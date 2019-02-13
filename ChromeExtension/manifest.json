@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "DOM extractor",
+  "description": "",
+  "version": "1.0.0",
+
+  "author":"Mathias Grundtvig Andreasen(MGApcDev)",
+  "permissions": [
+    "<all_urls>",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["main.js"]
+    }
+  ]
+}
