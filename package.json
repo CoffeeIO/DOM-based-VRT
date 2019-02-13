@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "python -m SimpleHTTPServer",
-    "compile": "cp -f DomVRT/domvrt.extractor.js ChromeExtension/lib.js"
+    "compile": "cp -f DomVRT/domvrt.extractor.js ChromeExtension/lib.js && cp -f DomVRT/domvrt.utils.js ChromeExtension/utils.js"
   },
   "repository": {
     "type": "git",

@@ -3,6 +3,68 @@ var DomExtractor = (function () {
     return extractCurrentApp();
   };
 
+
+  // Based on https://gist.github.com/sstur/7379870
+  var nodeToJSON = function (node) {
+    node = node || this;
+
+    // Define node.
+    var obj = {
+      nodeType: node.nodeType
+    };
+    if (node.tagName) {
+      obj.tagName = node.tagName.toLowerCase();
+    } else
+    if (node.nodeName) {
+      obj.nodeName = node.nodeName;
+    }
+    if (node.nodeValue) {
+      obj.nodeValue = node.nodeValue;
+    }
+
+    // Define attributes.
+    var attrs = {};
+    if (node.attributes != null) {
+      Array.prototype.forEach.call(node.attributes, function(attr) {
+        attrs[attr.name] = attr.value;
+      });
+    }
+    obj.attrs = attrs;
+
+    // Define CSS properties.
+    var n = node.nodeType;
+    var fullStyle = "";
+
+    if (n != 9 && n != 10 && n != 3 && n != 8) {
+      var styleObj = {};
+      var styles = window.getComputedStyle(node);
+      Array.prototype.forEach.call(styles, function(style) {
+        styleObj[style] = styles.getPropertyValue(style);
+        fullStyle += style + ":" + styles.getPropertyValue(style) + ","
+      });
+
+      obj.styles = styleObj;
+      obj.styleId = md5(fullStyle);
+    }
+
+
+    // Loop children.
+    obj.childNodes = [];
+    var styleSum = "";
+    if (node.childNodes) {
+      Array.prototype.forEach.call(node.childNodes, function(node) {
+        var child = nodeToJSON(node);
+        obj.childNodes.push(child);
+        if (child.styleId != null) {
+          styleSum += child.styleId;
+        }
+      });
+    }
+    obj.styleSum = md5(styleSum);
+
+    return obj;
+  }
+
   var extractCurrentApp = function() {
     // Extract DOM elements
   };
@@ -55,7 +117,7 @@ var DomExtractor = (function () {
 
   var extractCurrentAppAsJSON = function (elem){
     // Loop through all elements
-    var json = loopChild(document);
+    var json = nodeToJSON(document);
 
     return json;
   };

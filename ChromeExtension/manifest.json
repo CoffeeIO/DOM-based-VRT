@@ -13,7 +13,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["lib.js", "main.js"]
+      "js": ["utils.js", "lib.js", "main.js"]
     }
   ]
 }
