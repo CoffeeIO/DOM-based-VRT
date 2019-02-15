@@ -5,11 +5,17 @@
   "author": "Mathias Grundtvig Andreasen (MGApcDev)",
   "license": "GPL-3.0",
   "devDependencies": {
-
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "node-sass": "^4.11.0",
+    "uglify-js": "^3.4.9"
   },
   "scripts": {
     "start": "python -m SimpleHTTPServer",
-    "compile": "cp -f DomVRT/domvrt.extractor.js ChromeExtension/lib.js && cp -f DomVRT/domvrt.utils.js ChromeExtension/utils.js"
+    "uglify": "node_modules/uglify-js/bin/uglifyjs src/*.js -o dist/domvrt.min.js",
+    "copyToChrome": "cp dist/domvrt.min.js ChromeExtension/domvrt.min.js",
+    "compile": "npm run uglify && npm run copyToChrome",
+    "watch": "watch 'npm run compile' ./src"
   },
   "repository": {
     "type": "git",

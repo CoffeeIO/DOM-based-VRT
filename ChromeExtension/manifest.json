@@ -13,7 +13,10 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["utils.js", "lib.js", "main.js"]
+      "js": [
+        "domvrt.min.js",
+        "main.js"
+      ]
     }
   ]
 }
