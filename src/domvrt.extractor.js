@@ -1,62 +1,37 @@
 DomVRT.Extractor = (function (obj) {
 
-
-
-
-
-  // var getClasses = function(elem) {
-  //   var arr = [];
-  //   if (elem.classList == null) {
-  //     return arr;
-  //   }
-  //   Array.prototype.forEach.call(elem.classList, function(elemClass) {
-  //     arr.push(elemClass);
-  //   });
-  //
-  //   return arr;
-  // }
-  //
-  // var getAttributes = function(elem) {
-  //   var arr = {};
-  //
-  //   if (elem.attributes == null) {
-  //     return arr;
-  //   }
-  //   Array.prototype.forEach.call(elem.attributes, function(attr) {
-  //     arr[attr.name] = attr.value;
-  //   });
-  //
-  //   return arr;
-  // }
-  //
-  // var loopChild = function(elem) {
-  //   var json = {};
-  //   // Add attributes of element.
-  //   json.tag = elem.tagName;
-  //   json.class = getClasses(elem);
-  //   json.id = elem.id;
-  //   json.text = ""; // Think about how to retrieve this
-  //   json.attr = getAttributes(elem);
-  //
-  //   // Loop through children.
-  //   json.nodes = [];
-  //   if (elem.childNodes == null) {
-  //     return arr;
-  //   }
-  //   Array.prototype.forEach.call(elem.childNodes, function(node) {
-  //     json.nodes.push(loopChild(node));
-  //   });
-  //
-  //   return json;
-  // };
-
-  obj.extractCurrentAppAsJSON = function (elem){
-    // Loop through all elements
+  obj.currentAppToJSON = function() {
     return nodeToJSON(document);
   };
 
-  obj.extractCurrentApp = function() {
+  obj.currentApp = function() {
     // Extract DOM elements
+  };
+
+  var dts = function(digit) {
+    if (digit < 10) {
+      return '0' + digit;
+    }
+    return '' + digit;
+  };
+
+  obj.currentAppToFile = function(filename) {
+
+    var jsonObj = obj.currentAppToJSON();
+
+    if (filename == null) {
+      var d = new Date();
+      var timeStr = d.getFullYear() + '-' + dts(d.getMonth() + 1) + '-' +
+       dts(d.getDate()) + '_' + dts(d.getHours()) + ':' + dts(d.getMinutes() +
+        ':' + dts(d.getSeconds()));
+
+      var host = (window.location.host).split('.');
+
+      filename = host[0] + '--' + timeStr + '.json';
+    }
+
+    var blob = new Blob([JSON.stringify(jsonObj)], {type: "application/json;charset=utf-8"});
+    saveAs(blob, filename);
   };
 
   // Based on https://gist.github.com/sstur/7379870
@@ -100,7 +75,6 @@ DomVRT.Extractor = (function (obj) {
       json.styleId = DomVRT.Utils.md5(fullStyle);
     }
 
-
     // Loop children.
     json.childNodes = [];
     var styleSum = "";
@@ -110,7 +84,7 @@ DomVRT.Extractor = (function (obj) {
         var child = nodeToJSON(node);
         json.childNodes.push(child);
         if (child.styleId != null) {
-          styleSum += child.styleId + child.styleSum;
+          styleSum += child.styleId + child.styleSum + ';';
         }
       });
     }
@@ -123,7 +97,7 @@ DomVRT.Extractor = (function (obj) {
     }
 
     return json;
-  }
+  };
 
   return obj;
 

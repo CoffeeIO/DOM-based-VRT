@@ -8,17 +8,22 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "node-sass": "^4.11.0",
-    "uglify-js": "^3.4.9"
+    "uglify-js": "^3.4.9",
+    "watch": "*"
   },
   "scripts": {
     "start": "python -m SimpleHTTPServer",
     "uglify": "node_modules/uglify-js/bin/uglifyjs src/*.js -o dist/domvrt.min.js",
-    "copyToChrome": "cp dist/domvrt.min.js ChromeExtension/domvrt.min.js",
-    "compile": "npm run uglify && npm run copyToChrome",
+    "uglifyVendor": "node_modules/uglify-js/bin/uglifyjs src/vendor/*.js -o dist/domvrt.vendor.min.js",
+    "copyToChrome": "cp dist/*.js ChromeExtension/",
+    "compile": "npm run uglify && npm run uglifyVendor && npm run copyToChrome",
     "watch": "watch 'npm run compile' ./src"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/MGApcDev/DOM-based-VRT"
+  },
+  "dependencies": {
+    "file-saver": "^2.0.0"
   }
 }
