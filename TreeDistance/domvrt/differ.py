@@ -3,7 +3,7 @@ import sys
 import json, os
 
 # sys.path.append('../zhang-shasha')
-sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance/zhang-shasha')
+sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance')
 
 
 from zss import simple_distance, Node, distance as strdist
