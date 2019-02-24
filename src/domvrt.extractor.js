@@ -1,7 +1,10 @@
 DomVRT.Extractor = (function (obj) {
 
-  obj.currentAppToJSON = function() {
-    return nodeToJSON(document);
+  obj.currentAppToJSON = function(minify) {
+    minify = (minify == null) ? false : minify;
+    var result = nodeToJSON(document, minify);
+    result.minify = minify;
+    return result;
   };
 
   obj.currentApp = function() {
@@ -15,19 +18,19 @@ DomVRT.Extractor = (function (obj) {
     return '' + digit;
   };
 
-  obj.currentAppToFile = function(filename) {
+  obj.currentAppToFile = function(filename, minify) {
 
-    var jsonObj = obj.currentAppToJSON();
+    var jsonObj = obj.currentAppToJSON(minify);
 
     if (filename == null) {
       var d = new Date();
       var timeStr = d.getFullYear() + '-' + dts(d.getMonth() + 1) + '-' +
-       dts(d.getDate()) + '_' + dts(d.getHours()) + ':' + dts(d.getMinutes() +
-        ':' + dts(d.getSeconds()));
+       dts(d.getDate()) + '--' + dts(d.getHours()) + '-' + dts(d.getMinutes() +
+        '-' + dts(d.getSeconds()));
 
-      var host = (window.location.host).split('.');
+      var host = (window.location.host).replace('.', '-');
 
-      filename = host[0] + '--' + timeStr + '.json';
+      filename = host + '--' + timeStr + '.json';
     }
 
     var blob = new Blob([JSON.stringify(jsonObj)], {type: "application/json;charset=utf-8"});
@@ -35,60 +38,106 @@ DomVRT.Extractor = (function (obj) {
   };
 
   // Based on https://gist.github.com/sstur/7379870
-  var nodeToJSON = function (node) {
+  var nodeToJSON = function (node, minify, position) {
+    minify = (minify == null) ? false : minify;
+    position = (position == null) ? 1 : position;
     node = node || this;
 
-    // Define node.
-    var json = {
-      nodeType: node.nodeType
+    var mVal = (minify) ? 1 : 0;
+
+    var jsonMapping = {
+      nodeType:   ['nodeType', 'nt'],
+      tagName:    ['tagName', 'tn'],
+      nodeName:   ['nodeName', 'nn'],
+      nodeValue:  ['nodeValue', 'nv'],
+      attrs:      ['attrs', 'at'],
+      styles:     ['styles', null],
+      styleId:    ['styleId', 'si'],
+      styleSum:   ['styleSum', 'ss'],
+      childNodes: ['childNodes', 'c'],
+      level:      ['level', 'l'],
+      position:   ['position', 'p'],
     };
-    if (node.tagName) {
-      json.tagName = node.tagName.toLowerCase();
+
+    // Define node.
+    var json = {};
+
+    json[jsonMapping['nodeType'][mVal]] = node.nodeType
+
+    if (jsonMapping['tagName'][mVal] && node.tagName) {
+      json[jsonMapping['tagName'][mVal]] = node.tagName.toLowerCase();
     } else
-    if (node.nodeName) {
-      json.nodeName = node.nodeName;
+    if (jsonMapping['nodeName'][mVal] && node.nodeName) {
+      json[jsonMapping['nodeName'][mVal]] = node.nodeName;
     }
-    if (node.nodeValue) {
-      json.nodeValue = node.nodeValue;
+    if (jsonMapping['nodeValue'][mVal] && node.nodeValue) {
+      json[jsonMapping['nodeValue'][mVal]] = node.nodeValue;
     }
 
     // Define attributes.
-    json.attrs = {};
-    if (node.attributes != null) {
-      Array.prototype.forEach.call(node.attributes, function(attr) {
-        json.attrs[attr.name] = attr.value;
-      });
+    if (jsonMapping['attrs'][mVal]) {
+      json[jsonMapping['attrs'][mVal]] = {};
+      if (node.attributes != null) {
+        Array.prototype.forEach.call(node.attributes, function(attr) {
+          json[jsonMapping['attrs'][mVal]][attr.name] = attr.value;
+        });
+      }
     }
 
+
     // Define CSS properties.
-    var n = node.nodeType;
-    var fullStyle = "";
+    if (jsonMapping['styles'][mVal]) {
+      var n = node.nodeType;
+      var fullStyle = "";
 
-    if (n != 9 && n != 10 && n != 3 && n != 8) {
-      json.styles = {};
-      var stylesObj = window.getComputedStyle(node);
-      Array.prototype.forEach.call(stylesObj, function(style) {
-        json.styles[style] = stylesObj.getPropertyValue(style);
-        fullStyle += style + ":" + stylesObj.getPropertyValue(style) + ","
-      });
+      if (n != 9 && n != 10 && n != 3 && n != 8) {
+        json[jsonMapping['styles'][mVal]] = {};
+        var stylesObj = window.getComputedStyle(node);
+        Array.prototype.forEach.call(stylesObj, function(style) {
+          json[jsonMapping['styles'][mVal]][style] = stylesObj.getPropertyValue(style);
+          fullStyle += style + ":" + stylesObj.getPropertyValue(style) + ","
+        });
 
-      json.styleId = DomVRT.Utils.md5(fullStyle);
+        if (jsonMapping['styleId'][mVal]) {
+          json[jsonMapping['styleId'][mVal]] = DomVRT.Utils.md5(fullStyle);
+        }
+      }
+    }
+
+    if (jsonMapping['position'][mVal]) {
+      json[jsonMapping['position'][mVal]] = position;
     }
 
     // Loop children.
-    json.childNodes = [];
-    var styleSum = "";
+    if (jsonMapping['childNodes'][mVal]) {
+      var cLabel = [jsonMapping['childNodes'][mVal]]
+      json[cLabel] = [];
+      var styleSum = "";
 
-    if (node.childNodes) {
-      Array.prototype.forEach.call(node.childNodes, function(node) {
-        var child = nodeToJSON(node);
-        json.childNodes.push(child);
-        if (child.styleId != null) {
-          styleSum += child.styleId + child.styleSum + ';';
-        }
-      });
+      if (node.childNodes) {
+        var index = 0;
+        Array.prototype.forEach.call(node.childNodes, function(n) {
+
+          var newPos = position + '.' + index;
+          var child = nodeToJSON(n, minify, newPos);
+
+          json[cLabel].push(child);
+
+          if (jsonMapping['styleId'][mVal] && jsonMapping['styleSum'][mVal]) {
+            if (child[jsonMapping['styleId'][mVal]] != null) {
+              styleSum += child[jsonMapping['styleId'][mVal]] + child[jsonMapping['styleSum'][mVal]] + ';';
+            }
+          }
+
+
+          index++;
+        });
+      }
+      if (jsonMapping['styleSum'][mVal]) {
+        json[jsonMapping['styleSum'][mVal]] = DomVRT.Utils.md5(styleSum);
+      }
     }
-    json.styleSum = DomVRT.Utils.md5(styleSum);
+
 
     if (node.id == 'debug') {
       console.log('DEBUG: styles');
