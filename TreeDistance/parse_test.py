@@ -14,5 +14,4 @@ after_root = parser.toTree(after_obj)
 
 parser.printTree(after_root)
 
-
-tester.generate_test();
+tester.generate_test(True);

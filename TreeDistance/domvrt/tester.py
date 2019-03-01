@@ -1,24 +1,26 @@
 import json, random
-import parser
+import parser, test_tree
+import collections
+import lorem
+
 
 class Tester(object):
     """docstring for Tester."""
-
-    # Nested block level elements.
-
-    # Block level elements.
-
-    # Inline elements.
 
 
     # Default settings.
     settings = {
         # Generation settings.
-        'min-nodes'                   : 100,
-        'max-nodes'                   : 1000,
+        'min-nodes'                   : 80,
+        'max-nodes'                   : 80,
         'chance-class'                : 10,
         'chance-id'                   : 1,
         'chance-attr'                 : 3,
+        'min-elements-per-level'      : 3,
+        'max-elements-per-level'      : 3,
+        'max-depth'                   : None,
+        'depth-width-radio'           : 0.5,      # Chance between selecting a div and text element
+        'tree-type'                   : 'random', # Types: random, binary, right branch, left branch,
         # Mutation settings.
         'min-changes'                 : 3,
         'max-changes'                 : 20,
@@ -47,21 +49,7 @@ class Tester(object):
             if not self.settings.has_key(key):
                 continue
             self.settings[key] = value
-
-    def get_number_from_range(self, min, max):
-        """
-        Get a random number from range.
-
-        min -- min number in range
-        max -- max number in range
-        """
-        return random.randint(min, max)
-
-    def get_random_block_element(self):
-        pass
-
-    def get_random_inline_element(self):
-        pass
+            
 
     def generate_test(self, minify = False):
         """
@@ -69,14 +57,9 @@ class Tester(object):
 
         minify -- Output object with minified key names (defualt False)
         """
-        p = parser.Parser()
-        mVal = 1 if minify else 0
+        t = test_tree.TestTree(self.settings)
 
-        number_of_element = self.get_number_from_range(self.settings['min-nodes'], self.settings['max-nodes'])
-        number_of_changes = self.get_number_from_range(self.settings['min-changes'], self.settings['max-changes'])
-
-
-
+        return t.generate_test(minify)
 
 
     def generate_test_as_html(self):

@@ -1,5 +1,5 @@
 import sys
-
+import parser_mapping
 import json, os
 
 sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance')
@@ -16,21 +16,7 @@ def strdist(a, b):
 class Parser():
     """docstring for Parser."""
 
-    # Mapping of minified names.
-    jsonMapping = {
-      'nodeType':   ['nodeType', 'nt'],
-      'tagName':    ['tagName', 'tn'],
-      'nodeName':   ['nodeName', 'nn'],
-      'nodeValue':  ['nodeValue', 'nv'],
-      'attrs':      ['attrs', 'at'],
-      'styles':     ['styles', None],
-      'styleId':    ['styleId', 'si'],
-      'styleSum':   ['styleSum', 'ss'],
-      'childNodes': ['childNodes', 'c'],
-      'level':      ['level', 'l'],
-      'position':   ['position', 'p'],
-    }
-    mVal = 0
+    map = None
 
     def parse(self, filename):
         """
@@ -51,15 +37,15 @@ class Parser():
         obj  -- test object to loop through
         node -- the tree Node to append on
         """
-        for child in obj[self.jsonMapping['childNodes'][self.mVal]]:
+        for child in obj[self.map.get('childNodes')]:
 
             # Get value of node.
             tag = "Text node"
-            if child.has_key(self.jsonMapping['tagName'][self.mVal]):
-                tag = child[self.jsonMapping['tagName'][self.mVal]]
+            if child.has_key(self.map.get('tagName')):
+                tag = child[self.map.get('tagName')]
 
             # Get position of node.
-            position = child[self.jsonMapping['position'][self.mVal]]
+            position = child[self.map.get('position')]
 
             c = Node(tag, None, str(position))
             node.addkid(c)
@@ -72,8 +58,13 @@ class Parser():
 
         obj -- test object to convert
         """
+
+        minify = False
         if obj.has_key('minify'):
-            self.mVal = 1 if obj['minify'] else 0
+            minify = obj['minify']
+
+        self.map = parser_mapping.ParserMapping(minify)
+
 
         root = Node('root', None, '0.0')
         self.loopChild(obj, root)
