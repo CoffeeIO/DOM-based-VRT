@@ -312,6 +312,7 @@ class TestTreeGenerator(object):
         tagName = self.map.get('tagName')
         nodeType = self.map.get('nodeType')
         nodeName = self.map.get('nodeName')
+        nodeValue = self.map.get('nodeValue')
         position = self.map.get('position')
         childNodes = self.map.get('childNodes')
 
@@ -362,8 +363,5 @@ class TestTreeGenerator(object):
         (root, body) = self.create_base_object(minify)
 
         values = self.contruct_tree(number_of_element, 1, body)
-
-
-        print(root)
 
         return root

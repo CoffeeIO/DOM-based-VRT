@@ -1,12 +1,15 @@
 import json, random
 import parser, test_tree_generator
 import collections
-import lorem
 import json, os
 
 
 class TestTree(object):
     """docstring for TestTree."""
+
+    def __init__(self, settings = None):
+        self.merge_settings(settings)
+
     # Default settings.
     settings = {
         # Generation settings.
@@ -32,9 +35,6 @@ class TestTree(object):
         # Add, remove, modify style, modify position, modify dimensions, content change, move element.
         'distribution-of-change-type' : [5, 2, 0, 0, 0, 2, 0], # Ratio of changes
     }
-
-    def __init__(self, settings = None):
-        self.merge_settings(settings)
 
     def merge_settings(self, settings = None):
         """

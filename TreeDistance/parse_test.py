@@ -1,5 +1,7 @@
 import domvrt
 
+
+
 # parser = domvrt.parser.Parser()
 # differ = domvrt.differ.Differ()
 test_tree = domvrt.test_tree.TestTree()
@@ -16,4 +18,16 @@ after_root = node_tree.test_to_tree(after_obj)
 
 node_tree.print_tree(after_root)
 
-test_tree.generate_test(True);
+# test_t = test_tree.generate_test(True);
+
+# print(test_t)
+
+# html = html_tree.test_to_html(test_t)
+
+# print(html)
+
+
+before_html = html_tree.test_to_html(before_obj)
+print(before_html)
+
+html_tree.html_to_file(before_html, "data/output3.html")

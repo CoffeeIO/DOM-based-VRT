@@ -2,36 +2,15 @@ from yattag import Doc
 
 doc, tag, text = Doc().tagtext()
 
-body = 'body'
-children = ['div']
-
-div = 'div'
-cl = {'class': 'closed'}
-
-node = {
-    'tag' : 'body',
-    'text': 'outer1',
-    'childNodes': [
-        {
-            'tag' : 'div',
-            'text' : 'inner1',
-            'childNodes' : []
-        },
-        {
-            'tag' : 'div',
-            'text' : 'inner2',
-            'childNodes' : []
-        }
-    ],
+attr_map = {
+    'id': 'test'
 }
 
-def print_html(node):
-
-    with tag(node['tag']):
-        text(node['text'])
-        for n in node['childNodes']:
-            print_html(n)
-
-print_html(node)
+# id = ('id', 'test')
+# attr = (('id', 'test'), ('class', 'ctest'))
+with tag('h1'):
+    doc.attr(('id', 'test'))
+    doc.attr(('class', 'ctest'))
+    text('Hello world!')
 
 print(doc.getvalue())
