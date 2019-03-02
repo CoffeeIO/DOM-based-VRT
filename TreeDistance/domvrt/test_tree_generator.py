@@ -86,6 +86,13 @@ class TestTreeGenerator(object):
         "id10",
     ]
 
+    attrs = {
+        "title" : ['title1', 'title2', 'title3', 'title4', 'title5'],
+        "disabled" : ['disabled'],
+        "alt" : ['alt1', 'alt2', 'alt3', 'alt4', 'alt5'],
+        "style" : ['color:red;', 'display:none;', 'width:200px;', 'position:absolute;', 'background:blue;'],
+    }
+
     def modify_element(self, node):
         attrs = self.map.get('attrs')
 
@@ -102,7 +109,8 @@ class TestTreeGenerator(object):
             node[attrs]['id'] = random.choice(self.ids)
 
         if rnum_attr <= self.settings['chance-attr']:
-            pass
+            key = random.choice(self.attrs.keys())
+            node[attrs][key] = random.choice(self.attrs[key])
 
         return node
 

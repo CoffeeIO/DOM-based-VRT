@@ -13,11 +13,11 @@ class TestTree(object):
     # Default settings.
     settings = {
         # Generation settings.
-        'min-nodes'                   : 80,
-        'max-nodes'                   : 80,
+        'min-nodes'                   : 800,
+        'max-nodes'                   : 800,
         'chance-class'                : 10,
-        'chance-id'                   : 1,
-        'chance-attr'                 : 3,
+        'chance-id'                   : 10,
+        'chance-attr'                 : 10,
         'min-elements-per-level'      : 3,
         'max-elements-per-level'      : 3,
         'max-depth'                   : None,

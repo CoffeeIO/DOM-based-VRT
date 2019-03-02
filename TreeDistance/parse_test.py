@@ -18,11 +18,12 @@ after_root = node_tree.test_to_tree(after_obj)
 
 node_tree.print_tree(after_root)
 
-# test_t = test_tree.generate_test(True);
+test_t = test_tree.generate_test(True);
 
 # print(test_t)
 
-# html = html_tree.test_to_html(test_t)
+html = html_tree.test_to_html(test_t)
+html_tree.html_to_file(html, "data/output2.html")
 
 # print(html)
 
