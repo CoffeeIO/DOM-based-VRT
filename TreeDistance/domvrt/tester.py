@@ -7,7 +7,6 @@ import lorem
 class Tester(object):
     """docstring for Tester."""
 
-
     # Default settings.
     settings = {
         # Generation settings.
@@ -49,7 +48,7 @@ class Tester(object):
             if not self.settings.has_key(key):
                 continue
             self.settings[key] = value
-            
+
 
     def generate_test(self, minify = False):
         """

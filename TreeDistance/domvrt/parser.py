@@ -30,7 +30,7 @@ class Parser():
                 contents =f.read()
                 return json.loads(contents)
 
-    def loopChild(self, obj, node):
+    def loop_child(self, obj, node):
         """
         Construct Node tree on child.
 
@@ -49,10 +49,10 @@ class Parser():
 
             c = Node(tag, None, str(position))
             node.addkid(c)
-            self.loopChild(child, c)
+            self.loop_child(child, c)
 
 
-    def toTree(self, obj):
+    def to_tree(self, obj):
         """
         Convert test object to Node tree.
 
@@ -67,23 +67,23 @@ class Parser():
 
 
         root = Node('root', None, '0.0')
-        self.loopChild(obj, root)
+        self.loop_child(obj, root)
 
         return root
 
 
     count = 0
-    def printNode(self, node, indent = ''):
+    def print_node(self, node, indent = ''):
         """
         Print child Node.
         """
         self.count = self.count + 1
         print(indent + str(node.position) + ' : ' + node.label)
         for child in node.children:
-            self.printNode(child, indent + '')
+            self.print_node(child, indent + '')
 
 
-    def printTree(self, tree):
+    def print_tree(self, tree):
         """
         Print Node tree.
 
@@ -93,7 +93,7 @@ class Parser():
         self.count = 0
         print('{')
 
-        self.printNode(tree)
+        self.print_node(tree)
 
         print('}')
         print('nodes:', self.count)

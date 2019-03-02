@@ -55,8 +55,57 @@ class TestTree(object):
         "table", "tr", "td",
     ]
 
+    # Bootstrap classes: https://getbootstrap.com/docs/3.4/css/
+    classes = [
+        "container",
+        "row",
+        "active",
+        "success",
+        "warning",
+        "info",
+        "danger",
+        "table",
+        "btn",
+        "close",
+        "caret",
+        "clearfix",
+        "show",
+        "hidden",
+    ]
+
+    ids = [
+        "id1",
+        "id2",
+        "id3",
+        "id4",
+        "id5",
+        "id6",
+        "id7",
+        "id8",
+        "id9",
+        "id10",
+    ]
+
     def modify_element(self, node):
+        attrs = self.map.get('attrs')
+
+        rnum_class = random.randint(0, 100)
+        rnum_id = random.randint(0, 100)
+        rnum_attr = random.randint(0, 100)
+
+        node[attrs] = {}
+
+        if rnum_class <= self.settings['chance-class']:
+            node[attrs]['class'] = random.choice(self.classes)
+
+        if rnum_id <= self.settings['chance-id']:
+            node[attrs]['id'] = random.choice(self.ids)
+
+        if rnum_attr <= self.settings['chance-attr']:
+            pass
+
         return node
+
 
     # -------------------------------------------------------------------------
 
@@ -256,6 +305,8 @@ class TestTree(object):
                     continue
                 node_queue.append({'node': child, 'stage': stage, 'depth': node['depth'] + 1})
 
+        return (remain_nodes)
+
 
     def create_base_object(self, minify):
         tagName = self.map.get('tagName')
@@ -310,7 +361,8 @@ class TestTree(object):
 
         (root, body) = self.create_base_object(minify)
 
-        self.contruct_tree(number_of_element, 1, body)
+        values = self.contruct_tree(number_of_element, 1, body)
+
 
         print(root)
 
