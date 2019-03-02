@@ -13,22 +13,10 @@ def strdist(a, b):
         else:
             return 1
 
-class Parser():
-    """docstring for Parser."""
+class NodeTree(object):
+    """docstring for NodeTree."""
 
     map = None
-
-    def parse(self, filename):
-        """
-        Parse file to json object.
-
-        filename -- path to the file to parse
-        """
-        if os.path.isfile(filename):
-            f = open(filename, "r")
-            if f.mode == 'r':
-                contents =f.read()
-                return json.loads(contents)
 
     def loop_child(self, obj, node):
         """
@@ -52,7 +40,7 @@ class Parser():
             self.loop_child(child, c)
 
 
-    def to_tree(self, obj):
+    def test_to_tree(self, obj):
         """
         Convert test object to Node tree.
 
@@ -71,6 +59,15 @@ class Parser():
 
         return root
 
+
+    def diff_trees(self, pre, post):
+        """
+        Get the edit script (and distance) between two tree structures.
+
+        pre  -- object before changes
+        post -- object after changes
+        """
+        return simple_distance(before, after, Node.get_children, Node.get_label, strdist, True)
 
     count = 0
     def print_node(self, node, indent = ''):

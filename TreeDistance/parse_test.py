@@ -1,17 +1,19 @@
 import domvrt
 
-parser = domvrt.parser.Parser()
-differ = domvrt.differ.Differ()
-tester = domvrt.tester.Tester()
+# parser = domvrt.parser.Parser()
+# differ = domvrt.differ.Differ()
+test_tree = domvrt.test_tree.TestTree()
+node_tree = domvrt.node_tree.NodeTree()
+html_tree = domvrt.html_tree.HtmlTree()
 
-before_obj = parser.parse('github-com--2019-02-23--17-5-08.json')
-before_root = parser.to_tree(before_obj)
+before_obj = test_tree.file_to_tree('data/github-com--2019-02-23--17-5-08.json')
+before_root = node_tree.test_to_tree(before_obj)
 
-parser.print_tree(before_root)
+node_tree.print_tree(before_root)
 
-after_obj = parser.parse('github-com--2019-02-23--17-5-08-(1).json')
-after_root = parser.to_tree(after_obj)
+after_obj = test_tree.file_to_tree('data/github-com--2019-02-23--17-5-08-(1).json')
+after_root = node_tree.test_to_tree(after_obj)
 
-parser.print_tree(after_root)
+node_tree.print_tree(after_root)
 
-tester.generate_test(True);
+test_tree.generate_test(True);
