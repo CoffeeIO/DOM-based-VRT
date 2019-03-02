@@ -1,6 +1,7 @@
 ChromeExtension/domvrt.min.js
 ChromeExtension/domvrt*.min.js
 workspace
+TreeDistance/data
 
 .DS_Store
 

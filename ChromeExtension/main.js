@@ -1,7 +1,7 @@
 console.log('Start');
 
-var minify = true;
-var save = true
+var minify = false;
+var save = false;
 
 var dom1 = DomVRT.Extractor.currentAppToJSON(minify);
 if (save) DomVRT.Extractor.currentAppToFile(null, minify);
