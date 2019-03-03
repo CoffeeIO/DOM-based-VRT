@@ -20,7 +20,8 @@ node_tree.print_tree(after_root)
 
 test_t = test_tree.generate_test(True);
 
-# print(test_t)
+
+print(test_t)
 
 html = html_tree.test_to_html(test_t)
 html_tree.html_to_file(html, "data/output2.html")
@@ -28,7 +29,7 @@ html_tree.html_to_file(html, "data/output2.html")
 # print(html)
 
 
-before_html = html_tree.test_to_html(before_obj)
-print(before_html)
+# before_html = html_tree.test_to_html(before_obj)
+# print(before_html)
 
-html_tree.html_to_file(before_html, "data/output3.html")
+# html_tree.html_to_file(before_html, "data/output3.html")
