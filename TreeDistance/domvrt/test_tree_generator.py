@@ -114,20 +114,8 @@ class TestTreeGenerator(object):
         "height:300px;",
     ]
 
-
-    def get_mapping_names(self):
-        tagName = self.map.get('tagName')
-        nodeType = self.map.get('nodeType')
-        nodeName = self.map.get('nodeName')
-        nodeValue = self.map.get('nodeValue')
-        position = self.map.get('position')
-        childNodes = self.map.get('childNodes')
-        attrs = self.map.get('attrs')
-
-        return (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs)
-
     def modify_element(self, node):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         rnum_class = random.randint(0, 100)
         rnum_id = random.randint(0, 100)
@@ -148,7 +136,7 @@ class TestTreeGenerator(object):
         return node
 
     def mutate_element(self, node, type):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         if not node.has_key(attrs):
             node[attrs] = {}
@@ -175,7 +163,7 @@ class TestTreeGenerator(object):
     # -------------------------------------------------------------------------
 
     def random_div(self, position_value):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         node = {
             tagName: 'div',
@@ -185,7 +173,7 @@ class TestTreeGenerator(object):
         return node
 
     def random_content_section(self, position_value):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         node = {
             tagName: random.choice(self.content_section),
@@ -196,7 +184,7 @@ class TestTreeGenerator(object):
         return node
 
     def random_text_content(self, position_value):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         node = {
             tagName: random.choice(self.text_content),
@@ -207,7 +195,7 @@ class TestTreeGenerator(object):
         return node
 
     def random_inline_text(self, position_value):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         node = {
             tagName: random.choice(self.inline_text),
@@ -218,7 +206,7 @@ class TestTreeGenerator(object):
         return node
 
     def random_text(self, position_value):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         return {
             nodeName: '#text',
@@ -299,7 +287,7 @@ class TestTreeGenerator(object):
 
 
     def contruct_tree(self, remain_nodes, depth, body):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         node_queue = collections.deque([{'node':body, 'stage': 1, 'depth': depth}])
 
@@ -344,7 +332,7 @@ class TestTreeGenerator(object):
 
 
     def create_base_object(self, minify):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         body = {
             tagName : 'body',
@@ -442,7 +430,7 @@ class TestTreeGenerator(object):
 
         (add, delete, mod_style, mod_position, mod_dimension, change_content, move_element) = changes_remain
         (add_p, delete_p, mod_style_p, mod_position_p, mod_dimension_p, change_content_p, move_element_p) = changes_prop
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         # TODO: Remove
         # if node.has_key(tagName):
@@ -606,7 +594,7 @@ class TestTreeGenerator(object):
 
     def update_position_child(self, node, parent_position = None):
         self.node_count += 1
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         if not node.has_key(childNodes):
             return
@@ -628,7 +616,7 @@ class TestTreeGenerator(object):
 
         if self.map == None:
             self.map = parser_mapping.ParserMapping(node['minify'])
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.get_mapping_names()
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         parent_position = "1"
         node[position] = parent_position

@@ -10,13 +10,7 @@ class HtmlTree(object):
     map = None
 
     def test_to_html_child(self, node, (doc, tag, text)):
-        tagName = self.map.get('tagName')
-        nodeType = self.map.get('nodeType')
-        nodeName = self.map.get('nodeName')
-        nodeValue = self.map.get('nodeValue')
-        position = self.map.get('position')
-        childNodes = self.map.get('childNodes')
-        attrs = self.map.get('attrs')
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         if node[nodeType] == 3: # text node
             text(node[nodeValue])

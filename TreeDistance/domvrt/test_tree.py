@@ -1,11 +1,13 @@
 import json, random
-import parser, test_tree_generator
+import parser, test_tree_generator, parser_mapping
 import collections
 import json, os
 
 
 class TestTree(object):
     """docstring for TestTree."""
+
+    map = None
 
     def __init__(self, settings = None):
         self.merge_settings(settings)
@@ -22,7 +24,7 @@ class TestTree(object):
         'max-elements-per-level'      : 3,
         'max-depth'                   : None,     # Not implemented
         'depth-width-radio'           : 0.5,      # Chance between selecting a div and text element
-        'tree-type'                   : 'random', # Types: random, binary, right branch, left branch,
+        # 'tree-type'                   : 'random', # Types: random, binary, right branch, left branch,
         # Mutation settings.
         'min-changes'                 : 20,
         'max-changes'                 : 20,
@@ -61,6 +63,8 @@ class TestTree(object):
             if f.mode == 'r':
                 contents =f.read()
                 return json.loads(contents)
+        else:
+            print("Warning file '" + filename + "' does not exist")
 
     def generate_test(self, minify = False):
         """
@@ -79,3 +83,57 @@ class TestTree(object):
         """
         t = test_tree_generator.TestTreeGenerator(self.settings)
         return t.mutate_test(test_tree)
+
+    def make_position_map(self, node, map = {}):
+
+        if self.map == None and node.has_key('minify'):
+            self.map = parser_mapping.ParserMapping(node['minify'])
+
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
+
+        map[node[position]] = node
+
+        if not node.has_key(childNodes):
+            return
+
+        for child in node[childNodes]:
+            self.make_position_map(child, map)
+
+        return map
+
+
+    def compare_style(self, pre_tree, post_tree, diffs):
+        """
+        Compare style differences of matches.
+
+        pre_tree  --
+        post_tree --
+        diffs     --
+        """
+        pre_map = self.make_position_map(pre_tree)
+        post_map = self.make_position_map(post_tree)
+
+        for diff in diffs:
+            if diff.type == 0:
+                print("Removed elem", diff.arg1.position, diff.arg1.label)
+            elif diff.type == 1:
+                print("Added elem", diff.arg2.position, diff.arg2.label)
+            elif diff.type == 2:
+                print("Updated elem")
+                print("Before: ", diff.arg1.position, diff.arg1.label)
+                print("After: ", diff.arg2.position, diff.arg2.label)
+            elif diff.type == 3:
+                if diff.arg1.position == '0.0':
+                    continue
+                # print(diff.arg1.position)
+                # print(diff.arg2.position)
+                bn = pre_map[diff.arg1.position]
+                an = post_map[diff.arg2.position]
+
+                if bn.has_key('styleId'):
+
+                    print("Matched elem")
+                    print("Before: ", diff.arg1.position, diff.arg1.label, bn['styleId'])
+                    print("After: ", diff.arg2.position, diff.arg2.label, an['styleId'])
+                # b = bn['styleId'] if bn.has_key('styleId') else ""
+                # a = an['styleId'] if an.has_key('styleId') else ""

@@ -24,3 +24,14 @@ class ParserMapping(object):
 
     def get(self, name):
         return self.jsonMapping[name][self.mVal]
+
+    def get_mapping_names(self):
+        tagName = self.get('tagName')
+        nodeType = self.get('nodeType')
+        nodeName = self.get('nodeName')
+        nodeValue = self.get('nodeValue')
+        position = self.get('position')
+        childNodes = self.get('childNodes')
+        attrs = self.get('attrs')
+
+        return (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs)

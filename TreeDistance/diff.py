@@ -6,9 +6,9 @@ import domvrt
 # 400 nodes : 1m 38s
 # 500 nodes : 2m 39s
 # 600 nodes : 4m 51s
-nodes = 600
+nodes = 100
 changes = 10
-dist = [1,0,0,0,0,0,0]
+dist = [1,1,0,0,0,0,0]
 
 settings = {
     'min-nodes' : nodes,
@@ -17,7 +17,6 @@ settings = {
     'max-changes' : changes,
     'distribution-of-change-type' : dist
 }
-
 
 test_tree = domvrt.test_tree.TestTree(settings)
 

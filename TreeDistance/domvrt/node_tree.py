@@ -25,19 +25,22 @@ class NodeTree(object):
         obj  -- test object to loop through
         node -- the tree Node to append on
         """
-        if not obj.has_key('childNodes'):
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
+
+
+        if not obj.has_key(childNodes):
             return
-        for child in obj[self.map.get('childNodes')]:
+        for child in obj[childNodes]:
 
             # Get value of node.
             tag = "Text node"
-            if child.has_key(self.map.get('tagName')):
-                tag = child[self.map.get('tagName')]
+            if child.has_key(tagName):
+                tag = child[tagName]
 
             # Get position of node.
-            position = child[self.map.get('position')]
+            new_position = child[position]
 
-            c = Node(tag, None, str(position))
+            c = Node(tag, None, str(new_position))
             node.addkid(c)
             self.loop_child(child, c)
 
