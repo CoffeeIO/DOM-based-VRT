@@ -13,27 +13,27 @@ class TestTree(object):
     # Default settings.
     settings = {
         # Generation settings.
-        'min-nodes'                   : 20,
+        'min-nodes'                   : 20,       # Not relyable
         'max-nodes'                   : 20,
         'chance-class'                : 10,
         'chance-id'                   : 10,
         'chance-attr'                 : 10,
         'min-elements-per-level'      : 3,
         'max-elements-per-level'      : 3,
-        'max-depth'                   : None,
+        'max-depth'                   : None,     # Not implemented
         'depth-width-radio'           : 0.5,      # Chance between selecting a div and text element
         'tree-type'                   : 'random', # Types: random, binary, right branch, left branch,
         # Mutation settings.
-        'min-changes'                 : 3,
+        'min-changes'                 : 20,
         'max-changes'                 : 20,
-        'chance-modify-id'            : 1,
-        'chance-modify-class'         : 1,
-        'chance-modify-attr'          : 1,
-        'chance-add-leaf'             : 10,
-        'chance-add-subtree'          : 10,
-        'clustering-of-changes'       : 0.3,
+        # 'chance-modify-id'            : 1,
+        # 'chance-modify-class'         : 1,
+        # 'chance-modify-attr'          : 1,
+        # 'chance-add-leaf'             : 10,
+        # 'chance-add-leaf'             : 10,
+        # 'clustering-of-changes'       : 0.3,
         # Add, remove, modify style, modify position, modify dimensions, content change, move element.
-        'distribution-of-change-type' : [5, 2, 0, 0, 0, 2, 0], # Ratio of changes
+        'distribution-of-change-type' : [0, 0, 2, 2, 2, 6, 0], # Ratio of changes
     }
 
     def merge_settings(self, settings = None):
@@ -69,29 +69,13 @@ class TestTree(object):
         minify -- Output object with minified key names (defualt False)
         """
         t = test_tree_generator.TestTreeGenerator(self.settings)
-
         return t.generate_test(minify)
 
-
-    def generate_test_as_html(self):
-        """
-        Generate a test object and convert to HTML code.
-        """
-        test = self.generate_test_as_json(self)
-        return self.test_to_html(test)
-
-    def mutate_test(self, obj):
+    def mutate_test(self, test_tree):
         """
         Given a test object create a copy and mutate it with the given settings.
 
         obj -- the test object to mutate
         """
-        pass
-
-    def test_to_html(self, obj):
-        """
-        Convert test object to HTML code.
-
-        obj -- the test object to convert
-        """
-        pass
+        t = test_tree_generator.TestTreeGenerator(self.settings)
+        return t.mutate_test(test_tree)

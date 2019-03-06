@@ -25,6 +25,8 @@ class NodeTree(object):
         obj  -- test object to loop through
         node -- the tree Node to append on
         """
+        if not obj.has_key('childNodes'):
+            return
         for child in obj[self.map.get('childNodes')]:
 
             # Get value of node.
@@ -67,7 +69,7 @@ class NodeTree(object):
         pre  -- object before changes
         post -- object after changes
         """
-        return simple_distance(before, after, Node.get_children, Node.get_label, strdist, True)
+        return simple_distance(pre, post, Node.get_children, Node.get_label, strdist, True)
 
     count = 0
     def print_node(self, node, indent = ''):

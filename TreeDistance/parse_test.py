@@ -26,6 +26,12 @@ print(test_t)
 html = html_tree.test_to_html(test_t)
 html_tree.html_to_file(html, "data/output2.html")
 
+test_m = test_tree.mutate_test(test_t)
+
+print(test_m)
+html = html_tree.test_to_html(test_m)
+html_tree.html_to_file(html, "data/output3.html")
+
 # print(html)
 
 
