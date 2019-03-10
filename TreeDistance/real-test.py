@@ -1,6 +1,5 @@
 import domvrt
 
-
 # file1 = "data/coffeeio-com--2019-03-06--22-19-05.json"
 # file2 = "data/coffeeio-com--2019-03-06--22-19-05-1.json"
 
