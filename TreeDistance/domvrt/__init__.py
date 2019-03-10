@@ -1,3 +1,4 @@
-import test_tree
-import node_tree
-import html_tree
+from test_tree import TestTree
+from node_tree import NodeTree
+from html_tree import HtmlTree
+from tree_distance import TreeDistance

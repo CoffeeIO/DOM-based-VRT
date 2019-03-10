@@ -1,12 +1,8 @@
 import domvrt
 
-
-
-# parser = domvrt.parser.Parser()
-# differ = domvrt.differ.Differ()
-test_tree = domvrt.test_tree.TestTree()
-node_tree = domvrt.node_tree.NodeTree()
-html_tree = domvrt.html_tree.HtmlTree()
+test_tree = domvrt.TestTree()
+node_tree = domvrt.NodeTree()
+html_tree = domvrt.HtmlTree()
 
 before_obj = test_tree.file_to_tree('data/github-com--2019-02-23--17-5-08.json')
 before_root = node_tree.test_to_tree(before_obj)
