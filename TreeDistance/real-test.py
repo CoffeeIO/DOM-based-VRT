@@ -1,7 +1,12 @@
 import domvrt
 
-file1 = "data/coffeeio-com--2019-03-06--22-19-05.json"
-file2 = "data/coffeeio-com--2019-03-06--22-19-05-1.json"
+
+# file1 = "data/coffeeio-com--2019-03-06--22-19-05.json"
+# file2 = "data/coffeeio-com--2019-03-06--22-19-05-1.json"
+
+file1 = "data/coffeeio-com--2019-03-07--09-1-13.json"
+file2 = "data/coffeeio-com--2019-03-07--09-1-13-(1).json"
+
 
 test_tree = domvrt.test_tree.TestTree()
 node_tree = domvrt.node_tree.NodeTree()
