@@ -1,9 +1,14 @@
 DomVRT.Extractor = (function (obj) {
 
+
+  obj.nodeCount = 0;
+
   obj.currentAppToJSON = function(minify) {
+    obj.nodeCount = 0;
     minify = (minify == null) ? false : minify;
     var result = nodeToJSON(document, minify);
     result.minify = minify;
+    result['node-count'] = obj.nodeCount;
     return result;
   };
 
@@ -42,6 +47,8 @@ DomVRT.Extractor = (function (obj) {
     minify = (minify == null) ? false : minify;
     position = (position == null) ? 1 : position;
     node = node || this;
+
+    obj.nodeCount++;
 
     var mVal = (minify) ? 1 : 0;
 

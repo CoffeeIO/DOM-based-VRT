@@ -1,23 +1,28 @@
 console.log('Start');
 
-var minify = true;
-var save = true
+var minify = false;
+var save = true;
+var mod = true;
 
 var dom1 = DomVRT.Extractor.currentAppToJSON(minify);
 if (save) DomVRT.Extractor.currentAppToFile(null, minify);
-
-// document.querySelector('#LC148').style.color = 'yellow';
-// document.querySelector('body').style.paddingTop = '10px';
-// document.querySelector('.footer .mr-3').style.color = 'yellow';
-// document.querySelector('.commit-tease .btn-link').style.color = 'yellow';
-changeStyle('.commit-tease .btn-link', 'color', 'yellow');
-
-var dom2 = DomVRT.Extractor.currentAppToJSON(minify);
-
 console.log(dom1);
-console.log(dom2);
 
-if (save) DomVRT.Extractor.currentAppToFile(null, minify);
+if (mod) {
+  // document.querySelector('#LC148').style.color = 'yellow';
+  // document.querySelector('body').style.paddingTop = '10px';
+  // document.querySelector('.footer .mr-3').style.color = 'yellow';
+  // document.querySelector('.commit-tease .btn-link').style.color = 'yellow';
+  // changeStyle('.commit-tease .btn-link', 'color', 'yellow');
+  changeStyle('.front-title', 'color', 'blue');
+
+  var dom2 = DomVRT.Extractor.currentAppToJSON(minify);
+
+  if (save) DomVRT.Extractor.currentAppToFile(null, minify);
+  console.log(dom2);
+}
+
+
 
 // var result = DomVRT.Differ.compareJSON(dom1, dom2);
 //
