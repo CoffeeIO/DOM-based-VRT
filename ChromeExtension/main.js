@@ -2,7 +2,8 @@ console.log('Start');
 
 var minify = false;
 var save = true;
-var mod = true;
+var mod = false;
+
 
 var dom1 = DomVRT.Extractor.currentAppToJSON(minify);
 if (save) DomVRT.Extractor.currentAppToFile(null, minify);
@@ -15,6 +16,13 @@ if (mod) {
   // document.querySelector('.commit-tease .btn-link').style.color = 'yellow';
   // changeStyle('.commit-tease .btn-link', 'color', 'yellow');
   changeStyle('.front-title', 'color', 'blue');
+  elem = document.querySelector('.post-list-item-desc a');
+  elem.parentNode.removeChild(elem);
+
+  document.querySelector('.front-title').innerHTML = "CoffeeIO - change";
+
+  elem2 = document.querySelector('.post-list');
+  elem2.innerHTML = elem2.innerHTML + "<div>Added content</div>";
 
   var dom2 = DomVRT.Extractor.currentAppToJSON(minify);
 

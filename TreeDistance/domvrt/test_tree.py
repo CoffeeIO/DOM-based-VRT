@@ -23,7 +23,7 @@ class TestTree(object):
         'min-elements-per-level'      : 3,
         'max-elements-per-level'      : 3,
         'max-depth'                   : None,     # Not implemented
-        'depth-width-radio'           : 0.5,      # Chance between selecting a div and text element
+        # 'depth-width-radio'           : 0.5,      # Chance between selecting a div and text element
         # 'tree-type'                   : 'random', # Types: random, binary, right branch, left branch,
         # Mutation settings.
         'min-changes'                 : 20,
@@ -84,7 +84,10 @@ class TestTree(object):
         t = test_tree_generator.TestTreeGenerator(self.settings)
         return t.mutate_test(test_tree)
 
-    def make_position_map(self, node, map = {}):
+    def make_position_map(self, node, map = None):
+
+        if map == None:
+            map = {}
 
         if self.map == None and node.has_key('minify'):
             self.map = parser_mapping.ParserMapping(node['minify'])
@@ -113,27 +116,37 @@ class TestTree(object):
         pre_map = self.make_position_map(pre_tree)
         post_map = self.make_position_map(post_tree)
 
+        if self.map == None and pre_tree.has_key('minify'):
+            self.map = parser_mapping.ParserMapping(pre_tree['minify'])
+
+        styleId = self.map.get('styleId')
+        styles = self.map.get('styles')
+        attrs = self.map.get('attrs')
+
         for diff in diffs:
             if diff.type == 0:
-                print("Removed elem", diff.arg1.position, diff.arg1.label)
+                print("REMOVE elem")
+                print(diff.arg1.position, diff.arg1.label)
             elif diff.type == 1:
-                print("Added elem", diff.arg2.position, diff.arg2.label)
+                print("ADD elem")
+                print(diff.arg2.position, diff.arg2.label)
             elif diff.type == 2:
-                print("Updated elem")
+                print("UPDATE elem")
                 print("Before: ", diff.arg1.position, diff.arg1.label)
                 print("After: ", diff.arg2.position, diff.arg2.label)
             elif diff.type == 3:
                 if diff.arg1.position == '0.0':
                     continue
-                # print(diff.arg1.position)
-                # print(diff.arg2.position)
+
                 bn = pre_map[diff.arg1.position]
                 an = post_map[diff.arg2.position]
 
-                if bn.has_key('styleId'):
+                if bn.has_key(styleId) and bn[styleId] != an[styleId]:
 
-                    print("Matched elem")
-                    print("Before: ", diff.arg1.position, diff.arg1.label, bn['styleId'])
-                    print("After: ", diff.arg2.position, diff.arg2.label, an['styleId'])
-                # b = bn['styleId'] if bn.has_key('styleId') else ""
-                # a = an['styleId'] if an.has_key('styleId') else ""
+                    print("MATCH elem")
+                    print("Before:", diff.arg1.position, diff.arg1.label, bn[styleId])
+                    print("After: ", diff.arg2.position, diff.arg2.label, an[styleId])
+                    if bn.has_key(styles):
+                        for key in bn[styles].keys():
+                            if bn[styles][key] != an[styles][key]:
+                                print("Styles:", bn[styles][key], an[styles][key], key)

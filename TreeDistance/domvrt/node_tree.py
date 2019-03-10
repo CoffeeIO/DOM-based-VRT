@@ -33,14 +33,22 @@ class NodeTree(object):
         for child in obj[childNodes]:
 
             # Get value of node.
-            tag = "Text node"
-            if child.has_key(tagName):
-                tag = child[tagName]
+            label = "Other"
+            if child[nodeType] == 3:
+                label = "text:" + child[nodeValue]
+            elif child[nodeType] == 1:
+                label = child[tagName] + ";"
+                if child.has_key(attrs):
+                    if child[attrs].has_key('id'):
+                        label += "id=" + child[attrs]['id'] + ";"
+                    if child[attrs].has_key('class'):
+                        label += "class=" + child[attrs]['class'] + ";"
+
 
             # Get position of node.
             new_position = child[position]
 
-            c = Node(tag, None, str(new_position))
+            c = Node(label, None, str(new_position))
             node.addkid(c)
             self.loop_child(child, c)
 

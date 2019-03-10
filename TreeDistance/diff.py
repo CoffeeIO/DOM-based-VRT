@@ -1,12 +1,14 @@
 import domvrt
 
-# 100 nodes : 2.2s
-# 200 nodes : 15s
-# 300 nodes : 49s
-# 400 nodes : 1m 38s
-# 500 nodes : 2m 39s
-# 600 nodes : 4m 51s
-nodes = 100
+#  100 nodes : 2.2s
+#  200 nodes : 15s
+#  300 nodes : 49s
+#  400 nodes : 1m 38s
+#  500 nodes : 2m 39s
+#  600 nodes : 4m 51s
+# 1000 nodes : 27m 59s
+
+nodes = 1000
 changes = 10
 dist = [1,1,0,0,0,0,0]
 
