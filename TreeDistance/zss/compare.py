@@ -40,6 +40,7 @@ class AnnotatedTree(object):
         self.get_children = get_children
 
         self.root = root
+        self.index_tree(self.root)
         self.nodes = list()  # a post-order enumeration of the nodes in the tree
         self.ids = list()    # a matching list of ids
         self.lmds = list()   # left most descendents
@@ -83,6 +84,26 @@ class AnnotatedTree(object):
             i += 1
         self.keyroots = sorted(keyroots.values())
 
+    def index_tree_child(self, node):
+        count = 1
+
+        node.set_pre_order(self.pre_index)
+        self.pre_index += 1
+
+        for child in node.children:
+            count += self.index_tree_child(child)
+
+        node.set_post_order(self.post_index)
+        self.post_index += 1
+        node.set_sub_tree_size(count)
+
+        return count
+
+    def index_tree(self, tree):
+        self.post_index = 1
+        self.pre_index = 1
+
+        self.index_tree_child(tree)
 
 class Operation(object):
     """
@@ -121,6 +142,29 @@ INSERT = Operation.insert
 UPDATE = Operation.update
 MATCH = Operation.match
 
+
+def get_k_strip(A, B, k):
+    kstrip = []
+    for an in A.nodes:
+        for bn in B.nodes:
+            if (an.post_order_index - bn.post_order_index) <= k:
+                kstrip.append((an.post_order_index, bn.post_order_index))
+
+    return kstrip
+
+def get_map_of_subtree_size(A):
+    map = {}
+    for node in A.nodes:
+        map[node.post_order_index] = node.sub_tree_size
+    return map
+
+def is_k_relevant(A, B, x, y, map_A, map_B, k):
+    size_a = len(A.nodes)
+    size_b = len(B.nodes)
+    size_x = map_A[x]
+    size_y = map_B[y]
+    value = abs(size_a - x - size_b + y) + abs(size_x - size_y) + abs(x - size_x - y + size_x)
+    return value <= k
 
 def simple_distance(A, B, get_children=Node.get_children,
         get_label=Node.get_label, label_dist=strdist, return_operations=False):
@@ -206,43 +250,75 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
     A, B = AnnotatedTree(A, get_children), AnnotatedTree(B, get_children)
     size_a = len(A.nodes)
     size_b = len(B.nodes)
-    treedists = zeros((size_a, size_b), float)
-    operations = [[[] for _ in range(size_b)] for _ in range(size_a)]
+    treedists = zeros((size_a, size_b), float) # d
+    operations = [[[] for _ in range(size_b)] for _ in range(size_a)] # D
+
+
+
+
+    subtree_size_map_A = get_map_of_subtree_size(A)
+    print("Subtree")
+    print(subtree_size_map_A)
+    subtree_size_map_B = get_map_of_subtree_size(B)
+
+    def print_tree(tree):
+        for row in tree:
+            print(row)
+        # print(tree[-1][-1])
 
     def treedist(i, j):
-        Al = A.lmds
-        Bl = B.lmds
+        # print("treedist", i, j)
+
+        # i -> k
+        # j -> l
+        Al = A.lmds # rl_x
+        Bl = B.lmds # rl_y
         An = A.nodes
         Bn = B.nodes
 
-        m = i - Al[i] + 2
-        n = j - Bl[j] + 2
-        fd = zeros((m,n), float)
-        partial_ops = [[[] for _ in range(n)] for _ in range(m)]
+        # print(Al)
+        # print(Bl)
+
+        m = i - Al[i] + 2 # k - rl_x(k)
+        n = j - Bl[j] + 2 # k - rl_y(l)
+        fd = zeros((m,n), float) # forest distance ? Replacement for D
+        partial_ops = [[[] for _ in range(n)] for _ in range(m)] # Replacement for d
 
         ioff = Al[i] - 1
         joff = Bl[j] - 1
 
         for x in range(1, m): # δ(l(i1)..i, θ) = δ(l(1i)..1-1, θ) + γ(v → λ)
+            # x -> i
             node = An[x+ioff]
-            fd[x][0] = fd[x-1][0] + remove_cost(node)
+            fd[x][0] = fd[x-1][0] + remove_cost(node) # D_i,rl_x(k)
             op = Operation(REMOVE, node)
             partial_ops[x][0] = partial_ops[x-1][0] + [op]
         for y in range(1, n): # δ(θ, l(j1)..j) = δ(θ, l(j1)..j-1) + γ(λ → w)
+            # y -> j
             node = Bn[y+joff]
             fd[0][y] = fd[0][y-1] + insert_cost(node)
             op = Operation(INSERT, arg2=node)
             partial_ops[0][y] = partial_ops[0][y-1] + [op]
 
+
         for x in range(1, m):  # the plus one is for the xrange impl
             for y in range(1, n):
+
+        # for (x, y) in kstrip:
+        #     print("x, y",x, y)
+        #     if not is_k_relevant(A, B, x, y, subtree_size_map_A, subtree_size_map_B, k):
+        #         pass
+        #         print("not K relevant")
+        #     else:
+
+
                 # x+ioff in the fd table corresponds to the same node as x in
                 # the treedists table (same for y and y+joff)
                 node1 = An[x+ioff]
                 node2 = Bn[y+joff]
                 # only need to check if x is an ancestor of i
                 # and y is an ancestor of j
-                if Al[i] == Al[x+ioff] and Bl[j] == Bl[y+joff]:
+                if Al[i] == Al[x+ioff] and Bl[j] == Bl[y+joff]: # TD tree distance
                     #                   +-
                     #                   | δ(l(i1)..i-1, l(j1)..j) + γ(v → λ)
                     # δ(F1 , F2 ) = min-+ δ(l(i1)..i , l(j1)..j-1) + γ(λ → w)
@@ -267,7 +343,8 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
 
                     operations[x + ioff][y + joff] = partial_ops[x][y]
                     treedists[x+ioff][y+joff] = fd[x][y]
-                else:
+                    # print_tree(treedists)
+                else: # FD forest distance
                     #                   +-
                     #                   | δ(l(i1)..i-1, l(j1)..j) + γ(v → λ)
                     # δ(F1 , F2 ) = min-+ δ(l(i1)..i , l(j1)..j-1) + γ(λ → w)
@@ -290,10 +367,41 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
                     else:
                         partial_ops[x][y] = partial_ops[p][q] + \
                             operations[x+ioff][y+joff]
+        # print("hello")
+        # print_tree(fd)
+        # print("hello")
+    count = 0
 
-    for i in A.keyroots:
-        for j in B.keyroots:
-            treedist(i, j)
+    # k = 20
+    k = size_a / 2
+
+    kstrip = get_k_strip(A, B, k)
+
+    # for i in A.nodes:
+    #     for j in B.nodes:
+    #         treedist(i.post_order_index -1, j.post_order_index -1)
+    #         count += 1
+
+    # for i in A.keyroots: # Keyroots oprimized
+    #     for j in B.keyroots:  # Keyroots oprimized
+    #         treedist(i, j)
+    #         count += 1
+
+    for (x, y) in kstrip:
+        # print("x, y",x, y)
+        if not is_k_relevant(A, B, x, y, subtree_size_map_A, subtree_size_map_B, k):
+            treedists[x-1][y-1] = float("inf")
+        else:
+            treedist(x-1, y-1)
+            count += 1
+
+    print("Tree size", len(A.nodes), "Expected size", len(A.nodes) * len(A.nodes))
+    print("Iterations", count)
+    print("Size of kstrip", len(kstrip))
+    print_tree(treedists)
+
+    # print_tree(operations)
+
 
     if return_operations:
         return treedists[-1][-1], operations[-1][-1]

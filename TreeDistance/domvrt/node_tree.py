@@ -70,6 +70,8 @@ class NodeTree(object):
         root = Node('root', None, '0.0')
         self.loop_child(obj, root)
 
+        self.index_tree(root)
+
         return root
 
 
@@ -88,7 +90,7 @@ class NodeTree(object):
         Print child Node.
         """
         self.count = self.count + 1
-        print(indent + str(node.position) + ' : ' + node.label)
+        print(indent + str(node.position) + ' : ' + node.label , node.post_order_index, node.pre_order_index, node.sub_tree_size)
         for child in node.children:
             self.print_node(child, indent + '')
 
@@ -107,3 +109,40 @@ class NodeTree(object):
 
         print('}')
         print('nodes:', self.count)
+
+    post_index = 1
+    pre_index = 1
+
+    def index_tree_child(self, node):
+        count = 1
+
+        node.set_pre_order(self.pre_index)
+        self.pre_index += 1
+
+        for child in node.children:
+            count += self.index_tree_child(child)
+
+        node.set_post_order(self.post_index)
+        self.post_index += 1
+        node.set_sub_tree_size(count)
+
+        return count
+
+    def index_tree(self, tree):
+        self.post_index = 1
+        self.pre_index = 1
+
+        self.index_tree_child(tree)
+
+    def print_diff(self, diffs):
+        for diff in diffs:
+            if diff.type == 0:
+                print("REMOVE elem")
+                print(diff.arg1.position, diff.arg1.label)
+            elif diff.type == 1:
+                print("ADD elem")
+                print(diff.arg2.position, diff.arg2.label)
+            elif diff.type == 2:
+                print("UPDATE elem")
+                print("Before: ", diff.arg1.position, diff.arg1.label)
+                print("After: ", diff.arg2.position, diff.arg2.label)

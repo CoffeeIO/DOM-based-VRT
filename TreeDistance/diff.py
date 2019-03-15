@@ -24,8 +24,8 @@ test_tree = domvrt.test_tree.TestTree(settings)
 
 print(test_tree.settings)
 
-node_tree = domvrt.node_tree.NodeTree()
-html_tree = domvrt.html_tree.HtmlTree()
+node_tree = domvrt.NodeTree()
+html_tree = domvrt.HtmlTree()
 
 before = test_tree.generate_test()
 after = test_tree.mutate_test(before)
