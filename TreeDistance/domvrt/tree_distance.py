@@ -44,7 +44,25 @@ class TreeDistance(object):
 
 
     def get_distance_between_positions(self, position1, position2):
-        pass
+        p1 = None
+        p2 = None
+        if len(position1) > len(position2):
+            p1 = position2.split(".")
+            p2 = position1.split(".")
+        else:
+            p1 = position1.split(".")
+            p2 = position2.split(".")
+
+        for index, char1 in enumerate(p1):
+            char2 = p2[index]
+            if char1 != char2:
+                print(len(p1), index)
+                print(len(p2), index)
+                dist1 = len(p1) - index
+                dist2 = len(p2) - index
+                return dist1 + dist2 - 1
+
+        return len(p2) - len(p1)
 
 
     def build_preorder_queue(self, tree):
@@ -81,13 +99,37 @@ class TreeDistance(object):
 
         node_queue = self.build_preorder_queue(tree1)
         print(len(node_queue))
+
+
+        node_mapping = {}
+
+        root = TreeDistanceNode(TreeDistanceNode.ROOT, "0", "0")
+        match_queue = collections.deque([root])
+
         # Foreach node in tree1.
         while len(node_queue) > 0:
             node = node_queue.popleft()
+
             # Find the nearest matching node in tree2.
 
-            label = self.get_label_of_node(node)
-            
+            new_match_queue = []
+            while len(match_queue) > 0:
+                match = match_queue.popleft()
+
+                res = self.find_match(node, label_map_2, match)
+                new_match_queue += res
+
+            match_queue = collections.deque(new_match_queue)
+
+            # match = self.find_match(node, label_map_2)
+            # if match:
+            #     # add the mapping, position => position
+            #     # pop the node match
+            #     pass
+            # else:
+            #     # add node to unmatched queue
+            #     pass
+
             # For nodes with bad matching.
 
             # For nodes with no matching in tree1.
@@ -95,4 +137,55 @@ class TreeDistance(object):
             # For nodes with no matching in tree2.
 
 
-        pass
+        # print(self.get_distance_between_positions("1.2.2", "1.2.2.4"))
+        # print(self.get_distance_between_positions("1.2.2", "1.2.2.4.5"))
+        # print(self.get_distance_between_positions("1.2.3", "1.2.2.4.5"))
+        # print(self.get_distance_between_positions("1.2.3.4", "1.2.2.4.5"))
+        # print(self.get_distance_between_positions("1.2.2", "1.2.2"))
+        # print(self.get_distance_between_positions("1.2.2", "1.2.3"))
+        # print(self.get_distance_between_positions( "1.2.2.4.5", "1.2.3"))
+    def find_match(self, node, label_map, parent):
+        # Check map if node label exist.
+        label = self.get_label_of_node(node)
+        if label_map.has_key(label):
+            # Label is in the map, loop through nodes.
+            for child in label_map[label]['nodes']:
+                distance = self.get_distance_between_positions(node.position, child.position)
+                if distance == 0: # Match found
+                    return [TreeDistanceNode(TreeDistanceNode.MATCH, node.position, child.position, parent)]
+                else:
+                    return []
+        else:
+            return []
+
+
+
+class TreeDistanceNode(object):
+    """docstring for TreeDistanceNode."""
+    def __init__(self, type, from_pos, to_pos, parent = None):
+        self.type = type
+        self.from_pos = from_pos
+        self.to_pos = to_pos
+        self.parent = parent
+        self.cost = 0
+        if parent != None:
+            self.set_cost()
+
+    ROOT = 0
+    MATCH = 1
+    SUB = 2
+    REMOVE = 3
+
+    def get_cost(self):
+        if self.MATCH:
+            return 0
+        if self.SUB:
+            return 1
+        if self.REMOVE:
+            return 1
+
+    def set_cost(self):
+        if parent == None:
+            self.cost = 0
+        else:
+            self.cost = parent.cost + self.get_cost()
