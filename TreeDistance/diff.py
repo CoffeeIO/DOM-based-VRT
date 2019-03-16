@@ -1,5 +1,6 @@
 import domvrt
 
+# N^4
 #  100 nodes : 2.2s
 #  200 nodes : 15s
 #  300 nodes : 49s
@@ -8,7 +9,16 @@ import domvrt
 #  600 nodes : 4m 51s
 # 1000 nodes : 27m 59s
 
-nodes = 1000
+# N^2 K^2 : k=50, N>200 then k=N/2, N>500 then k=N/4
+#  100 nodes : 0.4s
+#  200 nodes : 5.3s
+#  300 nodes : 21s
+#  400 nodes : 37s
+#  500 nodes : 1m 14s
+#  600 nodes : 1m 26s
+# 1000 nodes : k/4: 6m , k/8 : 5m 21s
+
+nodes = 5000
 changes = 10
 dist = [1,1,0,0,0,0,0]
 
@@ -39,12 +49,12 @@ after_nodetree = node_tree.test_to_tree(after)
 diff = node_tree.diff_trees(before_nodetree, after_nodetree)
 
 print(diff[0])
-for item in diff[1]:
-    if item.type == 3:
-        continue
-
-    print("Type", item.type)
-    if item.arg1 != None:
-        print("arg1", item.arg1.position, item.arg1.label)
-    if item.arg2 != None:
-        print("arg2", item.arg2.position, item.arg2.label)
+# for item in diff[1]:
+#     if item.type == 3:
+#         continue
+#
+#     print("Type", item.type)
+#     if item.arg1 != None:
+#         print("arg1", item.arg1.position, item.arg1.label)
+#     if item.arg2 != None:
+#         print("arg2", item.arg2.position, item.arg2.label)

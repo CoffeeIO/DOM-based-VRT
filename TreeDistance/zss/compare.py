@@ -253,12 +253,7 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
     treedists = zeros((size_a, size_b), float) # d
     operations = [[[] for _ in range(size_b)] for _ in range(size_a)] # D
 
-
-
-
     subtree_size_map_A = get_map_of_subtree_size(A)
-    print("Subtree")
-    print(subtree_size_map_A)
     subtree_size_map_B = get_map_of_subtree_size(B)
 
     def print_tree(tree):
@@ -372,8 +367,15 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
         # print("hello")
     count = 0
 
-    # k = 20
-    k = size_a / 2
+
+    print("Tree is ", len(A.nodes))
+
+    k = 50
+    if size_a > 200:
+        k = size_a / 4
+    if size_a > 500:
+        k = size_a / 8
+
 
     kstrip = get_k_strip(A, B, k)
 
@@ -398,7 +400,7 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
     print("Tree size", len(A.nodes), "Expected size", len(A.nodes) * len(A.nodes))
     print("Iterations", count)
     print("Size of kstrip", len(kstrip))
-    print_tree(treedists)
+    # print_tree(treedists)
 
     # print_tree(operations)
 
