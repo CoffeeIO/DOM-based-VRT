@@ -18,7 +18,7 @@ import domvrt
 #  600 nodes : 1m 26s
 # 1000 nodes : k/4: 6m , k/8 : 5m 21s
 
-nodes = 5000
+nodes = 200
 changes = 10
 dist = [1,1,0,0,0,0,0]
 

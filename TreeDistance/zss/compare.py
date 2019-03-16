@@ -271,9 +271,6 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
         An = A.nodes
         Bn = B.nodes
 
-        # print(Al)
-        # print(Bl)
-
         m = i - Al[i] + 2 # k - rl_x(k)
         n = j - Bl[j] + 2 # k - rl_y(l)
         fd = zeros((m,n), float) # forest distance ? Replacement for D

@@ -1,5 +1,5 @@
 import json, random
-import parser, parser_mapping
+from domvrt.parser_mapping import ParserMapping
 import collections
 import lorem
 from copy import deepcopy
@@ -130,7 +130,7 @@ class TestTreeGenerator(object):
             node[attrs]['id'] = random.choice(self.ids)
 
         if rnum_attr <= self.settings['chance-attr']:
-            key = random.choice(self.attrs.keys())
+            key = random.choice(list(self.attrs.keys()))
             node[attrs][key] = random.choice(self.attrs[key])
 
         return node
@@ -138,12 +138,12 @@ class TestTreeGenerator(object):
     def mutate_element(self, node, type):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
-        if not node.has_key(attrs):
+        if not attrs in node:
             node[attrs] = {}
 
         current_style = ""
 
-        if node[attrs].has_key('style'):
+        if 'style' in node[attrs]:
             current_style = node[attrs]['style']
             current_style = current_style.strip()
             if not current_style[len(current_style) - 1] == ";":
@@ -387,7 +387,7 @@ class TestTreeGenerator(object):
 
         minify -- output object with minified key names (defualt False)
         """
-        self.map = parser_mapping.ParserMapping(minify)
+        self.map = ParserMapping(minify)
 
         number_of_element = random.randint(self.settings['min-nodes'], self.settings['max-nodes'])
 
@@ -432,18 +432,12 @@ class TestTreeGenerator(object):
         (add_p, delete_p, mod_style_p, mod_position_p, mod_dimension_p, change_content_p, move_element_p) = changes_prop
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
-        # TODO: Remove
-        # if node.has_key(tagName):
-        #     print('Looking at ', node[tagName])
-        # else:
-        #     print('Looking at ', node[nodeType])
-
         if changes_remain_total <= 0:
             return (changes_remain_total, changes_remain)
 
         # Only start mutation once we hit the body tag.
         if hit_body:
-            if not node.has_key(childNodes):
+            if not childNodes in node:
                 node[childNodes] = []
 
             if self.mutate_prop(add_p, add): # Insert element and move children
@@ -531,12 +525,12 @@ class TestTreeGenerator(object):
             if self.mutate_prop(move_element_p, move_element): # TODO:
                 pass
 
-        if node.has_key(tagName) and node[tagName] == 'body':
+        if tagName in node and node[tagName] == 'body':
             hit_body = True
 
         changes_remain = (add, delete, mod_style, mod_position, mod_dimension, change_content, move_element)
 
-        if node.has_key(childNodes):
+        if childNodes in node:
             index = 0
             for child in node[childNodes]:
                 (changes_remain_total, changes_remain) = self.mutate_test_child(child, changes_remain_total, changes_remain, changes_prop, hit_body, node, index)
@@ -554,7 +548,7 @@ class TestTreeGenerator(object):
         """
 
         if self.map == None:
-            self.map = parser_mapping.ParserMapping(test_tree['minify'])
+            self.map = ParserMapping(test_tree['minify'])
 
         changes_remain_total = random.randint(self.settings['min-changes'], self.settings['max-changes'])
         change_sum     = sum(self.settings['distribution-of-change-type'])
@@ -596,7 +590,7 @@ class TestTreeGenerator(object):
         self.node_count += 1
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
-        if not node.has_key(childNodes):
+        if not childNodes in node:
             return
 
         for index, child in enumerate(node[childNodes]):

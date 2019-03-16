@@ -1,5 +1,5 @@
 import sys
-import parser_mapping
+from domvrt.parser_mapping import ParserMapping
 import json, os
 
 sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance')
@@ -28,7 +28,7 @@ class NodeTree(object):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
 
-        if not obj.has_key(childNodes):
+        if not childNodes in obj:
             return
         for child in obj[childNodes]:
 
@@ -38,10 +38,10 @@ class NodeTree(object):
                 label = "text:" + child[nodeValue]
             elif child[nodeType] == 1:
                 label = child[tagName] + ";"
-                if child.has_key(attrs):
-                    if child[attrs].has_key('id'):
+                if attrs in child:
+                    if 'id' in child[attrs]:
                         label += "id=" + child[attrs]['id'] + ";"
-                    if child[attrs].has_key('class'):
+                    if 'class' in child[attrs]:
                         label += "class=" + child[attrs]['class'] + ";"
 
 
@@ -61,10 +61,10 @@ class NodeTree(object):
         """
 
         minify = False
-        if obj.has_key('minify'):
+        if 'minify' in obj:
             minify = obj['minify']
 
-        self.map = parser_mapping.ParserMapping(minify)
+        self.map = ParserMapping(minify)
 
 
         root = Node('root', None, '0.0')
