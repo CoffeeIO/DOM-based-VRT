@@ -35,16 +35,16 @@ B = (
         .addkid(Node("y", None, '2.3'))
     )
 
-print(A)
-print("next line")
-
-print(B)
-print("next line")
+# print(A)
+# print("next line")
+#
+# print(B)
+# print("next line")
 
 # node_tree.index_tree(A)
 # node_tree.index_tree(B)
 
-node_tree.print_tree(A)
+# node_tree.print_tree(A)
 dist = simple_distance(A, B, Node.get_children, Node.get_label, strdist, True)
 print(dist[0])
 # for dis in dist[1]:

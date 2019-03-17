@@ -100,8 +100,8 @@ class AnnotatedTree(object):
         return count
 
     def index_tree(self, tree):
-        self.post_index = 1
-        self.pre_index = 1
+        self.post_index = 0
+        self.pre_index = 0
 
         self.index_tree_child(tree)
 
@@ -143,20 +143,67 @@ UPDATE = Operation.update
 MATCH = Operation.match
 
 
+
+def get_e_strip_loop(node_x, node_y, e, acc):
+    if abs(node_x.post_order_index - node_y.post_order_index) <= e:
+        acc.append((node_x.post_order_index, node_y.post_order_index))
+        # acc.append((node_y.post_order_index, node_x.post_order_index))
+
+    for child in node_y.children:
+        get_e_strip_loop(node_x, child, e, acc)
+
+    return acc
+
+def get_e_strip(x, y, e, nodes_a, nodes_b, acc = None):
+    if acc == None:
+        acc = []
+    node_x = nodes_a[x]
+    get_e_strip_loop(node_x, nodes_b[y], e, acc)
+
+    for child in node_x.children:
+        get_e_strip(child.post_order_index, y, e, nodes_a, nodes_b, acc)
+
+    return acc
+
+def in_strip(strip_lookup, x, y):
+    lookup = str(x) + ":" + str(y)
+    return lookup in strip_lookup
+
+def get_strip_lookup(strip):
+    map = {}
+    for (x, y) in strip:
+        lookup = str(x) + ":" + str(y)
+        map[lookup] = True
+
+    return map
+
 def get_k_strip(A, B, k):
     kstrip = []
     for an in A.nodes:
         for bn in B.nodes:
-            if (an.post_order_index - bn.post_order_index) <= k:
+            if abs(an.post_order_index - bn.post_order_index) <= k:
                 kstrip.append((an.post_order_index, bn.post_order_index))
 
     return kstrip
+
+def get_map_of_nodes(A):
+    map = {}
+    for node in A.nodes:
+        map[node.post_order_index] = node
+    return map
 
 def get_map_of_subtree_size(A):
     map = {}
     for node in A.nodes:
         map[node.post_order_index] = node.sub_tree_size
     return map
+
+def get_e_value(A, B, x, y, map_A, map_B):
+    size_a = len(A.nodes)
+    size_b = len(B.nodes)
+    size_x = map_A[x]
+    size_y = map_B[y]
+    return abs(x - size_x - y + size_y) + abs(size_a - x - size_b + y)
 
 def is_k_relevant(A, B, x, y, map_A, map_B, k):
     size_a = len(A.nodes)
@@ -255,13 +302,20 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
 
     subtree_size_map_A = get_map_of_subtree_size(A)
     subtree_size_map_B = get_map_of_subtree_size(B)
+    node_map_A = get_map_of_nodes(A)
+    node_map_B = get_map_of_nodes(B)
+
+    count_xy = 1
+
+    strips_nor = []
+    strips_est = []
 
     def print_tree(tree):
         for row in tree:
             print(row)
         # print(tree[-1][-1])
 
-    def treedist(i, j):
+    def treedist(i, j, e):
         # print("treedist", i, j)
 
         # i -> k
@@ -293,8 +347,45 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
             partial_ops[0][y] = partial_ops[0][y-1] + [op]
 
 
+
+        # for (x, y) in estrip:
+        #     print("Estrip", x, y)
+        #     strips_est.append(str(x) +":" +str(y))
+        #
+        #     x -= 1
+        #     y -= 1
+            # if True:
+
+        estrip = get_e_strip(i, j, k , node_map_A, node_map_B)
+        estrip_lookup = get_strip_lookup(estrip)
+        # print(estrip)
+        # print(estrip_lookup)
+        # size_i = subtree_size_map_A[i]
+        # size_j = subtree_size_map_B[j]
+        # for x in range(i - size_i, i+1):
+        #     for y in range(j - size_j, j+1):
+        #         # if not in_strip(kstrip_lookup, x, y):
+        #         #     continue
+        #         if not in_strip(estrip_lookup, x, y):
+        #             print("caught estrip", x, y)
+        #             continue
+        #         x -= 1
+        #         y -= 1
+        #
+        #         ioff = 0
+        #         joff = 0
+
         for x in range(1, m):  # the plus one is for the xrange impl
             for y in range(1, n):
+                # if not in_strip(kstrip_lookup, x, y):
+                #     print("caught kstrip")
+                #     continue
+                # if not in_strip(estrip_lookup, x, y):
+                #     # print("caught estrip", x, y)
+                #     continue
+                #
+                # print("Simple", x, y)
+
 
         # for (x, y) in kstrip:
         #     print("x, y",x, y)
@@ -345,6 +436,7 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
                     #                   +-
                     p = Al[x+ioff]-1-ioff
                     q = Bl[y+joff]-1-joff
+
                     costs = [fd[x-1][y] + remove_cost(node1),
                              fd[x][y-1] + insert_cost(node2),
                              fd[p][q] + treedists[x+ioff][y+joff]]
@@ -367,7 +459,7 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
 
     print("Tree is ", len(A.nodes))
 
-    k = 50
+    k = 2
     if size_a > 200:
         k = size_a / 4
     if size_a > 500:
@@ -375,6 +467,15 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
 
 
     kstrip = get_k_strip(A, B, k)
+    kstrip_lookup = get_strip_lookup(kstrip)
+    estrip = get_e_strip(7, 7, k , node_map_A, node_map_B)
+
+    kstrip.sort()
+    estrip.sort()
+
+    print(kstrip)
+    print("break")
+    print(estrip)
 
     # for i in A.nodes:
     #     for j in B.nodes:
@@ -391,13 +492,16 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
         if not is_k_relevant(A, B, x, y, subtree_size_map_A, subtree_size_map_B, k):
             treedists[x-1][y-1] = float("inf")
         else:
-            treedist(x-1, y-1)
+            e = get_e_value(A, B, x, y, subtree_size_map_A, subtree_size_map_B)
+            treedist(x, y, e)
             count += 1
 
     print("Tree size", len(A.nodes), "Expected size", len(A.nodes) * len(A.nodes))
     print("Iterations", count)
     print("Size of kstrip", len(kstrip))
-    # print_tree(treedists)
+    print_tree(treedists)
+
+
 
     # print_tree(operations)
 
