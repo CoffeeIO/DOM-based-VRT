@@ -100,8 +100,8 @@ class AnnotatedTree(object):
         return count
 
     def index_tree(self, tree):
-        self.post_index = 1
-        self.pre_index = 1
+        self.post_index = 0
+        self.pre_index = 0
 
         self.index_tree_child(tree)
 
@@ -147,7 +147,7 @@ def get_k_strip(A, B, k):
     kstrip = []
     for an in A.nodes:
         for bn in B.nodes:
-            if (an.post_order_index - bn.post_order_index) <= k:
+            if abs(an.post_order_index - bn.post_order_index) <= k:
                 kstrip.append((an.post_order_index, bn.post_order_index))
 
     return kstrip
@@ -367,7 +367,7 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
 
     print("Tree is ", len(A.nodes))
 
-    k = 50
+    k = size_a
     if size_a > 200:
         k = size_a / 4
     if size_a > 500:
@@ -391,7 +391,7 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
         if not is_k_relevant(A, B, x, y, subtree_size_map_A, subtree_size_map_B, k):
             treedists[x-1][y-1] = float("inf")
         else:
-            treedist(x-1, y-1)
+            treedist(x, y)
             count += 1
 
     print("Tree size", len(A.nodes), "Expected size", len(A.nodes) * len(A.nodes))
