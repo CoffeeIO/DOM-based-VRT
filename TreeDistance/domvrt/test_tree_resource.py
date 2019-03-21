@@ -11,7 +11,8 @@ class TestTreeResource(object):
     map = None
     test_tree = None
     foldername = None
-    style_no = 0
+    file_no = 0
+    pre_filename = 'resource'
 
     def number_to_string(self, number):
         if number < 10:
@@ -24,9 +25,6 @@ class TestTreeResource(object):
         return str(number)
 
     def get_extension(self, request):
-        # path = urlparse(url).path
-        # ext = splitext(path)[1]
-        # return ext
         content_type = request.headers['content-type']
         if "application/javascript" in content_type or "text/javascript" in content_type:
             return '.js'
@@ -57,44 +55,31 @@ class TestTreeResource(object):
 
 
     def download_style_resources(self, content):
-        # content = content.decode('utf-8')
         matches = re.findall(r'url\(\"?([\w:\/\.,=?\-;+]+)\"?\)', content)
-        filename = None
-
-        resource = ""
-
 
         for match in matches:
             url = match
-            filename = self.download_uri(url, resource + 'styleres', self.style_no)
+            filename = self.download_uri(url)
 
-            # Remove "resource" from filename, as the reference is already nested.
-            # filename = filename[len(resource):]
-
-            self.style_no += 1
-            if filename == None:
-                print("Couldn't find file", url)
-            else:
+            if filename != None:
                 content = content.replace(url, filename, 1)
 
         return content
 
-    def save_file(self, content, ext, base, file_no):
+    def save_file(self, content, ext):
         folder = self.foldername + '/'
-        file  = base + self.number_to_string(file_no) + ext
-        # self.create_path(folder + base)
+        file  = self.pre_filename + self.number_to_string(self.file_no) + ext
+        self.file_no += 1
+
         filename = folder + file
 
         if ext == '.css':
-            print("saving css file")
             content = self.download_style_resources(content.decode('utf-8'))
             with open(filename, 'w') as f:
                 f.write(content)
         else:
             with open(filename, 'wb') as f:
                 f.write(content)
-
-
 
         return file
 
@@ -104,8 +89,7 @@ class TestTreeResource(object):
         except Exception as e:
             return None
 
-    def download_uri(self, uri, base, file_no):
-        # print(uri)
+    def download_uri(self, uri):
         invalid_url = False
 
         url = uri
@@ -131,14 +115,14 @@ class TestTreeResource(object):
                 r = self.send_request(url)
 
         if r == None:
-            print("Could not find url:", uri, url)
+            print("Could not find url:", uri)
             return None
 
         if r.status_code != 200:
-            print("Invalid request:", uri, url)
+            print("Invalid request:", uri)
             return None
 
-        filename = self.save_file(r.content, self.get_extension(r), base, file_no)
+        filename = self.save_file(r.content, self.get_extension(r))
         return filename
 
     def download_styles(self, styles):
@@ -153,7 +137,7 @@ class TestTreeResource(object):
 
                 if not nodeValue in text_node:
                     continue
-                    
+
                 text = text_node[nodeValue]
                 text_node[nodeValue] = self.download_style_resources(text)
 
@@ -167,36 +151,24 @@ class TestTreeResource(object):
     def download_resources(self, resources):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
-        file_no = 0
-        resource = "resource"
-
         for node in resources:
-            # print(node[tagName])
             if node[tagName] == 'link':
                 if 'href' in node[attrs] and node[attrs]['href'].strip():
-                    filename = self.download_uri(node[attrs]['href'], resource, file_no)
+                    filename = self.download_uri(node[attrs]['href'])
                     if filename != None:
-                        file_no += 1
-                        # print(filename)
                         node[attrs]['href'] = filename
 
             elif node[tagName] == 'script':
                 if 'src' in node[attrs] and node[attrs]['src'].strip():
-                    filename = self.download_uri(node[attrs]['src'], resource, file_no)
+                    filename = self.download_uri(node[attrs]['src'])
                     if filename != None:
-                        file_no += 1
-                        # print(filename)
                         node[attrs]['src'] = filename
 
             elif node[tagName] == 'img':
                 if 'src' in node[attrs] and node[attrs]['src'].strip():
-                    filename = self.download_uri(node[attrs]['src'], resource, file_no)
+                    filename = self.download_uri(node[attrs]['src'])
                     if filename != None:
-                        file_no += 1
-                        # print(filename)
                         node[attrs]['src'] = filename
-
-
 
     def create_path(self, folder):
         if not os.path.exists(folder):
@@ -255,7 +227,7 @@ class TestTreeResource(object):
         self.map = ParserMapping(tree['minify'])
         self.test_tree = tree
         self.foldername = foldername
-        self.style_no = 0
+        self.file_no = 0
 
 
         self.create_folder(foldername)

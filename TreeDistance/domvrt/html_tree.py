@@ -16,8 +16,8 @@ class HtmlTree(object):
         if node[nodeType] == 3: # text node
             if nodeValue in node:
                 text(node[nodeValue])
-            else:
-                text('')
+            # else:
+            #     text('')
         elif node[nodeType] == 1: # normal node
             with tag(node[tagName]):
                 if attrs in node:
