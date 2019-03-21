@@ -1,6 +1,7 @@
 import json, random
 from domvrt.test_tree_generator import TestTreeGenerator
 from domvrt.parser_mapping import ParserMapping
+from domvrt.test_tree_resource import TestTreeResource
 import collections
 import json, os
 
@@ -91,7 +92,7 @@ class TestTree(object):
             map = {}
 
         if self.map == None and 'minify' in node:
-            self.map = parser_mapping.ParserMapping(node['minify'])
+            self.map = ParserMapping(node['minify'])
 
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
@@ -151,3 +152,7 @@ class TestTree(object):
                         for key in bn[styles].keys():
                             if bn[styles][key] != an[styles][key]:
                                 print("Styles:", bn[styles][key], an[styles][key], key)
+
+    def store_resources(self, tree, foldername):
+        resource = TestTreeResource()
+        return resource.store_resources(tree, foldername)

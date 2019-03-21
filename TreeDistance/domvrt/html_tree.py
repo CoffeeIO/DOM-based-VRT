@@ -14,7 +14,10 @@ class HtmlTree(object):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         if node[nodeType] == 3: # text node
-            text(node[nodeValue])
+            if nodeValue in node:
+                text(node[nodeValue])
+            else:
+                text('')
         elif node[nodeType] == 1: # normal node
             with tag(node[tagName]):
                 if attrs in node:
