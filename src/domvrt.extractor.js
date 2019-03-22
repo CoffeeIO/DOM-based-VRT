@@ -9,6 +9,12 @@ DomVRT.Extractor = (function (obj) {
     var result = nodeToJSON(document, minify);
     result.minify = minify;
     result['node-count'] = obj.nodeCount;
+    result['location'] = {
+      'href'     : window.location.href,
+      'protocol' : window.location.protocol,
+      'host'     : window.location.host
+    };
+
     return result;
   };
 
