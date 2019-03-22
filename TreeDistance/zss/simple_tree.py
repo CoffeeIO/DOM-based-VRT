@@ -23,11 +23,23 @@ class Node(object):
                     .addkid(Node("l"))))
             .addkid(Node("e"))
     """
+    post_order_index = None
+    pre_order_index = None
+    sub_tree_size = None
 
     def __init__(self, label, children=None, position=None):
         self.label = label
         self.position = position
         self.children = children or list()
+
+    def set_post_order(self, index):
+        self.post_order_index = index
+
+    def set_pre_order(self, index):
+        self.pre_order_index = index
+
+    def set_sub_tree_size(self, size):
+        self.sub_tree_size = size
 
     @staticmethod
     def get_children(node):

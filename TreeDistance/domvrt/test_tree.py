@@ -1,5 +1,6 @@
 import json, random
-import parser, test_tree_generator, parser_mapping
+from domvrt.test_tree_generator import TestTreeGenerator
+from domvrt.parser_mapping import ParserMapping
 import collections
 import json, os
 
@@ -47,7 +48,7 @@ class TestTree(object):
         if settings == None:
             return
         for key, value in settings.items():
-            if not self.settings.has_key(key):
+            if not key in self.settings:
                 continue
             self.settings[key] = value
 
@@ -72,7 +73,7 @@ class TestTree(object):
 
         minify -- Output object with minified key names (defualt False)
         """
-        t = test_tree_generator.TestTreeGenerator(self.settings)
+        t = TestTreeGenerator(self.settings)
         return t.generate_test(minify)
 
     def mutate_test(self, test_tree):
@@ -81,7 +82,7 @@ class TestTree(object):
 
         obj -- the test object to mutate
         """
-        t = test_tree_generator.TestTreeGenerator(self.settings)
+        t = TestTreeGenerator(self.settings)
         return t.mutate_test(test_tree)
 
     def make_position_map(self, node, map = None):
@@ -89,14 +90,14 @@ class TestTree(object):
         if map == None:
             map = {}
 
-        if self.map == None and node.has_key('minify'):
+        if self.map == None and 'minify' in node:
             self.map = parser_mapping.ParserMapping(node['minify'])
 
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         map[node[position]] = node
 
-        if not node.has_key(childNodes):
+        if not childNodes in node:
             return
 
         for child in node[childNodes]:
@@ -116,7 +117,7 @@ class TestTree(object):
         pre_map = self.make_position_map(pre_tree)
         post_map = self.make_position_map(post_tree)
 
-        if self.map == None and pre_tree.has_key('minify'):
+        if self.map == None and 'minify' in pre_tree:
             self.map = parser_mapping.ParserMapping(pre_tree['minify'])
 
         styleId = self.map.get('styleId')
@@ -141,12 +142,12 @@ class TestTree(object):
                 bn = pre_map[diff.arg1.position]
                 an = post_map[diff.arg2.position]
 
-                if bn.has_key(styleId) and bn[styleId] != an[styleId]:
+                if styleId in bn and bn[styleId] != an[styleId]:
 
                     print("MATCH elem")
                     print("Before:", diff.arg1.position, diff.arg1.label, bn[styleId])
                     print("After: ", diff.arg2.position, diff.arg2.label, an[styleId])
-                    if bn.has_key(styles):
+                    if styles in bn:
                         for key in bn[styles].keys():
                             if bn[styles][key] != an[styles][key]:
                                 print("Styles:", bn[styles][key], an[styles][key], key)

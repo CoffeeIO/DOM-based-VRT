@@ -1,4 +1,4 @@
-import parser_mapping
+from domvrt.parser_mapping import ParserMapping
 import json, os
 from yattag import Doc
 import codecs
@@ -9,24 +9,25 @@ class HtmlTree(object):
 
     map = None
 
-    def test_to_html_child(self, node, (doc, tag, text)):
+    def test_to_html_child(self, node, values):
+        (doc, tag, text) = values
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         if node[nodeType] == 3: # text node
             text(node[nodeValue])
         elif node[nodeType] == 1: # normal node
             with tag(node[tagName]):
-                if node.has_key(attrs):
-                    for key, value in node[attrs].iteritems():
+                if attrs in node:
+                    for key, value in node[attrs].items():
                         doc.attr((key, value))
 
-                if not node.has_key(childNodes):
+                if not childNodes in node:
                     return
                 for child in node[childNodes]:
                     self.test_to_html_child(child, (doc, tag, text))
         elif node[nodeType] == 9: # root node
             doc.asis('<!DOCTYPE html>')
-            if not node.has_key(childNodes):
+            if not childNodes in node:
                 return
             for child in node[childNodes]:
                 self.test_to_html_child(child, (doc, tag, text))
@@ -41,10 +42,10 @@ class HtmlTree(object):
         doc, tag, text = Doc().tagtext()
 
         minify = False
-        if test_tree.has_key('minify'):
+        if 'minify' in test_tree:
             minify = test_tree['minify']
 
-        self.map = parser_mapping.ParserMapping(minify)
+        self.map = ParserMapping(minify)
 
         self.test_to_html_child(test_tree, (doc, tag, text))
 

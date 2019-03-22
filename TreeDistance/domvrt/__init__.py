@@ -1,3 +1,3 @@
-import test_tree
-import node_tree
-import html_tree
+from domvrt.test_tree import TestTree
+from domvrt.node_tree import NodeTree
+from domvrt.html_tree import HtmlTree
