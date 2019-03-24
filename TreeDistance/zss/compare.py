@@ -381,18 +381,18 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
     #         treedist(i.post_order_index -1, j.post_order_index -1)
     #         count += 1
 
-    # for i in A.keyroots: # Keyroots oprimized
-    #     for j in B.keyroots:  # Keyroots oprimized
-    #         treedist(i, j)
-    #         count += 1
-
-    for (x, y) in kstrip:
-        # print("x, y",x, y)
-        if not is_k_relevant(A, B, x, y, subtree_size_map_A, subtree_size_map_B, k):
-            treedists[x-1][y-1] = float("inf")
-        else:
-            treedist(x, y)
+    for i in A.keyroots: # Keyroots oprimized
+        for j in B.keyroots:  # Keyroots oprimized
+            treedist(i, j)
             count += 1
+
+    # for (x, y) in kstrip:
+    #     # print("x, y",x, y)
+    #     if not is_k_relevant(A, B, x, y, subtree_size_map_A, subtree_size_map_B, k):
+    #         treedists[x-1][y-1] = float("inf")
+    #     else:
+    #         treedist(x, y)
+    #         count += 1
 
     print("Tree size", len(A.nodes), "Expected size", len(A.nodes) * len(A.nodes))
     print("Iterations", count)

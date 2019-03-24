@@ -1,10 +1,15 @@
-import json, random
-from domvrt.test_tree_generator import TestTreeGenerator
+# Standard python
+import json, random, collections, os, requests
+# Dependencies
+# This package
 from domvrt.parser_mapping import ParserMapping
+from domvrt.html_tree import HtmlTree
+from domvrt.node_tree import NodeTree
+from domvrt.test_tree_generator import TestTreeGenerator
 from domvrt.test_tree_resource import TestTreeResource
-import collections
-import json, os
-
+from domvrt.test_tree_differ import TestTreeDiffer
+from domvrt.test_tree_visual import TestTreeVisual
+import domvrt.utils as utils
 
 class TestTree(object):
     """docstring for TestTree."""
@@ -53,7 +58,6 @@ class TestTree(object):
                 continue
             self.settings[key] = value
 
-
     def file_to_tree(self, filename):
         """
         Parse file to json object.
@@ -67,6 +71,9 @@ class TestTree(object):
                 return json.loads(contents)
         else:
             print("Warning file '" + filename + "' does not exist")
+
+    def tree_to_file(self, tree, filename):
+        utils.save_file(json.dumps(tree), filename)
 
     def generate_test(self, minify = False):
         """
@@ -86,73 +93,118 @@ class TestTree(object):
         t = TestTreeGenerator(self.settings)
         return t.mutate_test(test_tree)
 
-    def make_position_map(self, node, map = None):
+    def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None):
+        t = TestTreeDiffer()
+        return t.compare_style(pre_tree, post_tree, diffs, pre_path, post_path)
 
-        if map == None:
-            map = {}
+    def store_resources(self, tree, foldername, create_folder = True):
+        if create_folder:
+            foldername = self.get_folder(foldername)
 
-        if self.map == None and 'minify' in node:
-            self.map = ParserMapping(node['minify'])
+        t = TestTreeResource()
+        return t.store_resources(tree, foldername)
 
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
+    def save_tree_as_image(self, tree, foldername, save_resource = True, create_folder = True, file = "index.html", output = "image.png"):
+        if save_resource:
+            foldername = self.store_resources(tree, foldername, create_folder)
 
-        map[node[position]] = node
+        t = TestTreeVisual()
+        return t.save_tree_as_image(tree, foldername, file, output)
 
-        if not childNodes in node:
-            return
+    def save_url_as_image(self, url, foldername, create_folder = True, output = "image.png", width = None):
+        if create_folder:
+            foldername = self.get_folder(foldername)
 
-        for child in node[childNodes]:
-            self.make_position_map(child, map)
+        t = TestTreeVisual()
+        return t.save_url_as_image(url, foldername, output, width)
 
-        return map
+    def save_url_as_file(self, url, filename):
+        try:
+            r = requests.get(url)
+            if r.status_code != 200:
+                return None
+
+            utils.save_file((r.content).decode(), filename)
+
+        except Exception as e:
+            return None
 
 
-    def compare_style(self, pre_tree, post_tree, diffs):
-        """
-        Compare style differences of matches.
+    def save(self, filename, foldername, create_folder = True):
+        html_tree = HtmlTree()
 
-        pre_tree  --
-        post_tree --
-        diffs     --
-        """
-        pre_map = self.make_position_map(pre_tree)
-        post_map = self.make_position_map(post_tree)
+        if create_folder:
+            foldername = self.get_folder(foldername)
 
-        if self.map == None and 'minify' in pre_tree:
-            self.map = parser_mapping.ParserMapping(pre_tree['minify'])
+        tree = self.file_to_tree(filename)
 
-        styleId = self.map.get('styleId')
-        styles = self.map.get('styles')
-        attrs = self.map.get('attrs')
+        # Save original.
+        url = tree['location']['href']
+        self.tree_to_file(tree, foldername + "/index-original.json")
+        self.save_url_as_file(url, foldername + "/index-original.html")
+        self.save_url_as_image(url, foldername, False, "image-original.png", tree['captureWidth'])
 
-        for diff in diffs:
-            if diff.type == 0:
-                print("REMOVE elem")
-                print(diff.arg1.position, diff.arg1.label)
-            elif diff.type == 1:
-                print("ADD elem")
-                print(diff.arg2.position, diff.arg2.label)
-            elif diff.type == 2:
-                print("UPDATE elem")
-                print("Before: ", diff.arg1.position, diff.arg1.label)
-                print("After: ", diff.arg2.position, diff.arg2.label)
-            elif diff.type == 3:
-                if diff.arg1.position == '0.0':
-                    continue
+        # Download resources and save copy.
+        self.save_tree_as_image(tree, foldername, True, False)
+        self.tree_to_file(tree, foldername + "/index.json")
 
-                bn = pre_map[diff.arg1.position]
-                an = post_map[diff.arg2.position]
+        return foldername
 
-                if styleId in bn and bn[styleId] != an[styleId]:
+    def diff_folders(self, folder1, folder2):
+        pass
 
-                    print("MATCH elem")
-                    print("Before:", diff.arg1.position, diff.arg1.label, bn[styleId])
-                    print("After: ", diff.arg2.position, diff.arg2.label, an[styleId])
-                    if styles in bn:
-                        for key in bn[styles].keys():
-                            if bn[styles][key] != an[styles][key]:
-                                print("Styles:", bn[styles][key], an[styles][key], key)
+    def diff(self, file1, file2):
+        node_tree = NodeTree()
 
-    def store_resources(self, tree, foldername):
-        resource = TestTreeResource()
-        return resource.store_resources(tree, foldername)
+        foldername1 = self.get_folder("before")
+        foldername2 = self.get_folder("after")
+
+        before_tree = self.file_to_tree(file1)
+        after_tree = self.file_to_tree(file2)
+
+        self.save(file1, foldername1, False)
+        self.save(file2, foldername2, False)
+
+        before_root = node_tree.test_to_tree(before_tree)
+        after_root = node_tree.test_to_tree(after_tree)
+        diff = node_tree.diff_trees(before_root, after_root)
+
+        print("Distance:", diff[0])
+        node_tree.print_diff(diff[1])
+
+        pre_image = foldername1
+        post_image = foldername2
+        self.compare_style(before_tree, after_tree, diff[1], pre_image, post_image)
+
+        return (foldername1, foldername2)
+
+
+    # Helper functions.
+
+    def number_to_string(self, number):
+        if number < 10:
+            return '000' + str(number)
+        elif number < 100:
+            return '00' + str(number)
+        elif number < 1000:
+            return '0' + str(number)
+
+        return str(number)
+
+    def create_path(self, folder):
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+    def get_folder(self, foldername):
+        foldername = "data-output/" + foldername
+
+        folder_no = 0
+        folder = foldername + self.number_to_string(folder_no)
+
+        while os.path.exists(folder):
+            folder_no += 1
+            folder = foldername + self.number_to_string(folder_no)
+
+        self.create_path(folder)
+
+        return folder

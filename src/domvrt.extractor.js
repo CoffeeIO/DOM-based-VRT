@@ -15,6 +15,10 @@ DomVRT.Extractor = (function (obj) {
       'host'     : window.location.host
     };
 
+    result.captureWidth = window.innerWidth;
+    result.captureHeight= document.body.scrollHeight;
+
+
     return result;
   };
 
@@ -54,7 +58,6 @@ DomVRT.Extractor = (function (obj) {
     position = (position == null) ? 1 : position;
     node = node || this;
 
-    obj.nodeCount++;
 
     var mVal = (minify) ? 1 : 0;
 
@@ -70,6 +73,10 @@ DomVRT.Extractor = (function (obj) {
       childNodes: ['childNodes', 'c'],
       level:      ['level', 'l'],
       position:   ['position', 'p'],
+      x1 :        ['x1', null],
+      y1 :        ['y1', null],
+      x2 :        ['x2', null],
+      y2 :        ['y2', null],
     };
 
     // Define node.
@@ -84,7 +91,13 @@ DomVRT.Extractor = (function (obj) {
       json[jsonMapping['nodeName'][mVal]] = node.nodeName;
     }
     if (jsonMapping['nodeValue'][mVal] && node.nodeValue) {
+      value = node.nodeValue
+      if (value.trim() == '') { // Ignore empty text nodes
+        return null
+      }
+
       json[jsonMapping['nodeValue'][mVal]] = node.nodeValue;
+
     }
 
     // Define attributes.
@@ -117,6 +130,27 @@ DomVRT.Extractor = (function (obj) {
       }
     }
 
+    // Store coordinates of nodes.
+    if (jsonMapping['x1'][mVal]) {
+      rect = null
+      if (node.nodeType == 3) {
+        var range = document.createRange();
+        range.selectNode(node);
+        rect = range.getBoundingClientRect();
+      }
+
+      if (node.nodeType == 1) {
+        rect = node.getBoundingClientRect();
+      }
+      if (rect != null) {
+        json[jsonMapping['x1'][mVal]] = rect.left
+        json[jsonMapping['y1'][mVal]] = rect.top
+        json[jsonMapping['x2'][mVal]] = rect.right
+        json[jsonMapping['y2'][mVal]] = rect.bottom
+      }
+
+    }
+
     if (jsonMapping['position'][mVal]) {
       json[jsonMapping['position'][mVal]] = position;
     }
@@ -134,16 +168,18 @@ DomVRT.Extractor = (function (obj) {
           var newPos = position + '.' + index;
           var child = nodeToJSON(n, minify, newPos);
 
-          json[cLabel].push(child);
+          if (child != null) {
+            json[cLabel].push(child);
 
-          if (jsonMapping['styleId'][mVal] && jsonMapping['styleSum'][mVal]) {
-            if (child[jsonMapping['styleId'][mVal]] != null) {
-              styleSum += child[jsonMapping['styleId'][mVal]] + child[jsonMapping['styleSum'][mVal]] + ';';
+            if (jsonMapping['styleId'][mVal] && jsonMapping['styleSum'][mVal]) {
+              if (child[jsonMapping['styleId'][mVal]] != null) {
+                styleSum += child[jsonMapping['styleId'][mVal]] + child[jsonMapping['styleSum'][mVal]] + ';';
+              }
             }
+
+            index++;
           }
 
-
-          index++;
         });
       }
       if (jsonMapping['styleSum'][mVal]) {
@@ -158,6 +194,7 @@ DomVRT.Extractor = (function (obj) {
       console.log(json.styles);
     }
 
+    obj.nodeCount++;
     return json;
   };
 

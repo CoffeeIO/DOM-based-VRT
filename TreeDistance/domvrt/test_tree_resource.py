@@ -1,10 +1,11 @@
-import os
-from domvrt.parser_mapping import ParserMapping
-from domvrt.html_tree import HtmlTree
-import requests
+# Standard python
+import os, re, requests
 from os.path import splitext
 from urllib.parse import urlparse
-import re
+# Dependencies
+# This package
+from domvrt.parser_mapping import ParserMapping
+from domvrt.html_tree import HtmlTree
 
 class TestTreeResource(object):
     """docstring for TestTreeResource."""
@@ -55,7 +56,8 @@ class TestTreeResource(object):
 
 
     def download_style_resources(self, content):
-        matches = re.findall(r'url\(\"?([\w:\/\.,=?\-;+]+)\"?\)', content)
+        url_pattern = r'url\(\'?\"?([\w\/\.\,\=\-\:\;\+\&\?\$\@\%\#]+)\"?\'?\)'
+        matches = re.findall(url_pattern, content)
 
         for match in matches:
             url = match
@@ -170,21 +172,7 @@ class TestTreeResource(object):
                     if filename != None:
                         node[attrs]['src'] = filename
 
-    def create_path(self, folder):
-        if not os.path.exists(folder):
-            os.makedirs(folder)
 
-    def create_folder(self, foldername):
-        folder_no = 0
-        folder = foldername + self.number_to_string(folder_no)
-
-        while os.path.exists(folder):
-            folder_no += 1
-            folder = foldername + self.number_to_string(folder_no)
-
-        self.create_path(folder)
-
-        self.foldername = folder
 
     def get_resources(self, node, resources = None, images = None, styles = None):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
@@ -224,13 +212,11 @@ class TestTreeResource(object):
         return (resources, images, styles)
 
     def store_resources(self, tree, foldername):
+
         self.map = ParserMapping(tree['minify'])
         self.test_tree = tree
         self.foldername = foldername
         self.file_no = 0
-
-
-        self.create_folder(foldername)
 
         (resources, images, styles) = self.get_resources(tree)
         print('resources:', len(resources))
@@ -247,4 +233,4 @@ class TestTreeResource(object):
         html = html_tree.test_to_html(self.test_tree)
         html_tree.html_to_file(html, self.foldername + '/index.html')
 
-        return tree
+        return self.foldername

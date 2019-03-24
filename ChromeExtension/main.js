@@ -2,7 +2,7 @@ console.log('Start');
 
 var minify = false;
 var save = true;
-var mod = false;
+var mod = true;
 
 
 var dom1 = DomVRT.Extractor.currentAppToJSON(minify);
@@ -15,12 +15,18 @@ if (mod) {
   // document.querySelector('.footer .mr-3').style.color = 'yellow';
   // document.querySelector('.commit-tease .btn-link').style.color = 'yellow';
   // changeStyle('.commit-tease .btn-link', 'color', 'yellow');
+
+  // Style
   changeStyle('.front-title', 'color', 'blue');
+
+  // Remove
   elem = document.querySelector('.post-list-item-desc a');
   elem.parentNode.removeChild(elem);
 
+  // Change content
   document.querySelector('.front-title').innerHTML = "CoffeeIO - change";
 
+  // Add
   elem2 = document.querySelector('.post-list');
   elem2.innerHTML = elem2.innerHTML + "<div>Added content</div>";
 

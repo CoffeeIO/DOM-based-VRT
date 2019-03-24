@@ -1,6 +1,9 @@
-import sys
+# Standard python
+import sys, json, os
+# Dependencies
+# This package
 from domvrt.parser_mapping import ParserMapping
-import json, os
+
 
 sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance')
 
