@@ -1,9 +1,10 @@
-import json, random
-from domvrt.parser_mapping import ParserMapping
-import collections
-import lorem
+# Standard python
+import json, random, math, collections
 from copy import deepcopy
-import math
+# Dependencies
+import lorem
+# This package
+from domvrt.parser_mapping import ParserMapping
 
 class TestTreeGenerator(object):
     """docstring for TestTreeGenerator."""

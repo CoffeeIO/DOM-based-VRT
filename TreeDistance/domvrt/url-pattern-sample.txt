@@ -1,0 +1,6 @@
+url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css')
+url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700")
+url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i)
+url("/assets/posts/187ef4436122d1cc2f40dc2b92f0eba0.png")
+url("https://images.pexels.com/photos/414171/pexels-photo-414171.jpeg?auto=compress&cs=tinysrgb&h=350")
+url(https://serverName/deepLinkAction.do?userName=peter@nable.com&password=Hello%There&method=defaultDashboard)

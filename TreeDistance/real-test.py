@@ -21,4 +21,4 @@ diff = node_tree.diff_trees(before_root, after_root)
 
 print("Distance:", diff[0])
 node_tree.print_diff(diff[1])
-# test_tree.compare_style(before_test, after_test, diff[1])
+test_tree.compare_style(before_test, after_test, diff[1])

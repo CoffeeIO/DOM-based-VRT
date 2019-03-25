@@ -1,8 +1,10 @@
-from domvrt.parser_mapping import ParserMapping
-import json, os
+# Standard python
+import json, os, codecs
+# Dependencies
 from yattag import Doc
-import codecs
-
+# This package
+from domvrt.parser_mapping import ParserMapping
+import domvrt.utils as utils
 
 class HtmlTree(object):
     """docstring for HtmlTree."""
@@ -56,6 +58,8 @@ class HtmlTree(object):
 
 
     def html_to_file(self, html_tree, filename):
-        file = codecs.open(filename, "w", "utf-8")
-        file.write(html_tree)
-        file.close()
+        utils.save_file(html_tree, filename)
+
+    def test_to_file(self, test_tree, filename):
+        html = self.test_to_html(test_tree)
+        self.html_to_file(html, filename)
