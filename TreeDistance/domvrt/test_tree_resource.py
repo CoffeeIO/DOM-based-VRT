@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 # This package
 from domvrt.parser_mapping import ParserMapping
 from domvrt.html_tree import HtmlTree
+import domvrt.utils as utils
 
 class TestTreeResource(object):
     """docstring for TestTreeResource."""
@@ -14,16 +15,6 @@ class TestTreeResource(object):
     foldername = None
     file_no = 0
     pre_filename = 'resource'
-
-    def number_to_string(self, number):
-        if number < 10:
-            return '000' + str(number)
-        elif number < 100:
-            return '00' + str(number)
-        elif number < 1000:
-            return '0' + str(number)
-
-        return str(number)
 
     def get_extension(self, request):
         content_type = request.headers['content-type']
@@ -52,8 +43,7 @@ class TestTreeResource(object):
                 return '.' + match.group(1)
 
         raise Exception("Unknown request type", content_type)
-
-
+        
 
     def download_style_resources(self, content):
         url_pattern = r'url\(\'?\"?([\w\/\.\,\=\-\:\;\+\&\?\$\@\%\#]+)\"?\'?\)'
@@ -70,7 +60,7 @@ class TestTreeResource(object):
 
     def save_file(self, content, ext):
         folder = self.foldername + '/'
-        file  = self.pre_filename + self.number_to_string(self.file_no) + ext
+        file  = self.pre_filename + utils.number_to_string(self.file_no) + ext
         self.file_no += 1
 
         filename = folder + file

@@ -181,16 +181,6 @@ class TestTree(object):
 
     # Helper functions.
 
-    def number_to_string(self, number):
-        if number < 10:
-            return '000' + str(number)
-        elif number < 100:
-            return '00' + str(number)
-        elif number < 1000:
-            return '0' + str(number)
-
-        return str(number)
-
     def create_path(self, folder):
         if not os.path.exists(folder):
             os.makedirs(folder)
@@ -199,11 +189,11 @@ class TestTree(object):
         foldername = "data-output/" + foldername
 
         folder_no = 0
-        folder = foldername + self.number_to_string(folder_no)
+        folder = foldername + utils.number_to_string(folder_no)
 
         while os.path.exists(folder):
             folder_no += 1
-            folder = foldername + self.number_to_string(folder_no)
+            folder = foldername + utils.number_to_string(folder_no)
 
         self.create_path(folder)
 
