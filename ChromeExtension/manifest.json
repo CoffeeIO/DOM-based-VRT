@@ -8,8 +8,14 @@
   "author":"Mathias Grundtvig Andreasen(MGApcDev)",
   "permissions": [
     "<all_urls>",
-    "storage"
+    "storage",
+    "activeTab"
   ],
+  "browser_action": {
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
   "content_scripts": [
     {
       "matches": ["*://*/*"],

@@ -50,6 +50,8 @@ DomVRT.Extractor = (function (obj) {
 
     var blob = new Blob([JSON.stringify(jsonObj)], {type: "application/json;charset=utf-8"});
     saveAs(blob, filename);
+    
+    return jsonObj;
   };
 
   // Based on https://gist.github.com/sstur/7379870
