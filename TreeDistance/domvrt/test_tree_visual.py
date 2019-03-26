@@ -1,5 +1,5 @@
 # Standard python
-import os
+import os, hashlib
 # Dependencies
 from selenium import webdriver
 from PIL import Image, ImageDraw
@@ -87,11 +87,25 @@ class TestTreeVisual(object):
         line_color = (255, 0, 0)
         self.d.line([tl, tr, br, bl, tl], fill=line_color, width=2)
 
-    def draw_updated_node(self, node):
+    def draw_updated_node(self, node, color = (255, 255, 0)):
+        self.get_hash_of_area(node)
+
         tl = self.get_coord(node['x1'], node['y1'])
         tr = self.get_coord(node['x2'], node['y1'])
         br = self.get_coord(node['x2'], node['y2'])
         bl = self.get_coord(node['x1'], node['y2'])
 
-        line_color = (255, 255, 0)
+        line_color = color
         self.d.line([tl, tr, br, bl, tl], fill=line_color, width=2)
+
+    def get_hash_of_area(self, node):
+        pixel = self.im.load()
+        m = hashlib.md5()
+        for x in range(int(node['x1']), int(node['x2'])):
+            for y in range(int(node['y1']), int(node['y2'])):
+                m.update(repr(pixel[x, y]).encode('utf-8'))
+
+        return m.digest()
+
+    def get_size_of_area(self, node):
+        return (node['x2'] - node['x1'], node['y2'] - node['y1'])
