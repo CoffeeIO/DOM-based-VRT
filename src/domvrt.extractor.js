@@ -50,7 +50,7 @@ DomVRT.Extractor = (function (obj) {
 
     var blob = new Blob([JSON.stringify(jsonObj)], {type: "application/json;charset=utf-8"});
     saveAs(blob, filename);
-    
+
     return jsonObj;
   };
 
@@ -122,8 +122,8 @@ DomVRT.Extractor = (function (obj) {
         json[jsonMapping['styles'][mVal]] = {};
         var stylesObj = window.getComputedStyle(node);
         Array.prototype.forEach.call(stylesObj, function(style) {
-          json[jsonMapping['styles'][mVal]][style] = stylesObj.getPropertyValue(style);
-          fullStyle += style + ":" + stylesObj.getPropertyValue(style) + ","
+          json[jsonMapping['styles'][mVal]][style] = obj.getStyle(node, style);
+          fullStyle += style + ":" + json[jsonMapping['styles'][mVal]][style] + ","
         });
 
         if (jsonMapping['styleId'][mVal]) {
@@ -198,6 +198,23 @@ DomVRT.Extractor = (function (obj) {
 
     obj.nodeCount++;
     return json;
+  };
+
+  obj.getStyle = function(node, style) {
+    var display = window.getComputedStyle(node).getPropertyValue('display');
+    var value = window.getComputedStyle(node).getPropertyValue(style);
+    var dynamicStyles = ['height', 'width', 'perspective-origin', 'transform-origin'];
+
+    if (display != "none") {
+      // if (dynamicStyles.indexOf(style) != -1) {
+        node.style.display = "none";
+        var value = window.getComputedStyle(node).getPropertyValue(style);
+        // console.log(value);
+        node.style.display = display;
+      // }
+    }
+
+    return value;
   };
 
   return obj;

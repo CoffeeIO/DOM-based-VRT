@@ -99,9 +99,13 @@ class TestTreeVisual(object):
     def get_hash_of_area(self, node):
         pixel = self.im.load()
         m = hashlib.md5()
+        print("hashing: (", node['x1'], node['y1'], ') | (', node['x2'], node['y2'], ")")
+
         for x in range(int(node['x1']), int(node['x2'])):
             for y in range(int(node['y1']), int(node['y2'])):
-                m.update(repr(pixel[x, y]).encode('utf-8'))
+                (xs, ys) = self.get_coord(x, y)
+                print(pixel[xs, ys])
+                m.update(repr(pixel[xs, ys]).encode('utf-8'))
 
         return m.digest()
 

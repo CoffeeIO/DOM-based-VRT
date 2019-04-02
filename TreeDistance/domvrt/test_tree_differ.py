@@ -88,7 +88,7 @@ class TestTreeDiffer(object):
                 print("Before: ", diff.arg1.position, diff.arg1.label)
                 print("After: ", diff.arg2.position, diff.arg2.label)
 
-                # Element updated,
+                # Element updated
                 bn = pre_node = pre_map[diff.arg1.position]
                 an = post_node = post_map[diff.arg2.position]
 
