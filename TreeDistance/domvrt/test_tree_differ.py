@@ -128,9 +128,6 @@ class TestTreeDiffer(object):
                     print("After: ", diff.arg2.position, diff.arg2.label, an[styleId])
 
                     if pre_visual_diff != None and post_visual_diff != None:
-
-
-
                         if styles in bn:
                             for key in bn[styles].keys():
                                 if bn[styles][key] != an[styles][key]: # Compare individual styles
