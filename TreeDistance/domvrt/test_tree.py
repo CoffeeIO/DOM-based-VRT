@@ -1,5 +1,5 @@
 # Standard python
-import json, random, collections, os, requests
+import json, random, collections, os, requests, time
 # Dependencies
 # This package
 from domvrt.parser_mapping import ParserMapping
@@ -9,15 +9,19 @@ from domvrt.test_tree_generator import TestTreeGenerator
 from domvrt.test_tree_resource import TestTreeResource
 from domvrt.test_tree_differ import TestTreeDiffer
 from domvrt.test_tree_visual import TestTreeVisual
+from domvrt.results import Results
 import domvrt.utils as utils
 
 class TestTree(object):
     """docstring for TestTree."""
 
     map = None
+    results = None
 
     def __init__(self, settings = None):
         self.merge_settings(settings)
+        self.results = Results()
+
 
     # Default settings.
     settings = {
@@ -94,7 +98,7 @@ class TestTree(object):
         return t.mutate_test(test_tree)
 
     def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None):
-        t = TestTreeDiffer()
+        t = TestTreeDiffer(self.results)
         return t.compare_style(pre_tree, post_tree, diffs, pre_path, post_path)
 
     def store_resources(self, tree, foldername, create_folder = True):
@@ -154,13 +158,17 @@ class TestTree(object):
         pass
 
     def diff(self, file1, file2):
-        node_tree = NodeTree()
+        start = time.time()
+        node_tree = NodeTree(self.results)
 
         foldername1 = self.get_folder("before")
         foldername2 = self.get_folder("after")
 
+
         before_tree = self.file_to_tree(file1)
         after_tree = self.file_to_tree(file2)
+
+        self.results.set_mapping(before_tree)
 
         self.save(file1, foldername1, False)
         self.save(file2, foldername2, False)
@@ -172,9 +180,15 @@ class TestTree(object):
         print("Distance:", diff[0])
         node_tree.print_diff(diff[1])
 
-        pre_image = foldername1
-        post_image = foldername2
-        self.compare_style(before_tree, after_tree, diff[1], pre_image, post_image)
+        self.compare_style(before_tree, after_tree, diff[1], foldername1, foldername2)
+
+        total = time.time() - start
+        self.results.execution_time['total'] = total
+
+        self.results.save(foldername1)
+        self.results.save(foldername2)
+
+
 
         return (foldername1, foldername2)
 
@@ -184,6 +198,7 @@ class TestTree(object):
     def create_path(self, folder):
         if not os.path.exists(folder):
             os.makedirs(folder)
+            print("creating path: '" + folder + "'")
 
     def get_folder(self, foldername):
         foldername = "data-output/" + foldername

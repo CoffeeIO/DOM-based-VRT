@@ -1,8 +1,9 @@
 # Standard python
-import sys, json, os
+import sys, json, os, time
 # Dependencies
 # This package
 from domvrt.parser_mapping import ParserMapping
+from domvrt.results import Results
 
 
 sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance')
@@ -19,7 +20,11 @@ def strdist(a, b):
 class NodeTree(object):
     """docstring for NodeTree."""
 
+    def __init__(self, results):
+        self.results = results
+
     map = None
+    results = None
 
     def loop_child(self, obj, node):
         """
@@ -85,7 +90,16 @@ class NodeTree(object):
         pre  -- object before changes
         post -- object after changes
         """
-        return simple_distance(pre, post, Node.get_children, Node.get_label, strdist, True)
+        if self.results != None:
+            start = time.time()
+
+        result = simple_distance(pre, post, Node.get_children, Node.get_label, strdist, True)
+        if self.results != None:
+            total = time.time() - start
+            self.results.execution_time['distance'] = total
+
+
+        return result
 
     count = 0
     def print_node(self, node, indent = ''):
