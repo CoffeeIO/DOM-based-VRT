@@ -88,8 +88,6 @@ class TestTreeVisual(object):
         self.d.line([tl, tr, br, bl, tl], fill=line_color, width=2)
 
     def draw_updated_node(self, node, color = (255, 255, 0)):
-        self.get_hash_of_area(node)
-
         tl = self.get_coord(node['x1'], node['y1'])
         tr = self.get_coord(node['x2'], node['y1'])
         br = self.get_coord(node['x2'], node['y2'])
