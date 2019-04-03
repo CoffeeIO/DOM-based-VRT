@@ -1,5 +1,5 @@
 # Standard python
-import os, hashlib
+import os, hashlib, time
 # Dependencies
 from selenium import webdriver
 from PIL import Image, ImageDraw
@@ -28,6 +28,7 @@ class TestTreeVisual(object):
         # screenshot = driver.save_screenshot(imagepath)
 
         # Capture whole body element.
+        time.sleep(1)
         el = driver.find_element_by_tag_name('body')
         el.screenshot(imagepath)
         driver.quit()
@@ -100,14 +101,31 @@ class TestTreeVisual(object):
         pixel = self.im.load()
         m = hashlib.md5()
         print("hashing: (", node['x1'], node['y1'], ') | (', node['x2'], node['y2'], ")")
+        sum = 0
 
-        for x in range(int(node['x1']), int(node['x2'])):
-            for y in range(int(node['y1']), int(node['y2'])):
-                (xs, ys) = self.get_coord(x, y)
-                print(pixel[xs, ys])
+        # img = Image.new("RGBA", self.get_size_of_area(node), color = "white")
+        # img.save(foldername + "/amiss.png")
+        # m_pixel = img.load()
+
+
+        for x in range(int(node['x1'] * self.width_scale), int(node['x2'] * self.width_scale)):
+            for y in range(int(node['y1'] * self.height_scale), int(node['y2'] * self.height_scale)):
+                # (xs, ys) = self.get_coord(x, y)
+                (r,g,b,a) = pixel[x, y]
+                sum += r + g + b + a
+                xs = x
+                ys = y
+                # Offset pixel
+                # (xo, yo) = (x - (node['x1'] * self.width_scale), y - (node['y1'] * self.height_scale))
+                # m_pixel[xo, yo] = pixel[xs, ys]
                 m.update(repr(pixel[xs, ys]).encode('utf-8'))
 
-        return m.digest()
+        # img.save(foldername + "/amiss.png")
+
+
+        print("sum -> " , sum)
+
+        return (m.digest(), sum)
 
     def get_size_of_area(self, node):
-        return (node['x2'] - node['x1'], node['y2'] - node['y1'])
+        return (int((node['x2'] - node['x1'])  * self.width_scale), int((node['y2'] - node['y1']) * self.height_scale))

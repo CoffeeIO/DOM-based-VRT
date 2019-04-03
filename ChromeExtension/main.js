@@ -18,3 +18,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   }, 250);
 
 });
+
+function coffeeio() {
+  document.querySelector('.front-title').textContent = 'CoffeeIO hell world';
+  document.querySelector('.post-list-item-desc h2').remove();
+  document.querySelector('.post-list-item:nth-child(2) p').style.color = "green";
+  document.querySelector('.post-list-item-display').style.color = "red";
+  e1 = document.querySelector('.scrollreveal:last-child h2');
+  console.log(e1.innerHtml);
+  e1.innerHtml = e1.innerHtml + "<p>Added content</p>";
+  console.log(e1.innerHtml);
+  document.querySelector('.footer-social-icon img').style.marginRight = "1px";
+}

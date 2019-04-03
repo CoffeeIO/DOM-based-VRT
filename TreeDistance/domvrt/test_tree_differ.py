@@ -151,11 +151,24 @@ class TestTreeDiffer(object):
 
     def ignore_diff(self, pre_visual_diff, post_visual_diff, pre_node, post_node):
         if (pre_visual_diff.get_size_of_area(pre_node) == post_visual_diff.get_size_of_area(post_node)):
+            print('diff size matches', pre_visual_diff.get_size_of_area(pre_node))
             # Size of element area matches, need to check for visual impact.
-            pre_hash = pre_visual_diff.get_hash_of_area(pre_node)
-            post_hash = pre_visual_diff.get_hash_of_area(post_node)
+            (pre_hash, pre_sum) = pre_visual_diff.get_hash_of_area(pre_node)
+            (post_hash, post_sum) = post_visual_diff.get_hash_of_area(post_node)
+
+            error_margin = pre_sum * 0.0001 # 0.01% differences in all pixels
+            diff = abs(pre_sum - post_sum)
+
 
             if pre_hash == post_hash:
+                print("hash match", pre_hash)
                 return True
 
+            if diff < error_margin:
+                print("diff within error", diff, ':', error_margin)
+                return True
+        else:
+            print('sizes did not match', pre_visual_diff.get_size_of_area(pre_node), ':', post_visual_diff.get_size_of_area(post_node))
+
+        print("Show error diff")
         return False

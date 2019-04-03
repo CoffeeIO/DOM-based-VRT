@@ -1,7 +1,7 @@
 import domvrt
 import time
-file1 = "coffeeio-com--2019-04-02--17-28-08.json"
-file2 = "coffeeio-com--2019-04-02--17-30-39.json"
+file1 = "coffeeio-com--2019-04-03--16-34-07.json"
+file2 = "coffeeio-com--2019-04-03--16-46-42.json"
 
 data = "data/"
 file1 = data + file1
