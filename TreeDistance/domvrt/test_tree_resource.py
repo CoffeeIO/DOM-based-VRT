@@ -43,22 +43,22 @@ class TestTreeResource(object):
                 return '.' + match.group(1)
 
         raise Exception("Unknown request type", content_type)
-        
 
-    def download_style_resources(self, content):
+
+    def download_style_resources(self, content, reference = None):
         url_pattern = r'url\(\'?\"?([\w\/\.\,\=\-\:\;\+\&\?\$\@\%\#]+)\"?\'?\)'
         matches = re.findall(url_pattern, content)
 
         for match in matches:
             url = match
-            filename = self.download_uri(url)
+            filename = self.download_uri(url, reference)
 
             if filename != None:
                 content = content.replace(url, filename, 1)
 
         return content
 
-    def save_file(self, content, ext):
+    def save_file(self, content, ext, reference = None):
         folder = self.foldername + '/'
         file  = self.pre_filename + utils.number_to_string(self.file_no) + ext
         self.file_no += 1
@@ -66,7 +66,7 @@ class TestTreeResource(object):
         filename = folder + file
 
         if ext == '.css':
-            content = self.download_style_resources(content.decode('utf-8'))
+            content = self.download_style_resources(content.decode('utf-8'), reference)
             with open(filename, 'w') as f:
                 f.write(content)
         else:
@@ -81,7 +81,7 @@ class TestTreeResource(object):
         except Exception as e:
             return None
 
-    def download_uri(self, uri):
+    def download_uri(self, uri, reference = None):
         invalid_url = False
 
         url = uri
@@ -94,17 +94,41 @@ class TestTreeResource(object):
         # If fail try as relative url.
         if invalid_url:
             base_url = self.test_tree['location']['protocol'] + '//' + self.test_tree['location']['host']
-            if uri.strip()[0] + uri.strip()[1] == '//':
+
+            if reference != None:
+                base_url = reference[:reference.rindex('/') + 1]
+
+            # if uri.strip()[0] + uri.strip()[1] == '//':
+            if r == None or r.status_code != 200:
                 url = 'http:' + uri
+                print("2: http ->", url)
+
                 r = self.send_request(url)
-            elif uri.strip()[0] == '/':
+            # elif uri.strip()[0] == '/':
+            if r == None or r.status_code != 200:
                 # Url from host.
                 url = base_url + uri
+                print("3: base ->", url)
+
+                try:
+                    print('indexing:', uri)
+                    while uri.index('../') == 0:
+                        uri = uri[3:]
+                        base_url = base_url[:base_url[:len(base_url)-1].rindex('/') + 1]
+                except Exception as e:
+                    pass
+
+                url = base_url + uri
+
                 r = self.send_request(url)
-            else:
+
+            if r == None or r.status_code != 200:
                 # Url from href.
                 url = self.test_tree['location']['host'] + '/' +  uri
+                print("4: host -> ", url)
+
                 r = self.send_request(url)
+
 
         if r == None:
             print("Could not find url:", uri)
@@ -114,7 +138,7 @@ class TestTreeResource(object):
             print("Invalid request:", uri)
             return None
 
-        filename = self.save_file(r.content, self.get_extension(r))
+        filename = self.save_file(r.content, self.get_extension(r), url)
         return filename
 
     def download_styles(self, styles):
