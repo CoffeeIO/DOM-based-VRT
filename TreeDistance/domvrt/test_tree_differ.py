@@ -48,10 +48,10 @@ class TestTreeDiffer(object):
         post_visual_diff = None
 
         if pre_path != None:
-            pre_visual_diff = TestTreeVisual()
+            pre_visual_diff = TestTreeVisual(pre_path)
             pre_visual_diff.init_image(pre_path + "/image.png", pre_tree)
         if post_path != None:
-            post_visual_diff = TestTreeVisual()
+            post_visual_diff = TestTreeVisual(post_path)
             post_visual_diff.init_image(post_path + "/image.png", post_tree)
 
         pre_map = self.make_position_map(pre_tree)

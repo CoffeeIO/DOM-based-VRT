@@ -98,13 +98,11 @@ class TestTreeResource(object):
             if reference != None:
                 base_url = reference[:reference.rindex('/') + 1]
 
-            # if uri.strip()[0] + uri.strip()[1] == '//':
             if r == None or r.status_code != 200:
                 url = 'http:' + uri
                 print("2: http ->", url)
 
                 r = self.send_request(url)
-            # elif uri.strip()[0] == '/':
             if r == None or r.status_code != 200:
                 # Url from host.
                 url = base_url + uri
