@@ -161,8 +161,10 @@ class TestTree(object):
         start = time.time()
         node_tree = NodeTree(self.results)
 
-        foldername1 = self.get_folder("before")
-        foldername2 = self.get_folder("after")
+        (full_folder, test_folder) = self.get_folder('test', True)
+
+        foldername1 = self.get_folder(test_folder + "/before")
+        foldername2 = self.get_folder(test_folder + "/after")
 
 
         before_tree = self.file_to_tree(file1)
@@ -200,16 +202,19 @@ class TestTree(object):
             os.makedirs(folder)
             print("creating path: '" + folder + "'")
 
-    def get_folder(self, foldername):
-        foldername = "data-output/" + foldername
+    def get_folder(self, foldername, return_base = False):
+        base = "data-output/"
 
         folder_no = 0
-        folder = foldername + utils.number_to_string(folder_no)
+        folder = base + foldername + utils.number_to_string(folder_no)
 
         while os.path.exists(folder):
             folder_no += 1
-            folder = foldername + utils.number_to_string(folder_no)
+            folder = base + foldername + utils.number_to_string(folder_no)
 
         self.create_path(folder)
+
+        if return_base:
+            return (folder, foldername + utils.number_to_string(folder_no))
 
         return folder

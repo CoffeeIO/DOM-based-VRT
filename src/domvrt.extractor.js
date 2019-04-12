@@ -50,7 +50,7 @@ DomVRT.Extractor = (function (obj) {
 
     var blob = new Blob([JSON.stringify(jsonObj)], {type: "application/json;charset=utf-8"});
     saveAs(blob, filename);
-    
+
     return jsonObj;
   };
 
@@ -122,8 +122,8 @@ DomVRT.Extractor = (function (obj) {
         json[jsonMapping['styles'][mVal]] = {};
         var stylesObj = window.getComputedStyle(node);
         Array.prototype.forEach.call(stylesObj, function(style) {
-          json[jsonMapping['styles'][mVal]][style] = stylesObj.getPropertyValue(style);
-          fullStyle += style + ":" + stylesObj.getPropertyValue(style) + ","
+          json[jsonMapping['styles'][mVal]][style] = obj.getStyle(node, style);
+          fullStyle += style + ":" + json[jsonMapping['styles'][mVal]][style] + ","
         });
 
         if (jsonMapping['styleId'][mVal]) {
@@ -138,12 +138,13 @@ DomVRT.Extractor = (function (obj) {
       if (node.nodeType == 3) {
         var range = document.createRange();
         range.selectNode(node);
-        rect = range.getBoundingClientRect();
+        rect = obj.getRect(range, false);
       }
 
       if (node.nodeType == 1) {
-        rect = node.getBoundingClientRect();
+        rect = obj.getRect(node, true);
       }
+
       if (rect != null) {
         json[jsonMapping['x1'][mVal]] = rect.left
         json[jsonMapping['y1'][mVal]] = rect.top
@@ -198,6 +199,62 @@ DomVRT.Extractor = (function (obj) {
 
     obj.nodeCount++;
     return json;
+  };
+
+  obj.getStyle = function(node, style) {
+    var display = window.getComputedStyle(node).getPropertyValue('display');
+    var value = window.getComputedStyle(node).getPropertyValue(style);
+    var dynamicStyles = ['height', 'width', 'perspective-origin', 'transform-origin'];
+
+    if (display != "none") {
+      // if (dynamicStyles.indexOf(style) != -1) {
+        node.style.display = "none";
+        var value = window.getComputedStyle(node).getPropertyValue(style);
+        // console.log(value);
+        node.style.display = display;
+      // }
+    }
+
+    return value;
+  };
+
+  obj.getRect = function(node, hasStyle) {
+    if (! hasStyle) {
+      return node.getBoundingClientRect();
+    }
+    var style = window.getComputedStyle(node);
+    var margin = {
+        left: parseInt(style["margin-left"]),
+        right: parseInt(style["margin-right"]),
+        top: parseInt(style["margin-top"]),
+        bottom: parseInt(style["margin-bottom"])
+    };
+    var padding = {
+        left: parseInt(style["padding-left"]),
+        right: parseInt(style["padding-right"]),
+        top: parseInt(style["padding-top"]),
+        bottom: parseInt(style["padding-bottom"])
+    };
+    var border = {
+        left: parseInt(style["border-left"]),
+        right: parseInt(style["border-right"]),
+        top: parseInt(style["border-top"]),
+        bottom: parseInt(style["border-bottom"])
+    };
+
+
+    var rect = node.getBoundingClientRect();
+    rect = {
+        left: rect.left - margin.left,
+        right: rect.right + margin.right,
+        top: rect.top - margin.top,
+        bottom: rect.bottom + margin.bottom
+    };
+    rect['x'] = rect.left;
+    rect['y'] = rect.top;
+    rect.width = rect.right - rect.left;
+    rect.height = rect.bottom - rect.top;
+    return rect;
   };
 
   return obj;
