@@ -13,50 +13,6 @@ class TestTreeGenerator(object):
 
     map = None
 
-    # Tag categories from: https://developer.mozilla.org/en-US/docs/Web/HTML/Element
-
-    # Content sectioning.
-    content_section = [
-        "article",
-        "aside",
-        "nav",
-        "footer",
-        "header",
-        "main",
-        "section",
-        "div",
-    ]
-
-    # Text content.
-    text_content = [
-        "div",
-        "ol",
-        "ul",
-        "p",
-    ]
-
-    # Inline text semantics.
-    inline_text = [
-        "a",
-        "b",
-        "i",
-        "span",
-    ]
-
-    # Image and multimedia.
-    media = [
-        "img",
-    ]
-
-    # Other tags to explore later.
-    other_tags = [
-        "br", "hr",
-        "form", "input", "fieldset",
-        "li", "ul", "ol",
-        "meta", "title",
-        "script", "style",
-        "table", "tr", "td",
-    ]
 
     # Bootstrap classes: https://getbootstrap.com/docs/3.4/css/
     classes = [
@@ -88,13 +44,6 @@ class TestTreeGenerator(object):
         "id9",
         "id10",
     ]
-
-    attrs = {
-        "title" : ['title1', 'title2', 'title3', 'title4', 'title5'],
-        "disabled" : ['disabled'],
-        "alt" : ['alt1', 'alt2', 'alt3', 'alt4', 'alt5'],
-        "style" : ['color:red;', 'display:none;', 'width:200px;', 'position:absolute;', 'background:blue;'],
-    }
 
     change_style = [
         "color:yellow;",
