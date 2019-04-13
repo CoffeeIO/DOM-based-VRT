@@ -26,13 +26,13 @@ class TestTree(object):
     # Default settings.
     settings = {
         # Generation settings.
-        'min-nodes'                   : 20,       # Not relyable
-        'max-nodes'                   : 20,
+        'min-nodes'                   : 2000,
+        'max-nodes'                   : 2000,
         'chance-class'                : 10,
         'chance-id'                   : 10,
-        'min-elements-per-level'      : 3,
-        'max-elements-per-level'      : 3,
-        'extra-leaf-probability'      : 80,     # Not implemented
+        'min-branch-factor'           : 2,
+        'max-branch-factor'           : 2,
+        'extra-leaf-probability'      : 30,
         # Mutation settings.
         'min-changes'                 : 20,
         'max-changes'                 : 20,

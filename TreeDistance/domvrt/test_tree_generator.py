@@ -5,14 +5,15 @@ from copy import deepcopy
 import lorem
 # This package
 from domvrt.parser_mapping import ParserMapping
+from domvrt.test_tree_generator_data import TestTreeGeneratorData
 
 class TestTreeGenerator(object):
     """docstring for TestTreeGenerator."""
     def __init__(self, settings):
         self.settings = settings
+        self.test_tree_generator_data = TestTreeGeneratorData()
 
     map = None
-
 
     # Bootstrap classes: https://getbootstrap.com/docs/3.4/css/
     classes = [
@@ -69,7 +70,6 @@ class TestTreeGenerator(object):
 
         rnum_class = random.randint(0, 100)
         rnum_id = random.randint(0, 100)
-        rnum_attr = random.randint(0, 100)
 
         node[attrs] = {}
 
@@ -78,10 +78,6 @@ class TestTreeGenerator(object):
 
         if rnum_id <= self.settings['chance-id']:
             node[attrs]['id'] = random.choice(self.ids)
-
-        if rnum_attr <= self.settings['chance-attr']:
-            key = random.choice(list(self.attrs.keys()))
-            node[attrs][key] = random.choice(self.attrs[key])
 
         return node
 
@@ -112,7 +108,7 @@ class TestTreeGenerator(object):
 
     # -------------------------------------------------------------------------
 
-    def random_div(self, position_value):
+    def __random_div(self, position_value):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         node = {
@@ -120,43 +116,29 @@ class TestTreeGenerator(object):
             nodeType: 1,
             position: position_value,
         }
-        return node
-
-    def random_content_section(self, position_value):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
-
-        node = {
-            tagName: random.choice(self.content_section),
-            nodeType: 1,
-            position: position_value,
-        }
         node = self.modify_element(node)
+
         return node
 
-    def random_text_content(self, position_value):
+    def __random_content(self, position_value):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
-        node = {
-            tagName: random.choice(self.text_content),
-            nodeType: 1,
-            position: position_value,
-        }
-        node = self.modify_element(node)
-        return node
+        if random.randint(1, 100) > self.settings['extra-leaf-probability']:
+            return None
 
-    def random_inline_text(self, position_value):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
+        if random.randint(0, 8) < 1: # 20% chance that content is image
+            self.count_tags += 1
+            image_data = self.test_tree_generator_data.get_image_data()
+            return {
+                tagName: 'img',
+                nodeType: 1,
+                position: position_value,
+                attrs: {
+                    'src': image_data
+                }
+            }
 
-        node = {
-            tagName: random.choice(self.inline_text),
-            nodeType: 1,
-            position: position_value,
-        }
-        node = self.modify_element(node)
-        return node
-
-    def random_text(self, position_value):
-        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
+        self.count_text += 1
 
         return {
             nodeName: '#text',
@@ -165,123 +147,74 @@ class TestTreeGenerator(object):
             position: position_value
         }
 
-    # -------------------------------------------------------------------------
-
-    def pick_element_stage_1(self, node, position_value):
-        # Produce some random value.
-        prop = [5, 3, 2, None]
-        rval = random.randint(0, 9)
-
-        # Pick div.
-        if rval < prop[0]:
-            child = self.random_div(position_value)
-            return (child, 1)
-
-        # Pick content section element. (goto stage 2)
-        if rval < (prop[0] + prop[1]):
-            return (self.random_content_section(position_value), 2)
-
-        # Pick text content element. (goto stage 3)
-        if rval < (prop[0] + prop[1] + prop[2]):
-            return (self.random_text_content(position_value), 3)
-
-        # Pick inline text element. (goto stage 4)
-        return (self.random_inline_text(position_value), 4)
-
-
-    def pick_element_stage_2(self, node, position_value):
-        # Produce some random value.
-        prop = [4, 2, 2, 1, None]
-        rval = random.randint(0, 9)
-
-        # Pick div.
-        if rval < prop[0]:
-            child = self.random_div(position_value)
-            return (child, 2)
-
-        # Pick text content element. (goto stage 3)
-        if rval < (prop[0] + prop[1]):
-            return (self.random_text_content(position_value), 3)
-
-        # Pick inline text element. (goto stage 4)
-        if rval < (prop[0] + prop[1] + prop[2]):
-            return (self.random_inline_text(position_value), 4)
-
-        # Pick text.
-        if rval < (prop[0] + prop[1] + prop[2] + prop[3]):
-            return (self.random_text(position_value), 5)
-
-        # Pick empty.
-        return (None, 5)
-
-    def pick_element_stage_3(self, node, position_value):
-        # Produce some random value.
-        prop = [5, 3, None]
-        rval = random.randint(0, 9)
-
-        # Pick inline text element. (goto stage 4)
-        if rval < prop[0]:
-            return (self.random_inline_text(position_value), 4)
-
-        # Pick text.
-        if rval < (prop[0] + prop[1]):
-            return (self.random_text(position_value), 5)
-
-        # Pick empty.
-        return (None, 5)
-
-
-    def pick_element_stage_4(self, node, position_value):
-        # Pick text.
-        return (self.random_text(position_value), 5)
-
-
-    def contruct_tree(self, remain_nodes, depth, body):
+    def __random_text(self, position_value):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
-        node_queue = collections.deque([{'node':body, 'stage': 1, 'depth': depth}])
+        self.count_text += 1
+
+        return {
+            nodeName: '#text',
+            nodeType: 3,
+            nodeValue: lorem.sentence(),
+            position: position_value
+        }
+
+
+    def __contruct_tree(self, remain_nodes, depth, body):
+        (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
+
+
+        node_queue = collections.deque([{'node': body, 'depth': depth}])
+
+        self.count_tags = 0
+        self.count_text = 0
 
         # Loop until queue is empty.
         while len(node_queue) > 0:
             node = node_queue.popleft()
+            remain_nodes -= 1
             node['node'][childNodes] = []
 
-            number_of_children = random.randint(self.settings['min-elements-per-level'], self.settings['max-elements-per-level'])
+            if remain_nodes <= 0:
+                # Insert content here.
+                new_pos = node['node'][position] + '.0'
+                content_child = self.__random_text(new_pos)
+                node['node'][childNodes].append(content_child)
+                remain_nodes -= 1
 
+
+            number_of_children = random.randint(self.settings['min-branch-factor'], self.settings['max-branch-factor'])
             offset = 0
+            has_content = False
+
+            # Select how many children should be contructed.
             for i in range(number_of_children):
                 if remain_nodes <= 0:
                     continue
 
-                new_pos = node['node'][position] + '.' + str(i - offset)
+                new_pos = node['node'][position] + '.' + str(i + offset)
 
-                s = node['stage']
-                if s==1:
-                    (child, stage) = self.pick_element_stage_1(None, new_pos)
-                elif s==2:
-                    (child, stage) = self.pick_element_stage_2(None, new_pos)
-                elif s==3:
-                    (child, stage) = self.pick_element_stage_3(None, new_pos)
-                elif s==4:
-                    (child, stage) = self.pick_element_stage_4(None, new_pos)
-
-                # If child is empty or stage is above 4.
-                if child == None:
-                    offset = offset + 1
-                    continue
-
-                remain_nodes = remain_nodes - 1
-
+                child = self.__random_div(new_pos)
                 node['node'][childNodes].append(child)
+                self.count_tags += 1
+                remain_nodes -= 1
 
-                if stage > 4:
-                    continue
-                node_queue.append({'node': child, 'stage': stage, 'depth': node['depth'] + 1})
+                if not has_content:
+                    content_child = self.__random_content(node['node'][position] + '.' + str(i + offset + 1))
+                    if content_child != None:
+                        node['node'][childNodes].append(content_child)
+                        remain_nodes -= 1
+                        offset += 1
+                        has_content = True
 
-        return (remain_nodes)
+                node_queue.append({'node': child, 'depth': node['depth'] + 1})
 
 
-    def create_base_object(self, minify):
+        print("counts: ", self.count_tags, self.count_text)
+        return (self.count_tags, self.count_text)
+
+
+    def __create_base_object(self, minify):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         body = {
@@ -340,10 +273,11 @@ class TestTreeGenerator(object):
         self.map = ParserMapping(minify)
 
         number_of_element = random.randint(self.settings['min-nodes'], self.settings['max-nodes'])
+        number_of_element -= 4 # Reduce number on base of elements.
+        (root, body) = self.__create_base_object(minify)
 
-        (root, body) = self.create_base_object(minify)
+        (count_tags, count_text) = self.__contruct_tree(number_of_element, 1, body)
 
-        values = self.contruct_tree(number_of_element, 1, body)
 
         root['node-count'] = number_of_element + 6 # Add 6 nodes from template
 
@@ -392,7 +326,7 @@ class TestTreeGenerator(object):
 
             if self.mutate_prop(add_p, add): # Insert element and move children
                 # print("Adding element")
-                div = self.random_div(node[position] + ".+")
+                div = self.__random_div(node[position] + ".+")
                 div = self.modify_element(div)
 
                 div[childNodes] = node[childNodes]
@@ -441,7 +375,7 @@ class TestTreeGenerator(object):
 
                 changed = False
                 if node[nodeType] == 1: # Normal node
-                    text = self.random_text(node[position] + "." + str(len(node[childNodes])))
+                    text = self.__random_text(node[position] + "." + str(len(node[childNodes])))
                     if i == 1:
                         node[childNodes].append(text)
                         changed = True

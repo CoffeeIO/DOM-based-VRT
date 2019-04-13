@@ -11,7 +11,7 @@ class HtmlTree(object):
 
     map = None
 
-    def test_to_html_child(self, node, values):
+    def __test_to_html_child(self, node, values):
         (doc, tag, text) = values
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
@@ -29,13 +29,13 @@ class HtmlTree(object):
                 if not childNodes in node:
                     return
                 for child in node[childNodes]:
-                    self.test_to_html_child(child, (doc, tag, text))
+                    self.__test_to_html_child(child, (doc, tag, text))
         elif node[nodeType] == 9: # root node
             doc.asis('<!DOCTYPE html>')
             if not childNodes in node:
                 return
             for child in node[childNodes]:
-                self.test_to_html_child(child, (doc, tag, text))
+                self.__test_to_html_child(child, (doc, tag, text))
 
 
     def test_to_html(self, test_tree):
@@ -52,7 +52,7 @@ class HtmlTree(object):
 
         self.map = ParserMapping(minify)
 
-        self.test_to_html_child(test_tree, (doc, tag, text))
+        self.__test_to_html_child(test_tree, (doc, tag, text))
 
         return doc.getvalue()
 
