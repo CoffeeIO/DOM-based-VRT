@@ -13,6 +13,7 @@ setup(name='domvrt',
           'lorem',
           'yattag',
           'image',
-          'selenium'
+          'selenium',
+          'time'
       ],
       zip_safe=False)

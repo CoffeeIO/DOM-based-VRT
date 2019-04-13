@@ -26,27 +26,18 @@ class TestTree(object):
     # Default settings.
     settings = {
         # Generation settings.
-        'min-nodes'                   : 20,       # Not relyable
-        'max-nodes'                   : 20,
+        'min-nodes'                   : 100,
+        'max-nodes'                   : 100,
         'chance-class'                : 10,
         'chance-id'                   : 10,
-        'chance-attr'                 : 10,
-        'min-elements-per-level'      : 3,
-        'max-elements-per-level'      : 3,
-        'max-depth'                   : None,     # Not implemented
-        # 'depth-width-radio'           : 0.5,      # Chance between selecting a div and text element
-        # 'tree-type'                   : 'random', # Types: random, binary, right branch, left branch,
+        'min-branch-factor'           : 2,
+        'max-branch-factor'           : 2,
+        'extra-leaf-probability'      : 30,
         # Mutation settings.
         'min-changes'                 : 20,
         'max-changes'                 : 20,
-        # 'chance-modify-id'            : 1,
-        # 'chance-modify-class'         : 1,
-        # 'chance-modify-attr'          : 1,
-        # 'chance-add-leaf'             : 10,
-        # 'chance-add-leaf'             : 10,
-        # 'clustering-of-changes'       : 0.3,
         # Add, remove, modify style, modify position, modify dimensions, content change, move element.
-        'distribution-of-change-type' : [0, 0, 2, 2, 2, 6, 0], # Ratio of changes
+        'distribution-of-change-type' : [1, 1, 2, 2, 2, 6], # Ratio of changes
     }
 
     def merge_settings(self, settings = None):
