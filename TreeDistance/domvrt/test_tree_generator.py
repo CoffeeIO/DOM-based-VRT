@@ -19,19 +19,18 @@ class TestTreeGenerator(object):
 
     # Bootstrap classes: https://getbootstrap.com/docs/3.4/css/
     classes = [
-        "container",
-        "row",
-        "active",
-        "success",
-        "warning",
-        "info",
-        "danger",
-        "table",
-        "btn",
-        "close",
-        "caret",
-        "clearfix",
-        "show",
+        "style-1",
+        "style-2",
+        "style-3",
+        "style-4",
+        "position-1",
+        "position-2",
+        "position-3",
+        "position-4",
+        "dimension-1",
+        "dimension-2",
+        "dimension-3",
+        "dimension-4",
         "hidden",
     ]
 
@@ -49,22 +48,22 @@ class TestTreeGenerator(object):
     ]
 
     change_style = [
-        "color:yellow;",
-        "background-color:green;",
-        "font-style:italic;",
-        "font-weight:bold;",
+        "color: yellow;",
+        "background-color: red;",
+        "font-style: italic;",
+        "font-weight: bold;",
     ]
     change_position = [
-        "top:20px;",
-        "bottom:40px;",
-        "left:30px;",
-        "right:10px;",
+        "top: 20px; position: relative;",
+        "bottom: 40px; position: relative;",
+        "left: 30px; position: relative;",
+        "right: 10px; position: relative;",
     ]
     change_dimension = [
-        "padding:20px;",
-        "margin:10px;",
-        "width:50%;",
-        "height:300px;",
+        "padding: 20px;",
+        "margin: 10px;",
+        "width: 50px;",
+        "height: 300px;",
     ]
 
     def __modify_element(self, node):
@@ -224,6 +223,7 @@ class TestTreeGenerator(object):
             nodeType : 1,
             position : '1.1.1',
         }
+
         root = {
             'minify': minify,
             nodeName: '#document',
@@ -256,6 +256,33 @@ class TestTreeGenerator(object):
                                         "crossorigin": "anonymous",
                                     }
                                 },
+                                {
+                                    tagName: 'style',
+                                    nodeType: 1,
+                                    position: '1.0.1',
+                                    childNodes: [
+                                        {
+                                            nodeType: 3,
+                                            nodeName: '#text',
+                                            position: '1.0.1.0',
+                                            nodeValue:\
+                                            " \
+                                            .style-1 { color: blue; } \
+                                            .style-2 { font-style: italic; } \
+                                            .style-3 { background: green; } \
+                                            .style-4 { text-transform: uppercase; } \
+                                            .dimension-1 { font-size: 30px; } \
+                                            .dimension-2 { margin: 10px; } \
+                                            .dimension-3 { padding: 10px; } \
+                                            .dimension-4 { height: 200px; } \
+                                            .position-1 { top: 10px; position: relative; } \
+                                            .position-2 { left: 20px; position: relative; } \
+                                            .position-3 { top: 10px; position: absolute; } \
+                                            .position-4 { left: 20px; position: absolute; } \
+                                            "
+                                        }
+                                    ]
+                                }
                             ]
                         },
                         body,
