@@ -14,6 +14,7 @@ class TestTreeGenerator(object):
         self.test_tree_generator_data = TestTreeGeneratorData()
         self.count_tags = 0
         self.count_text = 0
+        self.node_count = 0
 
     map = None
 
@@ -513,7 +514,6 @@ class TestTreeGenerator(object):
             child[position] = new_position
             self.update_position_child(child, new_position)
 
-    node_count = 0
     def update_position(self, node):
         """
         Update position on tree.
