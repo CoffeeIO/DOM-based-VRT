@@ -12,6 +12,8 @@ class TestTreeGenerator(object):
     def __init__(self, settings):
         self.settings = settings
         self.test_tree_generator_data = TestTreeGeneratorData()
+        self.count_tags = 0
+        self.count_text = 0
 
     map = None
 
@@ -65,7 +67,7 @@ class TestTreeGenerator(object):
         "height:300px;",
     ]
 
-    def modify_element(self, node):
+    def __modify_element(self, node):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         rnum_class = random.randint(0, 100)
@@ -81,7 +83,7 @@ class TestTreeGenerator(object):
 
         return node
 
-    def mutate_element(self, node, type):
+    def __mutate_element(self, node, type):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         if not attrs in node:
@@ -116,7 +118,7 @@ class TestTreeGenerator(object):
             nodeType: 1,
             position: position_value,
         }
-        node = self.modify_element(node)
+        node = self.__modify_element(node)
 
         return node
 
@@ -283,7 +285,7 @@ class TestTreeGenerator(object):
 
         return root
 
-    def mutate_prop(self, change_probability, changes_remain):
+    def __mutate_prop(self, change_probability, changes_remain):
         """
         Check if we should mutate the property based on how many changes remain and probability.
 
@@ -301,7 +303,7 @@ class TestTreeGenerator(object):
         return False
 
 
-    def mutate_test_child(self, node, changes_remain_total, changes_remain, changes_prop, hit_body = False, parent = None, child_index = None):
+    def __mutate_test_child(self, node, changes_remain_total, changes_remain, changes_prop, hit_body = False, parent = None, child_index = None):
         """
         Mutate node with the different test types.
 
@@ -313,7 +315,9 @@ class TestTreeGenerator(object):
         """
 
         (add, delete, mod_style, mod_position, mod_dimension, change_content, move_element) = changes_remain
+
         (add_p, delete_p, mod_style_p, mod_position_p, mod_dimension_p, change_content_p, move_element_p) = changes_prop
+
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         if changes_remain_total <= 0:
@@ -324,10 +328,10 @@ class TestTreeGenerator(object):
             if not childNodes in node:
                 node[childNodes] = []
 
-            if self.mutate_prop(add_p, add): # Insert element and move children
+            if self.__mutate_prop(add_p, add): # Insert element and move children
                 # print("Adding element")
                 div = self.__random_div(node[position] + ".+")
-                div = self.modify_element(div)
+                div = self.__modify_element(div)
 
                 div[childNodes] = node[childNodes]
                 node[childNodes] = [div]
@@ -335,7 +339,7 @@ class TestTreeGenerator(object):
                 add -= 1
                 changes_remain_total -= 1
 
-            if self.mutate_prop(delete_p, delete): # Remove node and move children
+            if self.__mutate_prop(delete_p, delete): # Remove node and move children
                 # print("Remove element")
 
                 parent[childNodes].pop(child_index)
@@ -348,28 +352,28 @@ class TestTreeGenerator(object):
                 delete -= 1
                 changes_remain_total -= 1
 
-            if self.mutate_prop(mod_style_p, mod_style): # Add style attribute
+            if self.__mutate_prop(mod_style_p, mod_style): # Add style attribute
                 # print("Mod style")
 
-                node = self.mutate_element(node, "style")
+                node = self.__mutate_element(node, "style")
                 mod_style -= 1
                 changes_remain_total -= 1
 
-            if self.mutate_prop(mod_position_p, mod_position): # Add style attribute
+            if self.__mutate_prop(mod_position_p, mod_position): # Add style attribute
                 # print("Mod position")
 
-                node = self.mutate_element(node, "position")
+                node = self.__mutate_element(node, "position")
                 mod_position -= 1
                 changes_remain_total -= 1
 
-            if self.mutate_prop(mod_dimension_p, mod_dimension): # Add style attribute
+            if self.__mutate_prop(mod_dimension_p, mod_dimension): # Add style attribute
                 # print("Mod dimension")
 
-                node = self.mutate_element(node, "dimension")
+                node = self.__mutate_element(node, "dimension")
                 mod_dimension -= 1
                 changes_remain_total -= 1
 
-            if self.mutate_prop(change_content_p, change_content): # Add text / remove text / change text
+            if self.__mutate_prop(change_content_p, change_content): # Add text / remove text / change text
                 # print("Change content")
                 i = random.randint(1, 3)
 
@@ -406,7 +410,7 @@ class TestTreeGenerator(object):
                     change_content -= 1
                     changes_remain_total -= 1
 
-            if self.mutate_prop(move_element_p, move_element): # TODO:
+            if self.__mutate_prop(move_element_p, move_element): # TODO:
                 pass
 
         if tagName in node and node[tagName] == 'body':
@@ -417,7 +421,7 @@ class TestTreeGenerator(object):
         if childNodes in node:
             index = 0
             for child in node[childNodes]:
-                (changes_remain_total, changes_remain) = self.mutate_test_child(child, changes_remain_total, changes_remain, changes_prop, hit_body, node, index)
+                (changes_remain_total, changes_remain) = self.__mutate_test_child(child, changes_remain_total, changes_remain, changes_prop, hit_body, node, index)
                 index += 1
 
         return (changes_remain_total, changes_remain)
@@ -463,7 +467,7 @@ class TestTreeGenerator(object):
 
         while changes_remain_total > 0:
             # print("Remain changes", changes_remain_total)
-            (changes_remain_total, changes_remain) = self.mutate_test_child(mutate_tree, changes_remain_total, changes_remain, changes_prop)
+            (changes_remain_total, changes_remain) = self.__mutate_test_child(mutate_tree, changes_remain_total, changes_remain, changes_prop)
 
         # print("Done changes", changes_remain_total)
 

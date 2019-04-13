@@ -26,8 +26,8 @@ class TestTree(object):
     # Default settings.
     settings = {
         # Generation settings.
-        'min-nodes'                   : 2000,
-        'max-nodes'                   : 2000,
+        'min-nodes'                   : 100,
+        'max-nodes'                   : 100,
         'chance-class'                : 10,
         'chance-id'                   : 10,
         'min-branch-factor'           : 2,
@@ -37,7 +37,7 @@ class TestTree(object):
         'min-changes'                 : 20,
         'max-changes'                 : 20,
         # Add, remove, modify style, modify position, modify dimensions, content change, move element.
-        'distribution-of-change-type' : [0, 0, 2, 2, 2, 6, 0], # Ratio of changes
+        'distribution-of-change-type' : [1, 1, 2, 2, 2, 6, 0], # Ratio of changes
     }
 
     def merge_settings(self, settings = None):
