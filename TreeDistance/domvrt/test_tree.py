@@ -37,7 +37,7 @@ class TestTree(object):
         'min-changes'                 : 20,
         'max-changes'                 : 20,
         # Add, remove, modify style, modify position, modify dimensions, content change, move element.
-        'distribution-of-change-type' : [1, 1, 2, 2, 2, 6, 0], # Ratio of changes
+        'distribution-of-change-type' : [1, 1, 2, 2, 2, 6], # Ratio of changes
     }
 
     def merge_settings(self, settings = None):

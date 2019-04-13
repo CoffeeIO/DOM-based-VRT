@@ -342,9 +342,9 @@ class TestTreeGenerator(object):
         hit_body             --
         """
 
-        (add, delete, mod_style, mod_position, mod_dimension, change_content, move_element) = changes_remain
+        (add, delete, mod_style, mod_position, mod_dimension, change_content) = changes_remain
 
-        (add_p, delete_p, mod_style_p, mod_position_p, mod_dimension_p, change_content_p, move_element_p) = changes_prop
+        (add_p, delete_p, mod_style_p, mod_position_p, mod_dimension_p, change_content_p) = changes_prop
 
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
@@ -438,13 +438,10 @@ class TestTreeGenerator(object):
                     change_content -= 1
                     changes_remain_total -= 1
 
-            if self.__mutate_prop(move_element_p, move_element): # TODO:
-                pass
-
         if tagName in node and node[tagName] == 'body':
             hit_body = True
 
-        changes_remain = (add, delete, mod_style, mod_position, mod_dimension, change_content, move_element)
+        changes_remain = (add, delete, mod_style, mod_position, mod_dimension, change_content)
 
         if childNodes in node:
             index = 0
@@ -476,10 +473,9 @@ class TestTreeGenerator(object):
         mod_position   = (self.settings['distribution-of-change-type'][3] * changes_remain_total / change_sum)
         mod_dimension  = (self.settings['distribution-of-change-type'][4] * changes_remain_total / change_sum)
         change_content = (self.settings['distribution-of-change-type'][5] * changes_remain_total / change_sum)
-        move_element   = (self.settings['distribution-of-change-type'][6] * changes_remain_total / change_sum)
 
-        changes_remain = (add, delete, mod_style, mod_position, mod_dimension, change_content, move_element)
-        changes_remain_total = add + delete + mod_style + mod_position + mod_dimension + change_content + move_element
+        changes_remain = (add, delete, mod_style, mod_position, mod_dimension, change_content)
+        changes_remain_total = add + delete + mod_style + mod_position + mod_dimension + change_content
 
         print("Total changes after adjustment", changes_remain_total)
 
@@ -490,7 +486,7 @@ class TestTreeGenerator(object):
 
         nodes = float(mutate_tree['node-count']) # Convert to float
 
-        changes_prop = (add/nodes, delete/nodes, mod_style/nodes, mod_position/nodes, mod_dimension/nodes, change_content/nodes, move_element/nodes)
+        changes_prop = (add/nodes, delete/nodes, mod_style/nodes, mod_position/nodes, mod_dimension/nodes, change_content/nodes)
 
 
         while changes_remain_total > 0:
