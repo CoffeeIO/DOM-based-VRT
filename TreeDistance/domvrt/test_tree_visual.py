@@ -157,9 +157,6 @@ class TestTreeVisual(object):
         with open("../dist/domvrt.min.js") as f:
             js_content += f.read()
 
-        print("JS_CONTENT")
-        print(js_content)
-
         total_height = driver.execute_script("return document.body.scrollHeight")
         driver.set_window_size(captureWidth, total_height)
 
