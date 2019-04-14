@@ -22,7 +22,6 @@ class TestTree(object):
         self.merge_settings(settings)
         self.results = Results()
 
-
     # Default settings.
     settings = {
         # Generation settings.
@@ -37,7 +36,7 @@ class TestTree(object):
         'min-changes'                 : 5,
         'max-changes'                 : 5,
         # Add, remove, modify style, modify position, modify dimensions, content change.
-        'distribution-of-change-type' : [0, 1, 0, 0, 0, 0], # Ratio of changes
+        'distribution-of-change-type' : [1, 1, 1, 1, 1, 1], # Ratio of changes
     }
 
     def merge_settings(self, settings = None):
@@ -134,10 +133,11 @@ class TestTree(object):
         tree = self.file_to_tree(filename)
 
         # Save original.
-        url = tree['location']['href']
-        self.tree_to_file(tree, foldername + "/index-original.json")
-        self.save_url_as_file(url, foldername + "/index-original.html")
-        self.save_url_as_image(url, foldername, False, "image-original.png", tree['captureWidth'])
+        if 'location' in tree:
+            url = tree['location']['href']
+            self.tree_to_file(tree, foldername + "/index-original.json")
+            self.save_url_as_file(url, foldername + "/index-original.html")
+            self.save_url_as_image(url, foldername, False, "image-original.png", tree['captureWidth'])
 
         # Download resources and save copy.
         self.save_tree_as_image(tree, foldername, True, False)
@@ -186,9 +186,41 @@ class TestTree(object):
         return (foldername1, foldername2)
 
 
+    def run_generated_test(self):
+        html_tree = HtmlTree()
+
+        pre_dom = self.generate_test()
+        # self.tree_to_file(pre_dom, 'data-generator/pre-dom.json')
+
+        (post_dom, changes) = self.mutate_test(pre_dom)
+
+        html_tree.test_to_file(pre_dom, 'data-generator/state1.html')
+        html_tree.test_to_file(post_dom, 'data-generator/state2.html')
+
+        test_tree_visual = TestTreeVisual()
+        test_tree_visual.retrieve_render_properties(
+            pre_dom,
+            'data-generator/state1.html',
+            'data-generator/state1.json'
+        )
+
+        test_tree_visual.retrieve_render_properties(
+            post_dom,
+            'data-generator/state2.html',
+            'data-generator/state2.json'
+        )
+
+
+        # self.tree_to_file(post_dom, 'data-generator/post-dom.json')
+        self.results.mutations = changes
+        self.results.process_mutations()
+
+        res = self.diff('data-generator/state1.json', 'data-generator/state2.json')
+        print(res)
+
     # Helper functions.
 
-    def create_path(self, folder):
+    def __create_path(self, folder):
         if not os.path.exists(folder):
             os.makedirs(folder)
             print("creating path: '" + folder + "'")
@@ -203,7 +235,7 @@ class TestTree(object):
             folder_no += 1
             folder = base + foldername + utils.number_to_string(folder_no)
 
-        self.create_path(folder)
+        self.__create_path(folder)
 
         if return_base:
             return (folder, foldername + utils.number_to_string(folder_no))

@@ -86,13 +86,20 @@ class TestTreeResource(object):
 
         url = uri
 
+        if url.startswith('data:image/png;base64'):
+            return None
+
         # Try uri on its own.
         r = self.send_request(url)
         if r == None:
             invalid_url = True
 
+
         # If fail try as relative url.
         if invalid_url:
+            if 'location' not in self.test_tree:
+                print("No location in test and link not found: ", url)
+                return None
             base_url = self.test_tree['location']['protocol'] + '//' + self.test_tree['location']['host']
 
             if reference != None:
@@ -212,8 +219,9 @@ class TestTreeResource(object):
                 styles.append(node)
             else:
                 # Check if node has style attribute.
-                if "style" in node[attrs]:
-                    images.append(node)
+                if attrs in node:
+                    if "style" in node[attrs]:
+                        images.append(node)
 
         if not childNodes in node:
             return (resources, images)

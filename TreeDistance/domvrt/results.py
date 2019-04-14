@@ -53,8 +53,10 @@ class Results(object):
 
     def save(self, foldername):
         filename = foldername + "/output.json"
+
         data = {
             "issues": self.issues,
+            "mutations" : self.mutations,
             "execution" : self.execution_time,
             "quality" : self.quality,
         }
@@ -132,3 +134,16 @@ class Results(object):
             "ref-pre"   : pre_node,
             "ref-post"  : post_node
         })
+
+    def process_mutations(self):
+        for type, mutations in self.mutations.items():
+            for mutation in mutations:
+
+                if mutation["ref-pre"] != None:
+                    mutation["node-pre"]["position"] = mutation["ref-pre"]["position"]
+
+                if mutation["ref-post"] != None:
+                    mutation["node-post"]["position"] = mutation["ref-post"]["position"]
+
+                mutation['ref-pre'] = None
+                mutation['ref-post'] = None

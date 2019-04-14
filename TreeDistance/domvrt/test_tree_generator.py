@@ -94,8 +94,8 @@ class TestTreeGenerator(object):
     def __mutate_element(self, node, type):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
-        # old_node = deepcopy(node)
-        old_node = (node)
+        old_node = deepcopy(node)
+        # old_node = (node)
 
         if not attrs in node:
             node[attrs] = {}
@@ -339,8 +339,9 @@ class TestTreeGenerator(object):
 
 
         root['node-count'] = number_of_element + 6 # Add 6 nodes from template
-
+        root['captureWidth'] = 700
         print('Done generating')
+
 
         return root
 
@@ -465,8 +466,8 @@ class TestTreeGenerator(object):
                 # print("Change content")
                 i = random.randint(1, 3)
 
-                # old_node = deepcopy(node)
-                old_node = (node)
+                old_node = deepcopy(node)
+                # old_node = (node)
 
 
                 changed = False
@@ -555,8 +556,6 @@ class TestTreeGenerator(object):
 
         print("Total changes after adjustment", changes_remain_total)
 
-        if 'captureWidth' not in test_tree:
-            test_tree['captureWidth'] = 700
         mutate_tree = deepcopy(test_tree)
 
         self.base_root = mutate_tree
