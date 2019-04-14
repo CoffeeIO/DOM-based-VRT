@@ -32,7 +32,7 @@ class TestTreeVisual(object):
         # screenshot = driver.save_screenshot(imagepath)
 
         # Capture whole body element.
-        time.sleep(1)
+        time.sleep(0.1)
         el = driver.find_element_by_tag_name('body')
         el.screenshot(imagepath)
         driver.quit()
@@ -50,7 +50,11 @@ class TestTreeVisual(object):
             print("Error: filepath '" + filepath + "' does not exist")
             return None
 
-        self.save_url_as_image(url, foldername, output_name, tree['captureWidth'])
+        captureWidth = '700' # Default width if non is specified.
+        if 'captureWidth' in tree:
+            captureWidth = tree['captureWidth']
+
+        self.save_url_as_image(url, foldername, output_name, captureWidth)
 
         return foldername
 
