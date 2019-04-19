@@ -104,11 +104,13 @@ class TestTreeDiffer(object):
 
                 if pre_visual_diff != None and post_visual_diff != None:
 
+                    visible_change = False
                     if not self.ignore_diff(pre_visual_diff, post_visual_diff, pre_node, post_node):
                         pre_visual_diff.draw_updated_node(pre_node)
                         post_visual_diff.draw_updated_node(post_node)
                         # Add diff to results.
-                        self.results.add_issue(self.results.UPDATE, pre_node, post_node, styles_data)
+                        visible_change = True
+                    self.results.add_issue(self.results.UPDATE, pre_node, post_node, styles_data, visible_change)
 
             elif diff.type == 3:
                 color = (255, 165, 0)
@@ -137,11 +139,13 @@ class TestTreeDiffer(object):
                                     styles_data.append(style)
 
                         if style_diff:
+                            visible_change = False
                             if not self.ignore_diff(pre_visual_diff, post_visual_diff, pre_node, post_node):
                                 pre_visual_diff.draw_updated_node(pre_node, color)
                                 post_visual_diff.draw_updated_node(post_node, color)
                                 # Add diff to results.
-                                self.results.add_issue(self.results.MATCH, pre_node, post_node, styles_data)
+                                visible_change = True
+                            self.results.add_issue(self.results.MATCH, pre_node, post_node, styles_data, visible_change)
 
         # Save diff images.
         if pre_visual_diff != None:

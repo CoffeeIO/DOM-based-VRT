@@ -33,7 +33,7 @@ class TestTreeVisual(object):
         # screenshot = driver.save_screenshot(imagepath)
 
         # Capture whole body element.
-        time.sleep(0.1)
+        time.sleep(0.2)
         el = driver.find_element_by_tag_name('body')
         el.screenshot(imagepath)
         driver.quit()

@@ -63,7 +63,7 @@ class Results(object):
         utils.save_file(json.dumps(data), filename)
 
 
-    def add_issue(self, type, pre_node = None, post_node = None, style_data = None):
+    def add_issue(self, type, pre_node = None, post_node = None, style_data = None, visible = True):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         pre_data = None
@@ -99,6 +99,7 @@ class Results(object):
             "node-pre"  : pre_data,
             "node-post" : post_data,
             "style"     : style_data,
+            "visible"   : visible
         })
 
     def add_mutation(self, type, pre_node = None, post_node = None, style_data = None, visible = False):
@@ -114,7 +115,6 @@ class Results(object):
                 "tag"      : pre_node[tagName] if tagName in pre_node else None,
                 "attr"     : pre_node[attrs] if attrs in pre_node else None,
                 "text"     : pre_node[nodeValue] if nodeValue in pre_node else None,
-                "visible"  : visible,
             }
 
         if post_node != None:
@@ -124,13 +124,13 @@ class Results(object):
                 "tag"      : post_node[tagName] if tagName in post_node else None,
                 "attr"     : post_node[attrs] if attrs in post_node else None,
                 "text"     : post_node[nodeValue] if nodeValue in post_node else None,
-                "visible"  : visible,
             }
 
         self.mutations[type].append({
             "node-pre"  : pre_data,
             "node-post" : post_data,
             "style"     : style_data,
+            "visible"   : visible,
             "ref-pre"   : pre_node,
             "ref-post"  : post_node
         })
