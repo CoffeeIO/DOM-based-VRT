@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw
 # This package
 from domvrt.parser_mapping import ParserMapping
 from domvrt.test_tree_resource import TestTreeResource
+import domvrt.utils as utils
 
 
 class TestTreeVisual(object):
@@ -32,7 +33,7 @@ class TestTreeVisual(object):
         # screenshot = driver.save_screenshot(imagepath)
 
         # Capture whole body element.
-        time.sleep(1)
+        time.sleep(0.2)
         el = driver.find_element_by_tag_name('body')
         el.screenshot(imagepath)
         driver.quit()
@@ -50,7 +51,11 @@ class TestTreeVisual(object):
             print("Error: filepath '" + filepath + "' does not exist")
             return None
 
-        self.save_url_as_image(url, foldername, output_name, tree['captureWidth'])
+        captureWidth = '700' # Default width if non is specified.
+        if 'captureWidth' in tree:
+            captureWidth = tree['captureWidth']
+
+        self.save_url_as_image(url, foldername, output_name, captureWidth)
 
         return foldername
 
@@ -67,7 +72,9 @@ class TestTreeVisual(object):
 
         width, height = self.im.size
         self.width_scale = width / tree['captureWidth']
-        self.height_scale = height / tree['captureHeight']
+        self.height_scale = self.width_scale
+        if 'captureHeight' in tree:
+            self.height_scale = height / tree['captureHeight']
 
     def save_image(self, filename):
         self.im.save(filename)
@@ -126,3 +133,35 @@ class TestTreeVisual(object):
 
     def get_size_of_area(self, node):
         return (int((node['x2'] - node['x1'])  * self.width_scale), int((node['y2'] - node['y1']) * self.height_scale))
+
+    def retrieve_render_properties(self, tree, html_file, save_location):
+        path = os.getcwd()
+
+        filepath = path + "/" + html_file
+        url = "file:// " + filepath
+
+        if not os.path.isfile(filepath):
+            print("Error: filepath '" + filepath + "' does not exist")
+            return None
+
+        captureWidth = '700' # Default width if non is specified.
+        if 'captureWidth' in tree:
+            captureWidth = tree['captureWidth']
+
+        driver = webdriver.Chrome()
+        driver.get(url)
+
+        js_content = ""
+        with open("../dist/domvrt.vendor.min.js") as f:
+            js_content += f.read()
+        with open("../dist/domvrt.min.js") as f:
+            js_content += f.read()
+
+        total_height = driver.execute_script("return document.body.scrollHeight")
+        driver.set_window_size(captureWidth, total_height)
+
+        response = driver.execute_script(js_content + " return JSON.stringify(DomVRT.Extractor.currentAppToJSON());")
+
+        utils.save_file(response, save_location)
+
+        driver.quit()

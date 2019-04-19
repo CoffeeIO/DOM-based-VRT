@@ -1,11 +1,14 @@
 # Standard python
-import json, random, math, collections
+import json, random, math, collections, os
 from copy import deepcopy
 # Dependencies
 import lorem
 # This package
 from domvrt.parser_mapping import ParserMapping
+from domvrt.html_tree import HtmlTree
+from domvrt.test_tree_visual import TestTreeVisual
 from domvrt.test_tree_generator_data import TestTreeGeneratorData
+from domvrt.results import Results
 
 class TestTreeGenerator(object):
     """docstring for TestTreeGenerator."""
@@ -15,6 +18,11 @@ class TestTreeGenerator(object):
         self.count_tags = 0
         self.count_text = 0
         self.node_count = 0
+        self.results = Results()
+        self.results.set_mapping()
+        self.base_image = None
+        self.test_tree_visual = TestTreeVisual('data-generator')
+        self.html_tree = HtmlTree()
 
     map = None
 
@@ -86,6 +94,9 @@ class TestTreeGenerator(object):
     def __mutate_element(self, node, type):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
+        old_node = deepcopy(node)
+        # old_node = (node)
+
         if not attrs in node:
             node[attrs] = {}
 
@@ -97,14 +108,32 @@ class TestTreeGenerator(object):
             if not current_style[len(current_style) - 1] == ";":
                 current_style += ";"
 
+        property = None
         if type == 'style':
-            current_style += random.choice(self.change_style)
+            property = random.choice(self.change_style)
+            current_style += property
         elif type == 'position':
-            current_style += random.choice(self.change_position)
+            property = random.choice(self.change_position)
+            current_style += property
         elif type == 'dimension':
-            current_style += random.choice(self.change_dimension)
+            property = random.choice(self.change_dimension)
+            current_style += property
 
         node[attrs]['style'] = current_style
+
+        if property != None:
+            # self.__add_change(node, "change style", node[position], property)
+            visible_change = False
+            if self.__snapshot():
+                visible_change = True
+            self.results.add_mutation(
+                self.results.MATCH,
+                old_node,
+                node,
+                property,
+                visible_change
+            )
+
 
         return node
 
@@ -310,6 +339,9 @@ class TestTreeGenerator(object):
 
 
         root['node-count'] = number_of_element + 6 # Add 6 nodes from template
+        root['captureWidth'] = 700
+        print('Done generating')
+
 
         return root
 
@@ -361,8 +393,23 @@ class TestTreeGenerator(object):
                 div = self.__random_div(node[position] + ".+")
                 div = self.__modify_element(div)
 
+                # self.__add_change(div, 'add')
+
+
                 div[childNodes] = node[childNodes]
                 node[childNodes] = [div]
+
+                visible_change = False
+                if self.__snapshot():
+                    visible_change = True
+
+                self.results.add_mutation(
+                    self.results.INSERT,
+                    None,
+                    div,
+                    None,
+                    visible_change
+                )
 
                 add -= 1
                 changes_remain_total -= 1
@@ -370,12 +417,26 @@ class TestTreeGenerator(object):
             if self.__mutate_prop(delete_p, delete): # Remove node and move children
                 # print("Remove element")
 
-                parent[childNodes].pop(child_index)
+                child_node = parent[childNodes].pop(child_index)
+                # self.__add_change(child_node, "remove", child_node[position])
 
+                # Insert children of node, into parent at the child_index.
                 s_index = child_index
                 for child in node[childNodes]:
                     parent[childNodes].insert(s_index, child)
                     s_index += 1
+
+                visible_change = False
+                if self.__snapshot():
+                    visible_change = True
+                self.results.add_mutation(
+                    self.results.REMOVE,
+                    node,
+                    None,
+                    None,
+                    visible_change
+                )
+
 
                 delete -= 1
                 changes_remain_total -= 1
@@ -404,6 +465,10 @@ class TestTreeGenerator(object):
             if self.__mutate_prop(change_content_p, change_content): # Add text / remove text / change text
                 # print("Change content")
                 i = random.randint(1, 3)
+
+                old_node = deepcopy(node)
+                # old_node = (node)
+
 
                 changed = False
                 if node[nodeType] == 1: # Normal node
@@ -437,6 +502,16 @@ class TestTreeGenerator(object):
                 if changed:
                     change_content -= 1
                     changes_remain_total -= 1
+                    visible_change = False
+                    if self.__snapshot():
+                        visible_change = True
+                    self.results.add_mutation(
+                        self.results.UPDATE,
+                        old_node,
+                        node,
+                        None,
+                        visible_change
+                    )
 
         if tagName in node and node[tagName] == 'body':
             hit_body = True
@@ -463,6 +538,8 @@ class TestTreeGenerator(object):
         if self.map == None:
             self.map = ParserMapping(test_tree['minify'])
 
+        test_tree = self.update_position(test_tree)
+
         changes_remain_total = random.randint(self.settings['min-changes'], self.settings['max-changes'])
         change_sum     = sum(self.settings['distribution-of-change-type'])
 
@@ -481,24 +558,37 @@ class TestTreeGenerator(object):
 
         mutate_tree = deepcopy(test_tree)
 
-        # print(test_tree)
-        # print(mutate_tree)
+        self.base_root = mutate_tree
+        self.base_image = self.__snapshot()
+
 
         nodes = float(mutate_tree['node-count']) # Convert to float
 
         changes_prop = (add/nodes, delete/nodes, mod_style/nodes, mod_position/nodes, mod_dimension/nodes, change_content/nodes)
 
-
+        self.mutation_changes = []
         while changes_remain_total > 0:
             # print("Remain changes", changes_remain_total)
             (changes_remain_total, changes_remain) = self.__mutate_test_child(mutate_tree, changes_remain_total, changes_remain, changes_prop)
 
+        mutate_tree = self.update_position(mutate_tree)
+
         # print("Done changes", changes_remain_total)
+        for k, m in self.results.mutations.items():
+            # print(m['type'], m['position'] ,  ' --> ',   m['node']['position'])
+            print(k)
+            for v in m:
+                pos = ""
+                if v['ref-pre'] != None:
+                    pos += v['ref-pre']['position'] + " : "
+                if v['ref-post'] != None:
+                    pos += v['ref-post']['position'] + " : "
+                print('--- ', pos, v['node-pre'], ' | ', v['node-post'])
 
-        return self.update_position(mutate_tree)
+        return (mutate_tree, self.results.mutations)
 
 
-    def update_position_child(self, node, parent_position = None):
+    def __update_position_child(self, node, parent_position = None):
         self.node_count += 1
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
@@ -508,7 +598,10 @@ class TestTreeGenerator(object):
         for index, child in enumerate(node[childNodes]):
             new_position = parent_position + "." + str(index)
             child[position] = new_position
-            self.update_position_child(child, new_position)
+            if attrs not in child:
+                child[attrs] = {}
+            child[attrs]['p'] = new_position
+            self.__update_position_child(child, new_position)
 
     def update_position(self, node):
         """
@@ -526,8 +619,37 @@ class TestTreeGenerator(object):
         parent_position = "1"
         node[position] = parent_position
 
-        self.update_position_child(node, parent_position)
+        self.__update_position_child(node, parent_position)
 
         node['node-count'] = self.node_count
 
         return node
+
+    def __add_change(self, node, type, position, property = None):
+        self.mutation_changes.append({
+            'node': node,
+            'type': type,
+            'position': position,
+            'property': property,
+        })
+
+
+    def __snapshot(self):
+        if os.path.isfile('data-generator/snapshot.png'):
+            os.rename(
+                'data-generator/snapshot.png',
+                'data-generator/snapshot-base.png'
+            )
+        self.html_tree.test_to_file(self.base_root, 'data-generator/snapshot.html')
+        self.test_tree_visual.save_tree_as_image(
+            self.base_root,
+            "data-generator",
+            "snapshot.html",
+            "snapshot.png"
+        )
+
+        if os.path.isfile('data-generator/snapshot-base.png'):
+            if open("data-generator/snapshot.png","rb").read() != open("data-generator/snapshot-base.png","rb").read():
+                return True
+
+        return False

@@ -1,9 +1,10 @@
 DomVRT.Extractor = (function (obj) {
 
-
   obj.nodeCount = 0;
 
   obj.currentAppToJSON = function(minify) {
+    console.log('Running DomVRT Extractor');
+    
     obj.nodeCount = 0;
     minify = (minify == null) ? false : minify;
     var result = nodeToJSON(document, minify);
@@ -102,6 +103,10 @@ DomVRT.Extractor = (function (obj) {
 
     }
 
+    if (node.nodeType == 1) {
+      node.setAttribute("p", position)
+    }
+
     // Define attributes.
     if (jsonMapping['attrs'][mVal]) {
       json[jsonMapping['attrs'][mVal]] = {};
@@ -169,6 +174,7 @@ DomVRT.Extractor = (function (obj) {
         Array.prototype.forEach.call(node.childNodes, function(n) {
 
           var newPos = position + '.' + index;
+
           var child = nodeToJSON(n, minify, newPos);
 
           if (child != null) {
@@ -198,8 +204,16 @@ DomVRT.Extractor = (function (obj) {
     }
 
     obj.nodeCount++;
+
+    if (obj.nodeCount > obj.limit) {
+      console.log('Hit: ' + obj.limit);
+      obj.limit = obj.limit * 2;
+    }
+
     return json;
   };
+
+  obj.limit = 10;
 
   obj.getStyle = function(node, style) {
     var display = window.getComputedStyle(node).getPropertyValue('display');
