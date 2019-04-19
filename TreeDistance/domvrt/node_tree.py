@@ -26,7 +26,7 @@ class NodeTree(object):
     map = None
     results = None
 
-    def loop_child(self, obj, node):
+    def __loop_child(self, obj, node):
         """
         Construct Node tree on child.
 
@@ -58,7 +58,7 @@ class NodeTree(object):
 
             c = Node(label, None, str(new_position))
             node.addkid(c)
-            self.loop_child(child, c)
+            self.__loop_child(child, c)
 
 
     def test_to_tree(self, obj):
@@ -76,7 +76,7 @@ class NodeTree(object):
 
 
         root = Node('root', None, '0.0')
-        self.loop_child(obj, root)
+        self.__loop_child(obj, root)
 
         self.index_tree(root)
 
