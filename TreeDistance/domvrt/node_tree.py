@@ -8,7 +8,7 @@ from domvrt.results import Results
 
 sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance')
 
-from zss import simple_distance, Node, distance as strdist
+from zss import simple_distance, Node, Operation, distance as strdist
 
 # Define some cost function for replace.
 def strdist(a, b):
@@ -20,11 +20,29 @@ def strdist(a, b):
 class NodeTree(object):
     """docstring for NodeTree."""
 
-    def __init__(self, results):
-        self.results = results
+    def __init__(self, results = None):
+        if results == None:
+            self.results = Results()
+        else:
+            self.results = results
+        self.mapping = []
 
     map = None
-    results = None
+
+    def label_of_node(self, node):
+        # Get value of node.
+        label = "Other"
+        if node['nodeType'] == 3:
+            label = "text:" + node['nodeValue']
+        elif node['nodeType'] == 1:
+            label = node['tagName'] + ";"
+            if 'attrs' in node:
+                if 'id' in node['attrs']:
+                    label += "id=" + node['attrs']['id'] + ";"
+                if 'class' in node['attrs']:
+                    label += "class=" + node['attrs']['class'] + ";"
+
+        return label
 
     def __loop_child(self, obj, node):
         """
@@ -41,16 +59,7 @@ class NodeTree(object):
         for child in obj[childNodes]:
 
             # Get value of node.
-            label = "Other"
-            if child[nodeType] == 3:
-                label = "text:" + child[nodeValue]
-            elif child[nodeType] == 1:
-                label = child[tagName] + ";"
-                if attrs in child:
-                    if 'id' in child[attrs]:
-                        label += "id=" + child[attrs]['id'] + ";"
-                    if 'class' in child[attrs]:
-                        label += "class=" + child[attrs]['class'] + ";"
+            label = self.label_of_node(child)
 
 
             # Get position of node.
@@ -151,7 +160,8 @@ class NodeTree(object):
 
         self.index_tree_child(tree)
 
-    def print_diff(self, diffs):
+    def print_diff(self, diffs, print_match = False):
+        print("Diffing")
         for diff in diffs:
             if diff.type == 0:
                 print("REMOVE elem")
@@ -162,4 +172,16 @@ class NodeTree(object):
             elif diff.type == 2:
                 print("UPDATE elem")
                 print("Before: ", diff.arg1.position, diff.arg1.label)
-                print("After: ", diff.arg2.position, diff.arg2.label)
+                print("After:  ", diff.arg2.position, diff.arg2.label)
+            elif diff.type == 3 and print_match:
+                print("Match elem")
+                print("Before: ", diff.arg1.position, diff.arg1.label)
+                print("After:  ", diff.arg2.position, diff.arg2.label)
+
+    def add_match(self, pre_node, post_node):
+        pre_label = self.label_of_node(pre_node)
+        post_label = self.label_of_node(post_node)
+
+        node1 = Node(pre_label, None, pre_node['position'])
+        node2 = Node(post_label, None, post_node['position'])
+        self.mapping.append(Operation(3, node1, node2))

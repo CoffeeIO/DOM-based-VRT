@@ -171,8 +171,13 @@ class TestTree(object):
         diff = node_tree.diff_trees(before_root, after_root)
 
         print("Distance:", diff[0])
+        # print(diff[1][0])
+        #
+        # return
         node_tree.print_diff(diff[1])
 
+
+        return
         self.compare_style(before_tree, after_tree, diff[1], foldername1, foldername2)
 
         total = time.time() - start

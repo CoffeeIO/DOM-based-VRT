@@ -87,15 +87,29 @@ DomVRT.Differ = (function (obj) {
 
   obj.index = function() {
     obj.nodeCount = 0;
-    obj.findNode(document, '1', null, true);
-    return obj.nodeCount;
+    obj.type = {};
+    obj.maxDepth = 0;
+    obj.leafs = 0;
+
+    obj.findNode(document, '1', null, true, 0);
+    return {
+      'nodes' : obj.nodeCount,
+      'types' : obj.type,
+      'depth' : obj.maxDepth,
+      'leafs' : obj.leafs
+    };
   };
 
   obj.nodeCount = 0;
+  obj.type = {};
+  obj.maxDepth = 0;
+  obj.leafs = 0;
 
-  obj.findNode = function(node, position, toFind, setPosition) {
+  obj.findNode = function(node, position, toFind, setPosition, depth) {
     position = (position == null) ? 1 : position;
     node = node || this;
+
+
 
     // Define node.
     var json = {};
@@ -127,7 +141,7 @@ DomVRT.Differ = (function (obj) {
 
         var newPos = position + '.' + index;
 
-        var child = obj.findNode(n, newPos, toFind, setPosition);
+        var child = obj.findNode(n, newPos, toFind, setPosition, depth + 1);
 
         if (child['valid']) {
           index++;
@@ -139,7 +153,19 @@ DomVRT.Differ = (function (obj) {
       });
     }
 
+    if (node.childNodes.length) {
+      obj.leafs++;
+    }
+
     obj.nodeCount++;
+    if (! (node.nodeType in obj.type)) {
+      obj.type[node.nodeType] = 0;
+    }
+    obj.type[node.nodeType]++;
+
+    if (depth > obj.maxDepth) {
+      obj.maxDepth = depth;
+    }
 
     return {
       'found' : false,
