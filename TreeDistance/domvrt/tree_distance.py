@@ -245,17 +245,17 @@ class TreeDistance(object):
         post_root = node_tree.test_to_tree(new_post_dom)
         diff = node_tree.diff_trees(pre_root, post_root)
 
-        # print("Distance:", diff[0])
-        # node_tree.print_diff(diff[1])
+        print("Distance:", diff[0])
+        node_tree.print_diff(diff[1])
 
-        print("---")
-        print(node_tree.mapping)
-        node_tree.print_diff(node_tree.mapping, True)
+        # print("---")
+        # print(node_tree.mapping)
+        # node_tree.print_diff(node_tree.mapping, True)
 
 
         # self.pp(pre_dom)
 
-
+        return [diff[0], diff[1] + node_tree.mapping]
 
         # pre_post_mappings.append(NodeMapping('match', pre_dom['position'], post_dom['position']))
         #
