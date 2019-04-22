@@ -9,6 +9,7 @@ from domvrt.test_tree_generator import TestTreeGenerator
 from domvrt.test_tree_resource import TestTreeResource
 from domvrt.test_tree_differ import TestTreeDiffer
 from domvrt.test_tree_visual import TestTreeVisual
+from domvrt.tree_distance import TreeDistance
 from domvrt.results import Results
 import domvrt.utils as utils
 
@@ -166,9 +167,12 @@ class TestTree(object):
         self.save(file1, foldername1, False)
         self.save(file2, foldername2, False)
 
-        before_root = node_tree.test_to_tree(before_tree)
-        after_root = node_tree.test_to_tree(after_tree)
-        diff = node_tree.diff_trees(before_root, after_root)
+        # before_root = node_tree.test_to_tree(before_tree)
+        # after_root = node_tree.test_to_tree(after_tree)
+        # diff = node_tree.diff_trees(before_root, after_root)
+
+        tree_distance = TreeDistance()
+        diff = tree_distance.get_distance(before_tree, after_tree)
 
         print("Distance:", diff[0])
         node_tree.print_diff(diff[1])
