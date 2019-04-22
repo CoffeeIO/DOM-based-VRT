@@ -177,7 +177,6 @@ class TestTree(object):
         print("Distance:", diff[0])
         node_tree.print_diff(diff[1])
 
-
         self.compare_style(before_tree, after_tree, diff[1], foldername1, foldername2)
 
         total = time.time() - start
