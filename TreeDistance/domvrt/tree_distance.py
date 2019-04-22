@@ -6,15 +6,12 @@ from copy import deepcopy
 from domvrt.node_tree import NodeTree
 from domvrt.results import Results
 
-
-
 class TreeDistance(object):
     """docstring for TestDistance."""
 
     def get_hashable_label(self, node):
         label = "Other||"
         if node['nodeType'] == 3:
-            # label = "text||"
             label = "text;" + node['nodeValue'] + "||"
         elif node['nodeType'] == 1:
             label = node['tagName'] + ";"
@@ -30,34 +27,23 @@ class TreeDistance(object):
     def __count_subtree_size(self, node):
         node_hash = self.get_hashable_label(node) + '--' # Add '--' to diff levels
 
-        node['matched'] = False
+        node['matched'] = False # Default no node is matched
 
         if 'childNodes' not in node or len(node['childNodes']) == 0:
             node['subtree-size'] = 0
             node['subtree-hash'] = node_hash
             return (1, node_hash)
 
-        child_count = 0
+        node_size = 0
         for child in node['childNodes']:
-             (child_size, child_hash) = self.__count_subtree_size(child)
-             child_count += child_size
-             node_hash += child_hash
+             (subtree_size, subtree_hash) = self.__count_subtree_size(child)
+             node_size += subtree_size
+             node_hash += subtree_hash
 
-        node['subtree-size'] = child_count
+        node['subtree-size'] = node_size
         node['subtree-hash'] = node_hash
 
-        return (1 + child_count, node_hash)
-
-    def __create_position_map(self, node, map = None):
-        if map == None:
-            map = {}
-
-        map[str(node['position'])] = False
-
-        for child in node['childNodes']:
-            self.__create_position_map(child, map)
-
-        return map
+        return (1 + node_size, node_hash)
 
     def __get_size_to_hash(self, node, map = None):
         if map == None:
@@ -158,9 +144,6 @@ class TreeDistance(object):
          # O(n) , n is nodes of post_dom
         self.__count_subtree_size(post_dom)
 
-        # post_map = self.__create_position_map(post_dom, {})
-        # pre_post_mappings = []
-
         # O(n) , n is nodes of pre_dom
         pre_hash_to_node = self.__get_hash_to_node(pre_dom)
          # O(n) , n is nodes of post_dom
@@ -191,7 +174,7 @@ class TreeDistance(object):
 
                 pre_nodes = pre_hash_to_node[post_hash]
                 for pre_node in pre_nodes:
-                    # Worst case O(n), n nodes in pre_dom
+                    # Loop: worst case O(n), n nodes in pre_dom
 
                     # If the pre_node is already matched we skip it.
                     if pre_node['matched'] == True:
@@ -199,24 +182,18 @@ class TreeDistance(object):
                         continue
 
                     # Match pre_node to post_node.
+                    # Worst case O(n), n nodes in pre_dom and post_dom.
                     self.__mark_subtree_match_2(pre_node, post_node, node_tree)
-                    # self.__mark_subtree_match(pre_node)
-                    # self.__mark_subtree_match(post_node)
 
-                    print("")
-                    print("SUBTREE FOUND:")
-                    print("T1 ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~")
-                    self.pp(pre_node)
-                    print("T2 ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~")
-                    self.pp(post_node)
+                    # print("")
+                    # print("SUBTREE FOUND:")
+                    # print("T1 ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~")
+                    # self.pp(pre_node)
+                    # print("T2 ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~ ~~~~~~")
+                    # self.pp(post_node)
 
-
+                    # Match was found, break.
                     break
-                    # Add nodes to set of matched nodes.
-
-
-        # Find unmatched tree/nodes.
-
 
         # Construct a new tree with only unmatched nodes.
         new_pre_dom = deepcopy(pre_dom)
@@ -225,19 +202,13 @@ class TreeDistance(object):
         pre_dom_count = self.__pop_matched_nodes(new_pre_dom)
         post_dom_count = self.__pop_matched_nodes(new_post_dom)
 
-        print('before')
+        print('Sizes before reduction:')
         print(pre_dom['node-count'])
         print(post_dom['node-count'])
 
-        print('count')
+        print('Sizes after reduction:')
         print(pre_dom_count)
         print(post_dom_count)
-
-        # self.pp(new_pre_dom)
-        # print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-        # print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-        # print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-        # self.pp(new_post_dom)
 
         # Run ZSS with unmatched nodes.
 
@@ -248,24 +219,13 @@ class TreeDistance(object):
         print("Distance:", diff[0])
         node_tree.print_diff(diff[1])
 
-        # print("---")
-        # print(node_tree.mapping)
-        # node_tree.print_diff(node_tree.mapping, True)
-
-
-        # self.pp(pre_dom)
-
         return [diff[0], diff[1] + node_tree.mapping]
-
-        # pre_post_mappings.append(NodeMapping('match', pre_dom['position'], post_dom['position']))
-        #
-        # child_subtree = []
-        # for pre_child in pre_dom['childNodes']:
-        #     for post_child in post_dom['childNodes']:
-        #         pass
 
 
     def pp(self, test_dom):
+        """
+        Print DOM tree object.
+        """
         indent = ""
         for char in str(test_dom['position']):
             if char == '.':
@@ -278,9 +238,6 @@ class TreeDistance(object):
          "subtree: " + str(test_dom['subtree-size']) + " , " + \
         " }"
         print(s)
-
-         # "hash: `" + str(test_dom['subtree-hash']) + "`" + \
-
 
         if 'childNodes' not in test_dom:
             return
@@ -302,24 +259,6 @@ class TreeDistance(object):
                     label += "class=" + child['attrs']['class'] + ";"
 
         return label
-
-    def get_labels_of_tree(self, tree, map = None):
-        if map == None:
-            map = {}
-
-        label = self.get_label_of_node(tree)
-        if label not in map:
-            map[label] = { "nodes": [tree] }
-        else:
-            map[label]['nodes'].append(tree)
-
-        if 'childNodes' not in tree:
-            return
-
-        for child in tree['childNodes']:
-            self.get_labels_of_tree(child, map)
-
-        return map
 
 
     def get_distance_between_positions(self, position1, position2):
@@ -343,7 +282,6 @@ class TreeDistance(object):
 
         return len(p2) - len(p1)
 
-
     def build_preorder_queue(self, tree):
 
         full_queue = collections.deque([tree])
@@ -360,118 +298,3 @@ class TreeDistance(object):
                 node_queue.append(child)
 
         return full_queue
-
-
-    def get_edit_script(self, tree1, tree2):
-
-        # Get labels mappings from trees.
-        label_map_1 = self.get_labels_of_tree(tree1)
-        label_map_2 = self.get_labels_of_tree(tree2)
-
-        print(label_map_1.keys())
-        print(len(label_map_1.keys()))
-        for key in label_map_1.keys():
-            print(len(label_map_1[key]['nodes']), key)
-
-        node_queue = self.build_preorder_queue(tree1)
-        print(len(node_queue))
-
-
-        node_mapping = {}
-
-        root = TreeDistanceNode(TreeDistanceNode.ROOT, "0", "0")
-        match_queue = collections.deque([root])
-
-        # Foreach node in tree1.
-        while len(node_queue) > 0:
-            node = node_queue.popleft()
-
-            # Find the nearest matching node in tree2.
-
-            new_match_queue = []
-            while len(match_queue) > 0:
-                match = match_queue.popleft()
-
-                res = self.find_match(node, label_map_2, match)
-                new_match_queue += res
-
-            match_queue = collections.deque(new_match_queue)
-
-            # match = self.find_match(node, label_map_2)
-            # if match:
-            #     # add the mapping, position => position
-            #     # pop the node match
-            #     pass
-            # else:
-            #     # add node to unmatched queue
-            #     pass
-
-            # For nodes with bad matching.
-
-            # For nodes with no matching in tree1.
-
-            # For nodes with no matching in tree2.
-
-
-        # print(self.get_distance_between_positions("1.2.2", "1.2.2.4"))
-        # print(self.get_distance_between_positions("1.2.2", "1.2.2.4.5"))
-        # print(self.get_distance_between_positions("1.2.3", "1.2.2.4.5"))
-        # print(self.get_distance_between_positions("1.2.3.4", "1.2.2.4.5"))
-        # print(self.get_distance_between_positions("1.2.2", "1.2.2"))
-        # print(self.get_distance_between_positions("1.2.2", "1.2.3"))
-        # print(self.get_distance_between_positions( "1.2.2.4.5", "1.2.3"))
-    def find_match(self, node, label_map, parent):
-        # Check map if node label exist.
-        label = self.get_label_of_node(node)
-        if label_map.has_key(label):
-            # Label is in the map, loop through nodes.
-            for child in label_map[label]['nodes']:
-                distance = self.get_distance_between_positions(node.position, child.position)
-                if distance == 0: # Match found
-                    return [TreeDistanceNode(TreeDistanceNode.MATCH, node.position, child.position, parent)]
-                else:
-                    return []
-        else:
-            return []
-
-
-class NodeMapping(object):
-    """docstring for NodeMapping."""
-
-    def __init__(self, type, pre_position, post_position):
-        self.type = type
-        self.pre_position = pre_position
-        self.post_position = post_position
-
-
-
-
-class TreeDistanceNode(object):
-    """docstring for TreeDistanceNode."""
-    def __init__(self, type, from_pos, to_pos, parent = None):
-        self.type = type
-        self.from_pos = from_pos
-        self.to_pos = to_pos
-        self.parent = parent
-        self.cost = 0
-        if parent != None:
-            self.set_cost()
-
-    ROOT = 0
-    MATCH = 1
-    SUB = 2
-    REMOVE = 3
-
-    def get_cost(self):
-        if self.MATCH:
-            return 0
-        if self.SUB:
-            return 1
-        if self.REMOVE:
-            return 1
-
-    def set_cost(self):
-        if parent == None:
-            self.cost = 0
-        else:
-            self.cost = parent.cost + self.get_cost()
