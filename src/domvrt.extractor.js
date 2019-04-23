@@ -4,7 +4,7 @@ DomVRT.Extractor = (function (obj) {
 
   obj.currentAppToJSON = function(minify) {
     console.log('Running DomVRT Extractor');
-    
+
     obj.nodeCount = 0;
     minify = (minify == null) ? false : minify;
     var result = nodeToJSON(document, minify);
@@ -15,6 +15,8 @@ DomVRT.Extractor = (function (obj) {
       'protocol' : window.location.protocol,
       'host'     : window.location.host
     };
+
+    result['mutations'] = DomVRT.Differ.mutations;
 
     result.captureWidth = window.innerWidth;
     result.captureHeight= document.body.scrollHeight;
