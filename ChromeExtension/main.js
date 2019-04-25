@@ -33,5 +33,5 @@ function coffeeio() {
 
 
 (function() {
-   DomVRT.Differ.index()
+   console.log(DomVRT.Differ.index());
 })();

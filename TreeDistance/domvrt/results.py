@@ -15,12 +15,16 @@ class Results(object):
     UPDATE = "update"
     MATCH = "match"
 
+
+    # Issue = Actual change.
     issues = {
         INSERT : [],
         REMOVE : [],
         UPDATE : [],
         MATCH  : [],
     }
+
+    # Mutation = Expected change.
     mutations = {
         INSERT : [],
         REMOVE : [],
@@ -30,7 +34,15 @@ class Results(object):
 
     execution_time = {
         'distance' : None,
-        'total' : None
+        'visual-verification' : None,
+        'resource-storage': None,
+        'total' : None,
+    }
+    tree_info = {
+        'pre-dom-size': None,
+        'post-dom-size': None,
+        'reduced-pre-dom-size': None,
+        'reduced-post-dom-size': None,
     }
     quality = {
         'tp' : None,
@@ -45,11 +57,14 @@ class Results(object):
     pre_folder = None
     post_folder = None
 
-    def set_mapping(self, tree = None):
-        if tree == None:
-            self.map = ParserMapping(False)
-        else:
-            self.map = ParserMapping(tree['minify'])
+    def set_tree_info(self, pre_dom, post_dom):
+        self.map = ParserMapping(pre_dom['minify'])
+        self.tree_info['captureWidth'] = pre_dom['captureWidth']
+        self.tree_info['pre-dom-size'] = pre_dom['node-count']
+        self.tree_info['post-dom-size'] = post_dom['node-count']
+
+        self.mutations = post_dom['mutations']
+
 
     def save(self, foldername):
         filename = foldername + "/output.json"
@@ -59,6 +74,7 @@ class Results(object):
             "mutations" : self.mutations,
             "execution" : self.execution_time,
             "quality" : self.quality,
+            "tree-info": self.tree_info,
         }
         utils.save_file(json.dumps(data), filename)
 
@@ -147,3 +163,89 @@ class Results(object):
 
                 mutation['ref-pre'] = None
                 mutation['ref-post'] = None
+
+    def __compare_match(self, issues, mutations):
+        position_to_styles = {}
+
+        # Expected changes.
+        for mutation in mutations:
+            # Skip invisible changes.
+            if not mutation['visible']:
+                continue
+
+            pos = mutation['node-pre']['position']
+            if pos not in position_to_styles:
+                position_to_styles[pos] = { 'style' : [], 'found' : False }
+
+            position_to_styles[pos]['style'] += mutation['style']
+
+        # Detected changes.
+        for issue in issues:
+            issue['found'] = False
+
+            # Skip invisible changes.
+            if not issue['visible']:
+                continue
+
+            pos = issue['node-pre']['position']
+
+            if pos != issue['node-post']['position']:
+                # Add false positive.
+                continue
+
+            # Actual in expected change.
+            if pos in position_to_styles:
+                match = position_to_styles[pos]
+
+                result = self.__same_styles(match['style'], issue['style'])
+                if result == None:
+                    # Expected = Actual. Add true positive.
+                    issue['found'] = True
+                    match['found'] = True
+
+            else:
+                # Check if issue position is a descendant of mutation position.
+                matches = self.__get_descendant(pos, position_to_styles)
+                if matches != None:
+                    # Check if result has descendant with same style.
+                    for match in matches:
+                        result = self.__same_styles(match['style'], issue['style'])
+                        if result == None:
+                            # Expected = Actual. Add true positive.
+                            issue['found'] = True
+                            match['found'] = True
+
+
+
+        for position, match in position_to_styles.items():
+            if not match['found']:
+                # Expected change not found. Add false negative.
+                pass
+
+        for issue in issues:
+            if not issue['found']:
+                # Actual change not in expected. Add false positive.
+
+    def __compare_update(self, issues, mutations):
+        pass
+
+    def __compare_insert(self, issues, mutations):
+        pass
+
+    def __compare_remove(self, issues, mutations):
+        pass
+
+
+    def compare(self):
+        for type in self.issues:
+            issues = self.issues[type]
+            mutations = self.mutations[type]
+
+            if type == self.MATCH:
+                self.__compare_match(issues, mutations)
+            elif type == self.UPDATE:
+                self.__compare_update(issues, mutations)
+            elif type == self.REMOVE:
+                self.__compare_remove(issues, mutations)
+            elif type == self.INSERT:
+                self.__compare_insert(issues, mutations)

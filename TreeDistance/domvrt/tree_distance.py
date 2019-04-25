@@ -8,6 +8,11 @@ from domvrt.results import Results
 
 class TreeDistance(object):
     """docstring for TestDistance."""
+    def __init__(self, results = None):
+        if results == None:
+            self.results = Results()
+        else:
+            self.results = results
 
     def get_hashable_label(self, node):
         label = "Other||"
@@ -136,8 +141,7 @@ class TreeDistance(object):
 
 
     def get_distance(self, pre_dom, post_dom):
-        node_tree = NodeTree()
-
+        node_tree = NodeTree(self.results)
 
         # O(n) , n is nodes of pre_dom
         self.__count_subtree_size(pre_dom)
@@ -209,6 +213,9 @@ class TreeDistance(object):
         print('Sizes after reduction:')
         print(pre_dom_count)
         print(post_dom_count)
+
+        self.results.tree_info['reduced-pre-dom-size'] = pre_dom_count
+        self.results.tree_info['reduced-post-dom-size'] = post_dom_count
 
         # Run ZSS with unmatched nodes.
 

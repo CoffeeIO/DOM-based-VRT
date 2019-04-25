@@ -159,28 +159,31 @@ class TestTree(object):
         foldername2 = self.get_folder(test_folder + "/after")
 
 
-        before_tree = self.file_to_tree(file1)
-        after_tree = self.file_to_tree(file2)
+        pre_dom = self.file_to_tree(file1)
+        post_dom = self.file_to_tree(file2)
 
-        self.results.set_mapping(before_tree)
+        self.results.set_tree_info(pre_dom, post_dom)
 
         self.save(file1, foldername1, False)
         self.save(file2, foldername2, False)
 
-        # before_root = node_tree.test_to_tree(before_tree)
-        # after_root = node_tree.test_to_tree(after_tree)
+        # ZSS implementation.
+        # before_root = node_tree.test_to_tree(pre_dom)
+        # after_root = node_tree.test_to_tree(post_dom)
         # diff = node_tree.diff_trees(before_root, after_root)
 
-        tree_distance = TreeDistance()
-        diff = tree_distance.get_distance(before_tree, after_tree)
+        tree_distance = TreeDistance(self.results)
+        diff = tree_distance.get_distance(pre_dom, post_dom)
 
         print("Distance:", diff[0])
         node_tree.print_diff(diff[1])
 
-        self.compare_style(before_tree, after_tree, diff[1], foldername1, foldername2)
+        self.compare_style(pre_dom, post_dom, diff[1], foldername1, foldername2)
 
         total = time.time() - start
         self.results.execution_time['total'] = total
+
+        self.results.compare()
 
         self.results.save(foldername1)
         self.results.save(foldername2)
