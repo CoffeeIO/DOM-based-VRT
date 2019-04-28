@@ -107,13 +107,13 @@ class TestTreeResource(object):
 
             if r == None or r.status_code != 200:
                 url = 'http:' + uri
-                print("2: http ->", url)
+                # print("2: http ->", url)
 
                 r = self.send_request(url)
             if r == None or r.status_code != 200:
                 # Url from host.
                 url = base_url + uri
-                print("3: base ->", url)
+                # print("3: base ->", url)
 
                 try:
                     print('indexing:', uri)
@@ -130,7 +130,7 @@ class TestTreeResource(object):
             if r == None or r.status_code != 200:
                 # Url from href.
                 url = self.test_tree['location']['host'] + '/' +  uri
-                print("4: host -> ", url)
+                # print("4: host -> ", url)
 
                 r = self.send_request(url)
 

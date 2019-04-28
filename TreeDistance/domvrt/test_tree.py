@@ -134,11 +134,11 @@ class TestTree(object):
         tree = self.file_to_tree(filename)
 
         # Save original.
-        if 'location' in tree:
-            url = tree['location']['href']
-            self.tree_to_file(tree, foldername + "/index-original.json")
-            self.save_url_as_file(url, foldername + "/index-original.html")
-            self.save_url_as_image(url, foldername, False, "image-original.png", tree['captureWidth'])
+        # if 'location' in tree:
+        #     url = tree['location']['href']
+        #     self.tree_to_file(tree, foldername + "/index-original.json")
+        #     self.save_url_as_file(url, foldername + "/index-original.html")
+        #     self.save_url_as_image(url, foldername, False, "image-original.png", tree['captureWidth'])
 
         # Download resources and save copy.
         self.save_tree_as_image(tree, foldername, True, False)
@@ -150,7 +150,7 @@ class TestTree(object):
         pass
 
     def diff(self, file1, file2):
-        start = time.time()
+        start_total = time.time()
         node_tree = NodeTree(self.results)
 
         (full_folder, test_folder) = self.get_folder('test', True)
@@ -164,8 +164,11 @@ class TestTree(object):
 
         self.results.set_tree_info(pre_dom, post_dom)
 
+        start = time.time()
         self.save(file1, foldername1, False)
         self.save(file2, foldername2, False)
+        total = time.time() - start
+        self.results.execution_time['resource-storage'] = total
 
         # ZSS implementation.
         # before_root = node_tree.test_to_tree(pre_dom)
@@ -178,9 +181,13 @@ class TestTree(object):
         print("Distance:", diff[0])
         node_tree.print_diff(diff[1])
 
+        start = time.time()
         self.compare_style(pre_dom, post_dom, diff[1], foldername1, foldername2)
-
         total = time.time() - start
+        self.results.execution_time['visual-verification'] = total
+
+
+        total = time.time() - start_total
         self.results.execution_time['total'] = total
 
         self.results.compare()

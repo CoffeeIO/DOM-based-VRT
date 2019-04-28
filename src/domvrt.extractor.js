@@ -127,10 +127,13 @@ DomVRT.Extractor = (function (obj) {
 
       if (n != 9 && n != 10 && n != 3 && n != 8) {
         json[jsonMapping['styles'][mVal]] = {};
-        var stylesObj = window.getComputedStyle(node);
-        Array.prototype.forEach.call(stylesObj, function(style) {
-          json[jsonMapping['styles'][mVal]][style] = obj.getStyle(node, style);
-          fullStyle += style + ":" + json[jsonMapping['styles'][mVal]][style] + ","
+        // var stylesObj = window.getComputedStyle(node);
+        var stylesObj = obj.getAllStyles(node);
+        // json['allStyle'] = allStylesObj;
+
+        Array.prototype.forEach.call(Object.keys(stylesObj), function(style) {
+          json['styles'][style] = stylesObj[style];
+          fullStyle += style + ":" + stylesObj[style] + ","
         });
 
         if (jsonMapping['styleId'][mVal]) {
@@ -225,13 +228,39 @@ DomVRT.Extractor = (function (obj) {
     if (display != "none") {
       // if (dynamicStyles.indexOf(style) != -1) {
         node.style.display = "none";
-        var value = window.getComputedStyle(node).getPropertyValue(style);
+        value = window.getComputedStyle(node).getPropertyValue(style);
         // console.log(value);
         node.style.display = display;
       // }
     }
 
     return value;
+  };
+
+  obj.getAllStyles = function(node) {
+    var display = window.getComputedStyle(node).getPropertyValue('display');
+    var styles = window.getComputedStyle(node);
+
+    if (display != "none") {
+        node.style.display = "none";
+        styles = window.getComputedStyle(node);
+        // console.log(value['perspectiveOrigin']);
+    }
+
+    var map = {};
+    Array.prototype.forEach.call(Object.keys(styles), function(style) {
+      if (isNaN(style)) {
+        map[style] = styles[style];
+      }
+    });
+    // console.log('print map');
+    // console.log(map['text-transform']);
+    // console.log(map);
+
+
+    node.style.display = display;
+
+    return map;
   };
 
   obj.getRect = function(node, hasStyle) {

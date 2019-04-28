@@ -420,9 +420,13 @@ DomVRT.Differ = (function (obj) {
 
     if (newId != null) {
       node.id = newId;
+    } else {
+      newId = node.id;
     }
     if (newClass != null) {
       node.className = newClass;
+    } else {
+      newClass = node.className
     }
 
     /*
@@ -481,14 +485,19 @@ DomVRT.Differ = (function (obj) {
   obj.match = function(position, visible, prop, value) {
     var node = obj.getNode(position);
 
-
-    preStyles = window.getComputedStyle(node, null);
+    preStyles = DomVRT.Extractor.getAllStyles(node);
     preStyles = JSON.parse(JSON.stringify(preStyles))
 
     node.style[prop] = value;
 
-    postStyles = window.getComputedStyle(node, null);
-    var styleDiff = []
+    postStyles = DomVRT.Extractor.getAllStyles(node);
+    postStyles = JSON.parse(JSON.stringify(postStyles))
+
+    // console.log('Map');
+    // console.log(preStyles);
+    // console.log(postStyles);
+
+    var styleDiff = [];
     Array.prototype.forEach.call(Object.keys(postStyles), function(property) {
       if (preStyles[property] != postStyles[property]) {
         console.log('Style diff: {%s} - `%s` | `%s` ', property, preStyles[property], postStyles[property]);
