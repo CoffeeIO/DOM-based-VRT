@@ -167,7 +167,7 @@ def is_k_relevant(A, B, x, y, map_A, map_B, k):
     return value <= k
 
 def simple_distance(A, B, get_children=Node.get_children,
-        get_label=Node.get_label, label_dist=strdist, return_operations=False):
+        get_label=Node.get_label, label_dist=strdist, return_operations=False, use_touzet = False):
     """Computes the exact tree edit distance between trees A and B.
 
     Use this function if both of these things are true:
@@ -208,12 +208,13 @@ def simple_distance(A, B, get_children=Node.get_children,
         insert_cost=lambda node: label_dist('', get_label(node)),
         remove_cost=lambda node: label_dist(get_label(node), ''),
         update_cost=lambda a, b: label_dist(get_label(a), get_label(b)),
-        return_operations=return_operations
+        return_operations=return_operations,
+        use_touzet=use_touzet
     )
 
 
 def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
-             return_operations=False):
+             return_operations=False, use_touzet=False):
     '''Computes the exact tree edit distance between trees A and B with a
     richer API than :py:func:`zss.simple_distance`.
 
@@ -374,29 +375,31 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
         k = size_a / 8
 
 
-    kstrip = get_k_strip(A, B, k)
 
     # for i in A.nodes:
     #     for j in B.nodes:
     #         treedist(i.post_order_index -1, j.post_order_index -1)
     #         count += 1
 
-    for i in A.keyroots: # Keyroots oprimized
-        for j in B.keyroots:  # Keyroots oprimized
-            treedist(i, j)
-            count += 1
+    if not use_touzet:
+        for i in A.keyroots: # Keyroots oprimized
+            for j in B.keyroots:  # Keyroots oprimized
+                treedist(i, j)
+                count += 1
+    else:
+        kstrip = get_k_strip(A, B, k)
+        print("Size of kstrip", len(kstrip))
 
-    # for (x, y) in kstrip:
-    #     # print("x, y",x, y)
-    #     if not is_k_relevant(A, B, x, y, subtree_size_map_A, subtree_size_map_B, k):
-    #         treedists[x-1][y-1] = float("inf")
-    #     else:
-    #         treedist(x, y)
-    #         count += 1
+        for (x, y) in kstrip:
+            # print("x, y",x, y)
+            if not is_k_relevant(A, B, x, y, subtree_size_map_A, subtree_size_map_B, k):
+                treedists[x-1][y-1] = float("inf")
+            else:
+                treedist(x, y)
+                count += 1
 
     print("Tree size", len(A.nodes), "Expected size", len(A.nodes) * len(A.nodes))
     print("Iterations", count)
-    print("Size of kstrip", len(kstrip))
     # print_tree(treedists)
 
     # print_tree(operations)

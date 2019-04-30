@@ -1,5 +1,5 @@
 # Standard python
-import json, random, collections, os, requests, time
+import json, random, collections, os, requests, time, signal
 # Dependencies
 # This package
 from domvrt.parser_mapping import ParserMapping
@@ -13,11 +13,21 @@ from domvrt.tree_distance import TreeDistance
 from domvrt.results import Results
 import domvrt.utils as utils
 
+def timeout_handler(signum, frame):
+    print("Code timeout")
+    raise Exception("end of time")
+
+
 class TestTree(object):
     """docstring for TestTree."""
 
     map = None
     results = None
+
+    ZHANG = 'zhang'
+    TOUZET = 'touzet'
+    CUSTOM = 'custom'
+
 
     def __init__(self, settings = None):
         self.merge_settings(settings)
@@ -52,6 +62,7 @@ class TestTree(object):
             if not key in self.settings:
                 continue
             self.settings[key] = value
+
 
     def file_to_tree(self, filename):
         """
@@ -149,11 +160,22 @@ class TestTree(object):
     def diff_folders(self, folder1, folder2):
         pass
 
-    def diff(self, file1, file2):
+    def __valid_algorithm(self, algorithm):
+        if algorithm in ['zhang', 'touzet', 'custom']:
+            return True
+
+        return False
+
+    def diff(self, file1, file2, algorithm = 'zhang', base_folder = 'test'):
+        if not self.__valid_algorithm(algorithm):
+            print("Invalid algorithm used: ", algorithm)
+            return;
+
+
         start_total = time.time()
         node_tree = NodeTree(self.results)
 
-        (full_folder, test_folder) = self.get_folder('test', True)
+        (full_folder, test_folder) = self.get_folder(base_folder, True)
 
         foldername1 = self.get_folder(test_folder + "/before")
         foldername2 = self.get_folder(test_folder + "/after")
@@ -170,13 +192,36 @@ class TestTree(object):
         total = time.time() - start
         self.results.execution_time['resource-storage'] = total
 
-        # ZSS implementation.
-        # before_root = node_tree.test_to_tree(pre_dom)
-        # after_root = node_tree.test_to_tree(post_dom)
-        # diff = node_tree.diff_trees(before_root, after_root)
+        diff = None
 
-        tree_distance = TreeDistance(self.results)
-        diff = tree_distance.get_distance(pre_dom, post_dom)
+        signal.signal(signal.SIGALRM, timeout_handler)
+        timeout = 600
+        signal.alarm(timeout)
+
+        try:
+            if algorithm == self.ZHANG:
+                # ZSS implementation.
+                before_root = node_tree.test_to_tree(pre_dom)
+                after_root = node_tree.test_to_tree(post_dom)
+                diff = node_tree.diff_trees(before_root, after_root)
+            elif algorithm == self.TOUZET:
+                # ZSS implementation.
+                before_root = node_tree.test_to_tree(pre_dom)
+                after_root = node_tree.test_to_tree(post_dom)
+                diff = node_tree.diff_trees(before_root, after_root, True)
+            elif algorithm == self.CUSTOM:
+                tree_distance = TreeDistance(self.results)
+                diff = tree_distance.get_distance(pre_dom, post_dom)
+
+            signal.alarm(0)
+        except Exception:
+            print("Could not finish tree distance within timeout: ", timeout)
+            return;
+
+
+        if diff == None:
+            print("Distance could not be calculated")
+            return
 
         print("Distance:", diff[0])
         node_tree.print_diff(diff[1])
