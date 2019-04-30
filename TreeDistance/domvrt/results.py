@@ -228,7 +228,7 @@ class Results(object):
 
         to_find = to_find[0:to_find.rindex('.')]
         return self.__get_ancestor(to_find, position_to_styles, to_return)
-        
+
 
     def __compare_match(self, actuals, expected):
         position_to_styles = {}
@@ -249,9 +249,9 @@ class Results(object):
         # Detected changes.
         for actual in actuals:
             # Skip invisible changes.
+            actual['found'] = False
             if not actual['visible']:
                 continue
-            actual['found'] = False
 
             pos = actual['node-pre']['position']
 
@@ -315,17 +315,17 @@ class Results(object):
         # Expected changes.
         for expect in expected:
             # Skip invisible changes.
+            expect['found'] = False
             if not expect['visible']:
                 continue
-            expect['found'] = False
 
             pos = expect['node-post']['position']
             position_to_change[pos] = expect
 
         for actual in actuals:
+            actual['found'] = False
             if not actual['visible']:
                 continue
-            actual['found'] = False
 
             pos = actual['node-post']['position']
             if pos in position_to_change:
@@ -377,17 +377,17 @@ class Results(object):
         # Expected changes.
         for expect in expected:
             # Skip invisible changes.
+            expect['found'] = False
             if not expect['visible']:
                 continue
-            expect['found'] = False
 
             pos = expect['node-post']['position']
             position_to_change[pos] = expect
 
         for actual in actuals:
+            actual['found'] = False
             if not actual['visible']:
                 continue
-            actual['found'] = False
 
             pos = actual['node-post']['position']
             if pos in position_to_change:
@@ -433,17 +433,17 @@ class Results(object):
         # Expected changes.
         for expect in expected:
             # Skip invisible changes.
+            expect['found'] = False
             if not expect['visible']:
                 continue
-            expect['found'] = False
 
             pos = expect['node-pre']['position']
             position_to_change[pos] = expect
 
         for actual in actuals:
+            actual['found'] = False
             if not actual['visible']:
                 continue
-            actual['found'] = False
 
             pos = actual['node-pre']['position']
 
