@@ -106,6 +106,7 @@ DomVRT.Differ = (function (obj) {
   obj.leafs = 0;
 
   obj.findNode = function(node, position, toFind, setPosition, depth) {
+    var subtree = 1;
     position = (position == null) ? 1 : position;
     node = node || this;
 
@@ -116,7 +117,8 @@ DomVRT.Differ = (function (obj) {
       value = node.nodeValue
       if (value.trim() == '') { // Ignore empty text nodes
         return {
-          'valid' : false
+          'valid' : false,
+          'subtree' : 0
         };
       }
     }
@@ -141,7 +143,7 @@ DomVRT.Differ = (function (obj) {
       Array.prototype.forEach.call(node.childNodes, function(n) {
 
         var newPos = position + '.' + index;
-        console.log(newPos);
+        // console.log(newPos);
         var child = obj.findNode(n, newPos, toFind, setPosition, depth + 1);
 
         if (child['valid']) {
@@ -151,6 +153,7 @@ DomVRT.Differ = (function (obj) {
           // Can't return directly inside foreach loop.
           toReturn = child;
         }
+        subtree += child['subtree'];
 
       });
 
@@ -173,9 +176,14 @@ DomVRT.Differ = (function (obj) {
       obj.maxDepth = depth;
     }
 
+    if (node.nodeType == 1) {
+      node.setAttribute("st", subtree);
+    }
+
     return {
       'found' : false,
-      'valid' : true
+      'valid' : true,
+      'subtree' : subtree
     };
   }
 

@@ -17,6 +17,8 @@ class TestTreeResource(object):
     pre_filename = 'resource'
 
     def get_extension(self, request):
+        if 'content-type' not in request.headers:
+            return ''
         content_type = request.headers['content-type']
         if "application/javascript" in content_type or "text/javascript" in content_type:
             return '.js'

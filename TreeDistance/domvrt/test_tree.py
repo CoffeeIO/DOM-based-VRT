@@ -239,8 +239,8 @@ class TestTree(object):
 
         self.results.save(foldername1)
         self.results.save(foldername2)
-
-
+        self.results.print_save()
+        print(test_folder)
 
         return (foldername1, foldername2)
 

@@ -77,6 +77,14 @@ class Results(object):
         }
         utils.save_file(json.dumps(data), filename)
 
+    def print_save(self):
+        data_p = {
+            "execution" : self.execution_time,
+            "quality" : self.quality,
+            "tree-info": self.tree_info,
+        }
+        print(json.dumps(data_p, indent=4))
+
 
     def add_issue(self, type, pre_node = None, post_node = None, style_data = None, visible = True):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
@@ -300,7 +308,7 @@ class Results(object):
             if not match['found']:
                 # Expected change not found. Add false negative.
                 self.add_metric('fn')
-                print("Expected not found: ", match['node-pre']['position'])
+                print("Expected not found: ", position)
 
         for actual in actuals:
             if not actual['found']:
@@ -489,6 +497,16 @@ class Results(object):
 
 
     def compare(self):
+        # Check if there is no mutations to compare.
+        has_mutation = False
+        for type in self.mutations:
+            if len(self.mutations[type]) == 0:
+                continue
+            has_mutation = True
+
+        if not has_mutation:
+            return
+
         for type in self.issues:
             actual = self.issues[type]
             expected = self.mutations[type]
@@ -516,6 +534,11 @@ class Results(object):
 
         # Calc quality metrics.
 
+        print("tp: ", self.quality['tp'])
+        print("fp: ", self.quality['fp'])
+        print("tn: ", self.quality['tn'])
+        print("fn: ", self.quality['fn'])
+
         # Precision = TP/TP+FP
         precision = self.quality['tp'] / (self.quality['tp'] + self.quality['fp'])
         # Accuracy = TP+TN/TP+FP+FN+TN
@@ -529,3 +552,8 @@ class Results(object):
         self.add_metric('accuracy', accuracy)
         self.add_metric('recall', recall)
         self.add_metric('f1', f1)
+
+        if self.tree_info['reduced-pre-dom-size'] != None:
+            rec = self.tree_info['reduced-pre-dom-size'] + self.tree_info['reduced-post-dom-size']
+            pre = self.tree_info['pre-dom-size'] + self.tree_info['post-dom-size']
+            self.tree_info['reduction'] =  rec / pre

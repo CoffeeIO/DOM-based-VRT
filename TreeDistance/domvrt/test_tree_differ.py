@@ -154,7 +154,14 @@ class TestTreeDiffer(object):
             post_visual_diff.save_image(post_path + '/image-diff.png')
 
     def ignore_diff(self, pre_visual_diff, post_visual_diff, pre_node, post_node):
-        if (pre_visual_diff.get_size_of_area(pre_node) == post_visual_diff.get_size_of_area(post_node)):
+        size_pre = pre_visual_diff.get_size_of_area(pre_node)
+        size_post = post_visual_diff.get_size_of_area(post_node)
+        if size_pre == None:
+            return False
+        if size_post == None:
+            return False
+
+        if (size_pre == size_post):
             print('diff size matches', pre_visual_diff.get_size_of_area(pre_node))
             # Size of element area matches, need to check for visual impact.
             (pre_hash, pre_sum) = pre_visual_diff.get_hash_of_area(pre_node)
