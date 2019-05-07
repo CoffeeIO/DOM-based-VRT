@@ -1,5 +1,5 @@
 {
-  "name": "DOM-based-VRT",
+  "name": "DOM-based-VRT-distance",
   "version": "1.0.0",
   "description": "",
   "author": "Mathias Grundtvig Andreasen (MGApcDev)",
@@ -24,6 +24,8 @@
     "url": "https://github.com/MGApcDev/DOM-based-VRT"
   },
   "dependencies": {
-    "file-saver": "^2.0.0"
+    "mz": "^2.7.0",
+    "path": "^0.12.7",
+    "resemblejs": "^3.1.0"
   }
 }

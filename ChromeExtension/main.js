@@ -30,3 +30,8 @@ function coffeeio() {
   console.log(e1.innerHtml);
   document.querySelector('.footer-social-icon img').style.marginRight = "1px";
 }
+
+
+(function() {
+   console.log(DomVRT.Differ.index());
+})();

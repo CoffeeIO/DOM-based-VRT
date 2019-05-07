@@ -106,10 +106,9 @@ DomVRT.Differ = (function (obj) {
   obj.leafs = 0;
 
   obj.findNode = function(node, position, toFind, setPosition, depth) {
+    var subtree = 1;
     position = (position == null) ? 1 : position;
     node = node || this;
-
-
 
     // Define node.
     var json = {};
@@ -118,39 +117,49 @@ DomVRT.Differ = (function (obj) {
       value = node.nodeValue
       if (value.trim() == '') { // Ignore empty text nodes
         return {
-          'valid' : false
+          'valid' : false,
+          'subtree' : 0
         };
       }
     }
 
     if (node.nodeType == 1) {
       node.setAttribute("p", position);
-      if (position == toFind) {
-        return {
-          'found' : true,
-          'valid' : true,
-          'node'  : node
-        };
-      }
+    }
+
+    if (position == toFind) {
+      console.log('Found `%s`', toFind);
+      return {
+        'found' : true,
+        'valid' : true,
+        'node'  : node
+      };
     }
 
     // Loop children.
     if (node.childNodes) {
       var index = 0;
+      var toReturn = null;
       Array.prototype.forEach.call(node.childNodes, function(n) {
 
         var newPos = position + '.' + index;
-
+        // console.log(newPos);
         var child = obj.findNode(n, newPos, toFind, setPosition, depth + 1);
 
         if (child['valid']) {
           index++;
         }
         if (child['found']) {
-          return child;
+          // Can't return directly inside foreach loop.
+          toReturn = child;
         }
+        subtree += child['subtree'];
 
       });
+
+      if (toReturn != null) {
+        return toReturn;
+      }
     }
 
     if (node.childNodes.length) {
@@ -167,56 +176,392 @@ DomVRT.Differ = (function (obj) {
       obj.maxDepth = depth;
     }
 
+    if (node.nodeType == 1) {
+      node.setAttribute("st", subtree);
+    }
+
     return {
       'found' : false,
-      'valid' : true
+      'valid' : true,
+      'subtree' : subtree
     };
   }
 
-  obj.add = function(position, type, style, visible, affectChildren) {
-    if ([MATCH, UPDATE, INSERT, REMOVE].indexOf(type) == -1) {
-      console.log('Type: %s not found');
-      return;
-    }
-    console.log("type is %s", type);
-
+  obj.getNode = function(position) {
+    // Find tag nodes.
     var node = document.querySelector('*[p="' + position + '"]');
     if (node == null) {
+      console.log('Trying to find, node...');
       var result = obj.findNode(document, '1', position);
+      console.log(result);
       if (result['node']) {
         node = result['node'];
       }
     }
 
     if (node == null) {
-      console.log('Element not found');
+      console.log('Element `%s` not found', position);
+      return null
+    }
+    return node;
+  }
+
+  obj.insertWrapper = function(position, before, after, visible) {
+    var node = obj.getNode(position);
+    node.outerHTML = before + node.outerHTML + after;
+
+    /*
+    {
+      node-pre : null,
+      node-post :
+        {
+          position: position,
+          nodeType: 1,
+          text: null,
+        },
+      style : null,
+      visible : visible,
+    }
+    */
+    obj.add(
+      INSERT,
+      {
+        'node-pre': null,
+        'node-post': {
+          'position': position,
+          'nodeType': 1,
+          'text': null,
+          'tag': null,
+          'html': after + before
+        },
+        'style' : null,
+        'recursive': false,
+        'visible' : visible
+      }
+    );
+
+    return node;
+  }
+
+  obj.insert = function(position, html, prepend, visible) {
+    var node = obj.getNode(position);
+
+    if (! prepend) {
+      // Insert child.
+      node.innerHTML = html;
+    } else {
+      // Insert at index.
+      node.outerHTML += html;
+    }
+
+    if (prepend) {
+      var x = position.lastIndexOf('.');
+      var y = position.substr(x + 1, position.length)
+      var newX = Number(y) + 1;
+
+      var base = position.substr(0, x + 1)
+
+      newPosition = base + newX;
+      console.log('newPos: ' , newPosition);
+    } else {
+      newPosition = position + '.0';
+      console.log('newPos: ' , newPosition);
+    }
+
+    /*
+
+    // Allow to multiple inserts on newPosition.
+    {
+      node-pre : null,
+      node-post :
+        {
+          position: newPosition,
+          nodeType: ?,
+          text: ?,
+        },
+      style : null,
+      recursive: true,
+      visible : visible,
+    }
+    */
+
+    obj.add(
+      INSERT,
+      {
+        'node-pre': null,
+        'node-post': {
+          'position': newPosition,
+          'nodeType': null,
+          'text': null,
+          'tag': null,
+          'html': html
+        },
+        'style' : null,
+        'recursive': true,
+        'visible' : visible
+      }
+    );
+
+    return node;
+  };
+
+  obj.remove = function(position, visible, isWrapper) {
+    var node = obj.getNode(position);
+
+
+    if (isWrapper) {
+      var parent = node.parentNode;
+      var children = node['childNodes'];
+
+      html = ""
+      Array.prototype.forEach.call(children, function(child) {
+        if (child.nodeType == 3) {
+          html += child['nodeValue'];
+        } else if (true) {
+          html += child.outerHTML;
+        }
+
+        console.log(child);
+
+      });
+
+      console.log("Setting: ", html);
+
+      node.outerHTML = html;
+
+    } else {
+      node.remove();
+    }
+
+    /*
+    // If (! isWrapper): Allow to multiple removes on position.
+    {
+      node-pre :
+        {
+          position: position,
+          nodeType: node['nodeType'],
+          text: node['nodeValue'],
+        },
+      node-post : null,
+      style : null,
+      recursive: !isWrapper
+      visible : visible,
+    }
+    */
+    obj.add(
+      REMOVE,
+      {
+        'node-pre': {
+          'position': position,
+          'nodeType': node['nodeType'],
+          'text': node['nodeValue'],
+          'tag': node['tagName']
+        },
+        'node-post': null,
+        'style' : null,
+        'recursive': !isWrapper,
+        'visible' : visible
+      }
+    );
+
+
+    return node;
+  };
+
+  obj.updateText = function(position, visible, newText) {
+    var node = obj.getNode(position);
+    if (node == null || node.nodeType != 3) {
+      console.log('Invalid operation');
       return;
     }
+    node['nodeValue'] = newText;
 
+    /*
+    {
+      node-pre :
+        {
+          position: position,
+          nodeType: node['nodeType'],
+          text: node['nodeValue'],
+        },
+      node-post :
+        {
+          position: position,
+          nodeType: node['nodeType'],
+          text: newText,
+        },
+      style : null,
+      visible : visible,
+    }
+    */
 
-    // Find element and perform change.
-    document.querySelector('*')
-    if (type == MATCH) {
-
-    } else if (type == UPDATE) {
-
-    } else if (type == INSERT) {
-
-    } else if (type == REMOVE) {
-
-      if (affectChildren) {
-
-      } else {
-
+    obj.add(
+      UPDATE,
+      {
+        'node-pre': {
+          'position': position,
+          'nodeType': node['nodeType'],
+          'text': node['nodeValue']
+        },
+        'node-post': {
+          'position': position,
+          'nodeType': node['nodeType'],
+          'text': newText
+        },
+        'style' : null,
+        'recursive': false,
+        'visible' : visible
       }
+    );
+
+    return node;
+  };
+
+  obj.updateTag = function(position, visible, newId, newClass) {
+    var node = obj.getNode(position);
+    if (node == null || node.nodeType != 1) {
+      console.log('Invalid operation');
+      return;
+    }
+    var nodeId = node.id;
+    var nodeClass = node.className;
+
+    if (newId != null) {
+      node.id = newId;
+    } else {
+      newId = node.id;
+    }
+    if (newClass != null) {
+      node.className = newClass;
+    } else {
+      newClass = node.className
     }
 
-    obj.mutations[type].push({
-      'position' : position,
-      'style'    : style,
-      'visible'  : visible,
-      'affect-children' : affectChildren
-    })
+    /*
+    {
+      node-pre :
+        {
+          position: position,
+          nodeType: node['nodeType'],
+          attr: {
+            'id' : nodeId,
+            'class' : nodeClass,
+          },
+        },
+      node-post :
+        {
+          position: position,
+          nodeType: node['nodeType'],
+          attr: {
+            'id' : newId,
+            'class' : newClass,
+          },
+        },
+      style : null,
+      visible : visible,
+    }
+    */
+    obj.add(
+      UPDATE,
+      {
+        'node-pre': {
+          'position': position,
+          'nodeType': node['nodeType'],
+          'attr': {
+            'id' : nodeId,
+            'class' : nodeClass,
+          }
+        },
+        'node-post': {
+          'position': position,
+          'nodeType': node['nodeType'],
+          'attr': {
+            'id' : newId,
+            'class' : newClass,
+          }
+        },
+        'style' : null,
+        'recursive': visible,
+        'visible' : visible
+      }
+    );
+
+    return node;
+  };
+
+
+  obj.match = function(position, visible, prop, value) {
+    var node = obj.getNode(position);
+
+    preStyles = DomVRT.Extractor.getAllStyles(node);
+    preStyles = JSON.parse(JSON.stringify(preStyles))
+
+    node.style[prop] = value;
+
+    postStyles = DomVRT.Extractor.getAllStyles(node);
+    postStyles = JSON.parse(JSON.stringify(postStyles))
+
+    // console.log('Map');
+    // console.log(preStyles);
+    // console.log(postStyles);
+
+    var styleDiff = [];
+    Array.prototype.forEach.call(Object.keys(postStyles), function(property) {
+      if (preStyles[property] != postStyles[property]) {
+        console.log('Style diff: {%s} - `%s` | `%s` ', property, preStyles[property], postStyles[property]);
+        styleDiff.push([
+          preStyles[property],
+          postStyles[property],
+          property
+        ])
+      }
+
+    });
+
+    /*
+    {
+      node-pre :
+        {
+          position: position,
+          nodeType: 1,
+        },
+      node-post :
+        {
+          position: position,
+          nodeType: 1,
+        },
+      style : styleDiff,
+      visible : visible,
+    }
+    */
+    obj.add(
+      MATCH,
+      {
+        'node-pre': {
+          'position': position,
+          'nodeType': 1
+        },
+        'node-post': {
+          'position': position,
+          'nodeType': 1
+        },
+        'style' : styleDiff,
+        'recursive': visible,
+        'visible' : visible
+      }
+    );
+
+    return node;
+  };
+
+  obj.add = function(type, data) {
+    if ([MATCH, UPDATE, INSERT, REMOVE].indexOf(type) == -1) {
+      console.log('Type: %s not found');
+      return;
+    }
+    console.log("type is %s", type);
+
+    obj.mutations[type].push(data);
   }
 
   var dts = function(digit) {

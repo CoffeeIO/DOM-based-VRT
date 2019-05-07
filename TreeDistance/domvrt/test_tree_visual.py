@@ -1,5 +1,5 @@
 # Standard python
-import os, hashlib, time
+import os, hashlib, time, math
 # Dependencies
 from selenium import webdriver
 from PIL import Image, ImageDraw
@@ -84,6 +84,8 @@ class TestTreeVisual(object):
         return (x * self.width_scale, y * self.height_scale)
 
     def draw_inserted_node(self, node):
+        if not self.__is_valid_node(node):
+            return None
         tl = self.get_coord(node['x1'], node['y1'])
         tr = self.get_coord(node['x2'], node['y1'])
         br = self.get_coord(node['x2'], node['y2'])
@@ -94,6 +96,8 @@ class TestTreeVisual(object):
         self.d_highlight.line([tl, tr, br, bl, tl], fill=line_color, width=2)
 
     def draw_removed_node(self, node):
+        if not self.__is_valid_node(node):
+            return None
         tl = self.get_coord(node['x1'], node['y1'])
         tr = self.get_coord(node['x2'], node['y1'])
         br = self.get_coord(node['x2'], node['y2'])
@@ -104,6 +108,8 @@ class TestTreeVisual(object):
         self.d_highlight.line([tl, tr, br, bl, tl], fill=line_color, width=2)
 
     def draw_updated_node(self, node, color = (255, 255, 0)):
+        if not self.__is_valid_node(node):
+            return None
         tl = self.get_coord(node['x1'], node['y1'])
         tr = self.get_coord(node['x2'], node['y1'])
         br = self.get_coord(node['x2'], node['y2'])
@@ -131,8 +137,23 @@ class TestTreeVisual(object):
 
         return (m.digest(), sum)
 
+    def __is_valid_node(self, node):
+        attrs = ['x1', 'x2', 'y1', 'y2']
+        for attr in attrs:
+            if attr not in node or node[attr] == None or math.isnan(node[attr]):
+                print("Cannot retrive node size: ", attr, " of node ", node['position'])
+                return False
+
+        return True
+
     def get_size_of_area(self, node):
-        return (int((node['x2'] - node['x1'])  * self.width_scale), int((node['y2'] - node['y1']) * self.height_scale))
+        if not self.__is_valid_node(node):
+            return None
+
+        print(self.width_scale)
+        print(self.height_scale)
+
+        return (int((node['x2'] - node['x1']) * self.width_scale), int((node['y2'] - node['y1']) * self.height_scale))
 
     def retrieve_render_properties(self, tree, html_file, save_location):
         path = os.getcwd()
