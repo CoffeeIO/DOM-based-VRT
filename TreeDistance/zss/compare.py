@@ -365,8 +365,8 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
         # print("hello")
     count = 0
 
-
-    print("Tree is ", len(A.nodes))
+    if False:
+        print("Tree is ", len(A.nodes))
 
     k = size_a
     if size_a > 200:
@@ -388,7 +388,8 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
                 count += 1
     else:
         kstrip = get_k_strip(A, B, k)
-        print("Size of kstrip", len(kstrip))
+        if False:
+            print("Size of kstrip", len(kstrip))
 
         for (x, y) in kstrip:
             # print("x, y",x, y)
@@ -398,8 +399,9 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
                 treedist(x, y)
                 count += 1
 
-    print("Tree size", len(A.nodes), "Expected size", len(A.nodes) * len(A.nodes))
-    print("Iterations", count)
+    if False:
+        print("Tree size", len(A.nodes), "Expected size", len(A.nodes) * len(A.nodes))
+        print("Iterations", count)
     # print_tree(treedists)
 
     # print_tree(operations)

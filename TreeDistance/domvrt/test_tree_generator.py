@@ -12,14 +12,17 @@ from domvrt.results import Results
 
 class TestTreeGenerator(object):
     """docstring for TestTreeGenerator."""
-    def __init__(self, settings):
+    def __init__(self, settings, results = None):
         self.settings = settings
         self.test_tree_generator_data = TestTreeGeneratorData()
         self.count_tags = 0
         self.count_text = 0
         self.node_count = 0
-        self.results = Results()
-        self.results.set_mapping()
+        if results == None:
+            self.results = Results()
+        else:
+            self.results = results
+        # self.results.set_mapping()
         self.base_image = None
         self.test_tree_visual = TestTreeVisual('data-generator')
         self.html_tree = HtmlTree()
@@ -124,15 +127,16 @@ class TestTreeGenerator(object):
         if property != None:
             # self.__add_change(node, "change style", node[position], property)
             visible_change = False
-            if self.__snapshot():
-                visible_change = True
-            self.results.add_mutation(
-                self.results.MATCH,
-                old_node,
-                node,
-                property,
-                visible_change
-            )
+            if self.visual_check:
+                if self.__snapshot():
+                    visible_change = True
+                self.results.add_mutation(
+                    self.results.MATCH,
+                    old_node,
+                    node,
+                    property,
+                    visible_change
+                )
 
 
         return node
@@ -240,8 +244,8 @@ class TestTreeGenerator(object):
 
                 node_queue.append({'node': child, 'depth': node['depth'] + 1})
 
-
-        print("counts: ", self.count_tags, self.count_text)
+        if self.results.debug:
+            print("counts: ", self.count_tags, self.count_text)
         return (self.count_tags, self.count_text)
 
 
@@ -340,7 +344,8 @@ class TestTreeGenerator(object):
 
         root['node-count'] = number_of_element + 6 # Add 6 nodes from template
         root['captureWidth'] = 700
-        print('Done generating')
+        if self.results.debug:
+            print('Done generating')
 
 
         return root
@@ -400,16 +405,17 @@ class TestTreeGenerator(object):
                 node[childNodes] = [div]
 
                 visible_change = False
-                if self.__snapshot():
-                    visible_change = True
+                if self.visual_check:
+                    if self.__snapshot():
+                        visible_change = True
 
-                self.results.add_mutation(
-                    self.results.INSERT,
-                    None,
-                    div,
-                    None,
-                    visible_change
-                )
+                    self.results.add_mutation(
+                        self.results.INSERT,
+                        None,
+                        div,
+                        None,
+                        visible_change
+                    )
 
                 add -= 1
                 changes_remain_total -= 1
@@ -427,15 +433,16 @@ class TestTreeGenerator(object):
                     s_index += 1
 
                 visible_change = False
-                if self.__snapshot():
-                    visible_change = True
-                self.results.add_mutation(
-                    self.results.REMOVE,
-                    node,
-                    None,
-                    None,
-                    visible_change
-                )
+                if self.visual_check:
+                    if self.__snapshot():
+                        visible_change = True
+                    self.results.add_mutation(
+                        self.results.REMOVE,
+                        node,
+                        None,
+                        None,
+                        visible_change
+                    )
 
 
                 delete -= 1
@@ -503,15 +510,16 @@ class TestTreeGenerator(object):
                     change_content -= 1
                     changes_remain_total -= 1
                     visible_change = False
-                    if self.__snapshot():
-                        visible_change = True
-                    self.results.add_mutation(
-                        self.results.UPDATE,
-                        old_node,
-                        node,
-                        None,
-                        visible_change
-                    )
+                    if self.visual_check:
+                        if self.__snapshot():
+                            visible_change = True
+                        self.results.add_mutation(
+                            self.results.UPDATE,
+                            old_node,
+                            node,
+                            None,
+                            visible_change
+                        )
 
         if tagName in node and node[tagName] == 'body':
             hit_body = True
@@ -528,12 +536,13 @@ class TestTreeGenerator(object):
 
 
 
-    def mutate_test(self, test_tree):
+    def mutate_test(self, test_tree, visual_check = True):
         """
         Mutate test tree until desired number of changes is reached.
 
         test_tree -- the tree to mutate
         """
+        self.visual_check = visual_check
 
         if self.map == None:
             self.map = ParserMapping(test_tree['minify'])
@@ -554,12 +563,15 @@ class TestTreeGenerator(object):
         changes_remain = (add, delete, mod_style, mod_position, mod_dimension, change_content)
         changes_remain_total = add + delete + mod_style + mod_position + mod_dimension + change_content
 
-        print("Total changes after adjustment", changes_remain_total)
+        if self.results.debug:
+            print("Total changes after adjustment", changes_remain_total)
 
         mutate_tree = deepcopy(test_tree)
 
         self.base_root = mutate_tree
-        self.base_image = self.__snapshot()
+        self.base_image = None
+        if self.visual_check:
+            self.base_image = self.__snapshot()
 
 
         nodes = float(mutate_tree['node-count']) # Convert to float
@@ -576,14 +588,16 @@ class TestTreeGenerator(object):
         # print("Done changes", changes_remain_total)
         for k, m in self.results.mutations.items():
             # print(m['type'], m['position'] ,  ' --> ',   m['node']['position'])
-            print(k)
+            if self.results.debug:
+                print(k)
             for v in m:
                 pos = ""
                 if v['ref-pre'] != None:
                     pos += v['ref-pre']['position'] + " : "
                 if v['ref-post'] != None:
                     pos += v['ref-post']['position'] + " : "
-                print('--- ', pos, v['node-pre'], ' | ', v['node-post'])
+                if self.results.debug:
+                    print('--- ', pos, v['node-pre'], ' | ', v['node-post'])
 
         return (mutate_tree, self.results.mutations)
 
