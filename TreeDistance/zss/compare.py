@@ -163,11 +163,12 @@ def is_k_relevant(A, B, x, y, map_A, map_B, k):
     size_b = len(B.nodes)
     size_x = map_A[x]
     size_y = map_B[y]
+    # Something is wrong with the last part.
     value = abs(size_a - x - size_b + y) + abs(size_x - size_y) + abs(x - size_x - y + size_x)
     return value <= k
 
 def simple_distance(A, B, get_children=Node.get_children,
-        get_label=Node.get_label, label_dist=strdist, return_operations=False, use_touzet = False):
+        get_label=Node.get_label, label_dist=strdist, return_operations=False, use_touzet = False, k_size=None):
     """Computes the exact tree edit distance between trees A and B.
 
     Use this function if both of these things are true:
@@ -209,12 +210,13 @@ def simple_distance(A, B, get_children=Node.get_children,
         remove_cost=lambda node: label_dist(get_label(node), ''),
         update_cost=lambda a, b: label_dist(get_label(a), get_label(b)),
         return_operations=return_operations,
-        use_touzet=use_touzet
+        use_touzet=use_touzet,
+        k_size=k_size
     )
 
 
 def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
-             return_operations=False, use_touzet=False):
+             return_operations=False, use_touzet=False, k_size=None):
     '''Computes the exact tree edit distance between trees A and B with a
     richer API than :py:func:`zss.simple_distance`.
 
@@ -254,8 +256,9 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
     treedists = zeros((size_a, size_b), float) # d
     operations = [[[] for _ in range(size_b)] for _ in range(size_a)] # D
 
-    subtree_size_map_A = get_map_of_subtree_size(A)
-    subtree_size_map_B = get_map_of_subtree_size(B)
+    if use_touzet:
+        subtree_size_map_A = get_map_of_subtree_size(A)
+        subtree_size_map_B = get_map_of_subtree_size(B)
 
     def print_tree(tree):
         for row in tree:
@@ -368,13 +371,18 @@ def distance(A, B, get_children, insert_cost, remove_cost, update_cost,
     if False:
         print("Tree is ", len(A.nodes))
 
+
     k = size_a
-    if size_a > 200:
-        k = size_a / 4
-    if size_a > 500:
-        k = size_a / 8
 
+    if k_size == None:
+        if size_a > 200:
+            k = size_a / 4
+        if size_a > 500:
+            k = size_a / 8
+    else:
+        k = k_size
 
+    # k = int(size_a * 0.50)
 
     # for i in A.nodes:
     #     for j in B.nodes:

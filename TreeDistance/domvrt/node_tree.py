@@ -92,7 +92,7 @@ class NodeTree(object):
         return root
 
 
-    def diff_trees(self, pre, post, use_touzet = False):
+    def diff_trees(self, pre, post, use_touzet = False, k_size = None):
         """
         Get the edit script (and distance) between two tree structures.
 
@@ -102,7 +102,7 @@ class NodeTree(object):
         if self.results != None:
             start = time.time()
 
-        result = simple_distance(pre, post, Node.get_children, Node.get_label, strdist, True, use_touzet)
+        result = simple_distance(pre, post, Node.get_children, Node.get_label, strdist, True, use_touzet, k_size)
         if self.results != None:
             total = time.time() - start
             self.results.execution_time['distance'] = total

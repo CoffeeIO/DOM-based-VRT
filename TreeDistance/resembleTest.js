@@ -8,8 +8,9 @@ if (process.argv.length != 3) {
   console.log('Missing argument');
   return;
 }
-var folder = 'test';
-var num = parseNum(process.argv[2]);
+var folder = process.argv[2];
+var num = "";
+
 console.log('Looking for: /' + folder + num);
 
 const compareImages = require("resemblejs/compareImages");
@@ -44,10 +45,14 @@ async function getDiff() {
         options
     );
     const out1 = "./data-output/" + folder + num + "/after0000/resemble.png";
+    const out11 = "./data-output/" + folder + num + "/resemble.png";
 
     await fs.writeFile(out1, data.getBuffer());
     console.log("File saved to %s", out1);
 
+    await fs.writeFile(out11, data.getBuffer());
+    console.log("File saved to %s", out11);
+    
     const data2 = await compareImages(
         await fs.readFile("./data-output/" + folder + num + "/after0000/image.png"),
         await fs.readFile("./data-output/" + folder + num + "/before0000/image.png"),

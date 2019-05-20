@@ -30,6 +30,7 @@ const getDirectories = source =>
 
       // The parameters can be Node Buffers
       // data is the same as usual with an additional getBuffer() function
+    
 
       const data = await compareImages(
           await fs.readFile(dir + "/before0000/image.png"),
@@ -37,9 +38,13 @@ const getDirectories = source =>
           options
       );
       const out1 = dir + "/after0000/resemble.png";
+      const out11 = dir + "/resemble.png";
 
       await fs.writeFile(out1, data.getBuffer());
       console.log("File saved to %s", out1);
+
+      await fs.writeFile(out11, data.getBuffer());
+      console.log("File saved to %s", out11);
 
       const data2 = await compareImages(
           await fs.readFile(dir + "/after0000/image.png"),

@@ -59,6 +59,45 @@ class Results(object):
     pre_folder = None
     post_folder = None
 
+    def reset(self):
+        self.issues = {
+            self.INSERT : [],
+            self.REMOVE : [],
+            self.UPDATE : [],
+            self.MATCH  : [],
+        }
+        self.mutations = {
+            self.INSERT : [],
+            self.REMOVE : [],
+            self.UPDATE : [],
+            self.MATCH  : [],
+        }
+        self.execution_time = {
+            'distance' : None,
+            'visual-verification' : None,
+            'resource-storage': None,
+            'total' : None,
+        }
+        self.tree_info = {
+            'pre-dom-size': None,
+            'post-dom-size': None,
+            'reduced-pre-dom-size': None,
+            'reduced-post-dom-size': None,
+        }
+        self.quality = {
+            'tp' : 0,
+            'fp' : 0,
+            'tn' : 0,
+            'fn' : 0,
+            'accuracy' : None,
+            'precision' : None,
+            'recall' : None,
+            'f1' : None,
+        }
+        self.pre_folder = None
+        self.post_folder = None
+
+
     def set_tree_info(self, pre_dom, post_dom):
         self.map = ParserMapping(pre_dom['minify'])
         self.tree_info['captureWidth'] = pre_dom['captureWidth']
@@ -314,6 +353,8 @@ class Results(object):
 
         for actual in actuals:
             if not actual['found']:
+                if not actual['visible']:
+                    continue
                 # Actual change not in expected. Add false positive.
                 self.add_metric('fp')
                 print("Actual not found: ", actual['node-pre']['position'])
@@ -375,6 +416,8 @@ class Results(object):
 
         for actual in actuals:
             if not actual['found']:
+                if not actual['visible']:
+                    continue
                 # Actual change not in expected. Add false positive.
                 self.add_metric('fp')
                 print("Actual not found: ", actual['node-post']['position'])
@@ -433,6 +476,8 @@ class Results(object):
 
         for actual in actuals:
             if not actual['found']:
+                if not actual['visible']:
+                    continue
                 # Actual change not in expected. Add false positive.
                 self.add_metric('fp')
                 print("Actual not found: ", actual['node-post']['position'])
@@ -491,6 +536,8 @@ class Results(object):
 
         for actual in actuals:
             if not actual['found']:
+                if not actual['visible']:
+                    continue
                 # Actual change not in expected. Add false positive.
                 self.add_metric('fp')
                 print("Actual not found: ", actual['node-pre']['position'])
@@ -542,13 +589,21 @@ class Results(object):
         print("fn: ", self.quality['fn'])
 
         # Precision = TP/TP+FP
-        precision = self.quality['tp'] / (self.quality['tp'] + self.quality['fp'])
+        precision = 0.0
+        if (self.quality['tp'] + self.quality['fp']) != 0.0:
+            precision = self.quality['tp'] / (self.quality['tp'] + self.quality['fp'])
         # Accuracy = TP+TN/TP+FP+FN+TN
-        accuracy = (self.quality['tp'] + self.quality['tn']) / (self.quality['tp'] + self.quality['fp'] + self.quality['fn'] + self.quality['tn'])
+        accuracy = 0.0
+        if (self.quality['tp'] + self.quality['fp'] + self.quality['fn'] + self.quality['tn']) != 0.0:
+            accuracy = (self.quality['tp'] + self.quality['tn']) / (self.quality['tp'] + self.quality['fp'] + self.quality['fn'] + self.quality['tn'])
         # Recall = TP/TP+FN
-        recall = self.quality['tp'] / (self.quality['tp'] + self.quality['fn'])
+        recall = 0.0
+        if (self.quality['tp'] + self.quality['fn']) != 0.0:
+            recall = self.quality['tp'] / (self.quality['tp'] + self.quality['fn'])
         # F1 Score = 2*(Recall * Precision) / (Recall + Precision)
-        f1 = 2 * ( (precision * recall) / (precision / recall) )
+        f1 = 0.0
+        if (precision + recall) != 0.0:
+            f1 = 2 * ( (precision * recall) / (precision + recall) )
 
         self.add_metric('precision', precision)
         self.add_metric('accuracy', accuracy)

@@ -71,10 +71,12 @@ class TestTreeVisual(object):
         self.d_highlight = ImageDraw.Draw(self.im_highlight)
 
         width, height = self.im.size
-        self.width_scale = width / tree['captureWidth']
-        self.height_scale = self.width_scale
-        if 'captureHeight' in tree:
-            self.height_scale = height / tree['captureHeight']
+        # self.width_scale = width / tree['captureWidth']
+        # self.height_scale = self.width_scale
+        self.width_scale = 2.0
+        self.height_scale = 2.0
+        # if 'captureHeight' in tree:
+        #     self.height_scale = height / tree['captureHeight']
 
     def save_image(self, filename):
         self.im.save(filename)
@@ -127,7 +129,13 @@ class TestTreeVisual(object):
 
         for x in range(int(node['x1'] * self.width_scale), int(node['x2'] * self.width_scale)):
             for y in range(int(node['y1'] * self.height_scale), int(node['y2'] * self.height_scale)):
-                (r,g,b,a) = pixel[x, y]
+                
+                # Skip locations outside of image.
+                try:
+                    (r,g,b,a) = pixel[x, y]
+                except:
+                    continue
+                
                 sum += r + g + b + a
                 xs = x
                 ys = y

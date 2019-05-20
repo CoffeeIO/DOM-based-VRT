@@ -1,0 +1,47 @@
+# https://medium.com/the-mission/podcasts/home - 350 
+
+REMOVE
+DomVRT.Differ.remove('1.1.1.1.1.0.4.0.0.0.1.1.0', true, false)
+DomVRT.Differ.remove('1.1.1.1.1.0.0.1.1.0.0.1', true, false)
+DomVRT.Differ.remove('1.1.1.1.1.0.2.0', true, false)
+
+INSERT
+DomVRT.Differ.insert('1.1.1.1.1.0.4.2.0.0.1.0.1.0', '<p>Hello world</p>', true, true)
+DomVRT.Differ.insert('1.1.1.1.1.0.4.3.0.0.1.1.0.1.1.2', '<span>Test</span>', true, true)
+DomVRT.Differ.insert('1.1.1.1.1.0.4.1.0', '<p>Test</p>', true, true)
+
+UPDATE
+DomVRT.Differ.updateText('1.1.1.1.1.0.4.1.0.0.1.0.0.0.0', true, 'The mission')
+DomVRT.Differ.updateText('1.1.1.1.1.0.4.1.0.0.1.1.0.1.0.0', true, 'The mission')
+DomVRT.Differ.updateText('1.1.1.1.1.0.0.2.0.0.0.1.0.1.0.0', true, 'Audio')
+
+STYLE
+DomVRT.Differ.match('1.1.1.1.1.0.0.1.1.0.0.0', true, 'background-color', 'blue')
+DomVRT.Differ.match('1.1.1.1.1.0.0.2.0.0.0.1.0.0.0', true, 'color', 'red')
+DomVRT.Differ.match('1.1.1.1.1.0.4.0.0.0.1.0.1.0', true, 'font-weight', 'bold')
+
+POS
+DomVRT.Differ.match('1.1.1.1.1.0.4.1.0.0.1', true, 'top', '30px')
+DomVRT.Differ.match('1.1.1.1.1.0.4.2.0.0.0', true, 'left', '20px')
+DomVRT.Differ.match('1.1.1.1.1.0.0.2.0.0.0.0.0', true, 'right', '30px')
+DomVRT.Differ.match('1.1.1.1.1.0.0.2.0.0.0.0.0', true, 'position', 'relative')
+
+DIM
+DomVRT.Differ.match('1.1.1.1.1.0.0.2', true, 'margin', '20px')
+DomVRT.Differ.match('1.1.1.1.1.0.4.2.0.0', true, 'margin', '70px')
+DomVRT.Differ.match('1.1.1.1.1.0.4.3.0.0', true, 'width', '400px')
+
+
+COMB
+DomVRT.Differ.remove('1.1.1.1.1.0.4.0.0.0.1.1.0', true, false)
+DomVRT.Differ.remove('1.1.1.1.1.0.0.1.1.0.0.1', true, false)
+DomVRT.Differ.insert('1.1.1.1.1.0.4.2.0.0.1.0.1.0', '<p>Hello world</p>', true, true)
+DomVRT.Differ.insert('1.1.1.1.1.0.4.3.0.0.1.1.0.1.1.2', '<span>Test</span>', true, true)
+DomVRT.Differ.updateText('1.1.1.1.1.0.4.1.0.0.1.1.0.1.0.0', true, 'The mission')
+DomVRT.Differ.updateText('1.1.1.1.1.0.0.2.0.0.0.1.0.1.0.0', true, 'Audio')
+DomVRT.Differ.match('1.1.1.1.1.0.0.2.0.0.0.1.0.0.0', true, 'color', 'red')
+DomVRT.Differ.match('1.1.1.1.1.0.4.0.0.0.1.0.1.0', true, 'font-weight', 'bold')
+DomVRT.Differ.match('1.1.1.1.1.0.4.1.0.0.1', true, 'top', '30px')
+DomVRT.Differ.match('1.1.1.1.1.0.4.2.0.0.0', true, 'left', '20px')
+DomVRT.Differ.match('1.1.1.1.1.0.4.2.0.0', true, 'margin', '70px')
+DomVRT.Differ.match('1.1.1.1.1.0.4.3.0.0', true, 'width', '400px')

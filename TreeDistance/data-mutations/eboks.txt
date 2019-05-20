@@ -1,0 +1,48 @@
+# https://www.e-boks.com/danmark/da - 700 
+
+REMOVE
+DomVRT.Differ.remove('1.1.1.3.2.1.0.0.0.4.0.0.1.0.0', true, false)
+DomVRT.Differ.remove('1.1.1.3.2.1.0.0.0.8.0.0.1', true, false)
+DomVRT.Differ.remove('1.1.1.3.3.0.0.1.0.0.1.0.0.0', true, false)
+
+INSERT
+DomVRT.Differ.insert('1.1.1.3.2.1.0.0.0.10.0.0.1.0.8', '<span>Og hvor du vil.</span>', true, true)
+DomVRT.Differ.insert('1.1.1.3.0.0.0.1', '<a class="language-inactive" href="/danmark/enp/" tabindex="0" title="Posh English" data-language-switcher="" >Posh English</a>', true, true)
+DomVRT.Differ.insert('1.1.1.3.3.0.0.0.0', '<p>Hello world</p>', true, true)
+
+UPDATE
+DomVRT.Differ.updateText('1.1.1.3.2.1.0.0.0.12.0.0.0.0.2.0.0', true, 'Se færre nyheder')
+DomVRT.Differ.updateText('1.1.1.3.0.0.1.1.0', true, 'About us')
+DomVRT.Differ.updateText('1.1.1.3.2.1.0.0.0.10.0.0.1.0.3.0', true, ' ')
+
+STYLE
+DomVRT.Differ.match('1.1.1.3', true, 'background', '#d9d9d9')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.0.0.0.0.0.1.0', true, 'font-style', 'italic')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.1.0.0.1.3.0', true, 'color', 'blue')
+
+POS
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.1.0.0', true, 'top', '150px')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.0.0.2', true, 'position', 'relative')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.0.0.2', true, 'left', '150px')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.1.0.0.1.0.2', true, 'position', 'relative')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.1.0.0.1.0.2', true, 'bottom', '10px')
+
+DIM
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.0.0.0.0.0', true, 'height', '312px')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.6.0.0.0.0.0', true, 'max-width', '300px')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.11.0.0.0.0.0', true, 'height', '100px')
+
+COMB
+DomVRT.Differ.remove('1.1.1.3.2.1.0.0.0.4.0.0.1.0.0', true, false)
+DomVRT.Differ.remove('1.1.1.3.2.1.0.0.0.8.0.0.1', true, false)
+DomVRT.Differ.insert('1.1.1.3.2.1.0.0.0.10.0.0.1.0.8', '<span>Og hvor du vil.</span>', true, true)
+DomVRT.Differ.insert('1.1.1.3.0.0.0.1', '<a class="language-inactive" href="/danmark/enp/" tabindex="0" title="Posh English" data-language-switcher="" >Posh English</a>', true, true)
+DomVRT.Differ.updateText('1.1.1.3.2.1.0.0.0.12.0.0.0.0.2.0.0', true, 'Se færre nyheder')
+DomVRT.Differ.updateText('1.1.1.3.0.0.1.1.0', true, 'About us')
+DomVRT.Differ.match('1.1.1.3', true, 'background', '#d9d9d9')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.0.0.0.0.0.1.0', true, 'font-style', 'italic')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.1.0.0', true, 'top', '150px')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.0.0.2', true, 'position', 'relative')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.12.0.0.0.0.2', true, 'left', '150px')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.0.0.0.0.0', true, 'height', '312px')
+DomVRT.Differ.match('1.1.1.3.2.1.0.0.0.6.0.0.0.0.0', true, 'max-width', '300px')

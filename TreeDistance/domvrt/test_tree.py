@@ -1,5 +1,7 @@
 # Standard python
 import json, random, collections, os, requests, time, signal
+from shutil import copyfile
+
 # Dependencies
 # This package
 from domvrt.parser_mapping import ParserMapping
@@ -14,7 +16,7 @@ from domvrt.results import Results
 import domvrt.utils as utils
 
 def timeout_handler(signum, frame):
-    print("Code timeout")
+    # print("Code timeout")
     raise Exception("end of time")
 
 
@@ -46,7 +48,12 @@ class TestTree(object):
         # Mutation settings.
         'min-changes'                 : 5,
         'max-changes'                 : 5,
-        # Add, remove, modify style, modify position, modify dimensions, content change.
+        # 0:Add
+        # 1:Remove
+        # 2:Modify style
+        # 3:modify position
+        # 4:modify dimensions
+        # 5:content change
         'distribution-of-change-type' : [1, 1, 1, 1, 1, 1], # Ratio of changes
     }
 
@@ -78,13 +85,14 @@ class TestTree(object):
         else:
             print("Warning file '" + filename + "' does not exist")
 
-    def performance_test_distance(self):
+    def performance_test_distance(self, tree_size):
         self.merge_settings({'distribution-of-change-type' : [1, 1, 0, 0, 0, 1]})
         self.results.debug = False
 
         tree_sizes = [
-            250,
-            # 500,
+            # 125,
+            # 250,
+            500,
             # 1000,
             # 2000,
             # 4000,
@@ -105,13 +113,44 @@ class TestTree(object):
         ]
         s = ';'
 
-        print("tree_size", s, "branching_setting", s, "number_of_changes", s, "algorithm", s, "run", s, "time", s, "is_correct")
+        print("tree_size", s, "branching_setting", s, "number_of_changes", s, "algorithm", s, "run", s, "time", s, "is_correct", s, "reduction")
 
-        for tree_size in tree_sizes: # 5
-            for branching_setting in branching_settings: # *5
-                for number_of_change in number_of_changes: # *5
-                    # print(tree_size, branching_setting, number_of_change)
-                    self.run_distance_test(tree_size, branching_setting, number_of_change)
+
+        # for tree_size in tree_sizes: # 5
+        for branching_setting in branching_settings: # *5
+            for number_of_change in number_of_changes: # *5
+                # print(tree_size, branching_setting, number_of_change)
+                self.run_distance_test(tree_size, branching_setting, number_of_change)
+
+    def test_distance_comp(self, pre_dom, post_file, expect_dist, k_size = None):
+        self.results.debug = False
+
+        post_dom = self.file_to_tree(post_file)
+
+        zhang = self.run_distance(pre_dom, post_dom, self.ZHANG)
+        touzet = self.run_distance(pre_dom, post_dom, self.TOUZET, k_size)
+        custom = self.run_distance(pre_dom, post_dom, self.CUSTOM)
+
+        if zhang == expect_dist:
+            print(zhang, ' == ', expect_dist)
+            print("zhang success")
+        else:
+            print(zhang, ' == ', expect_dist)
+            print("zhang failed")
+
+        if touzet == expect_dist:
+            print(touzet, ' == ', expect_dist)
+            print("touzet success")
+        else:
+            print(touzet, ' == ', expect_dist)
+            print("touzet failed")
+
+        if custom == expect_dist:
+            print(custom, ' == ', expect_dist)
+            print("custom success")
+        else:
+            print(custom, ' == ', expect_dist)
+            print("custom failed")
 
     def run_distance_test(self, tree_size, branching_setting, number_of_changes, repeat = 10):
         """
@@ -119,6 +158,11 @@ class TestTree(object):
         Output as csv.
         """
         # Overwrite settings.
+        self.merge_settings({
+            'min-nodes'                   : tree_size,
+            'max-nodes'                   : tree_size,
+        })
+
         self.merge_settings(branching_setting)
         self.merge_settings(number_of_changes)
 
@@ -128,112 +172,128 @@ class TestTree(object):
         run = 1
         s = ';'
 
+        for n in range(repeat):
+            # Generate DOM of 'tree_size'.
+            pre_dom = self.generate_test()
 
-        # Generate DOM of 'tree_size'.
-        pre_dom = self.generate_test()
+            # Mutate DOM with 'number_of_changes'.
+            (post_dom, _) = self.mutate_test(pre_dom, False)
 
-        # Mutate DOM with 'number_of_changes'.
-        (post_dom, _) = self.mutate_test(pre_dom, False)
+            # Run the 3 distance algorithms.
+            min_branch = branching_setting['min-branch-factor']
+            max_branch = branching_setting['max-branch-factor']
 
-        # Run the 3 distance algorithms.
-        min_branch = branching_setting['min-branch-factor']
-        max_branch = branching_setting['max-branch-factor']
+            branch = str(min_branch)
+            if min_branch != max_branch:
+                branch += "-" + str(max_branch)
 
-        branch = str(min_branch)
-        if min_branch != max_branch:
-            branch += "-" + str(max_branch)
+            min_change = number_of_changes['min-changes']
+            max_change = number_of_changes['max-changes']
+            change = str(min_change)
+            if min_change != max_change:
+                change += "-" + str(max_change)
 
-        min_change = number_of_changes['min-changes']
-        max_change = number_of_changes['max-changes']
-        change = str(min_change)
-        if min_change != max_change:
-            change += "-" + str(max_change)
+            # print("DOM is done")
+            zhang_result = None
 
-        # ZHANG --------------------------------------------------
-        start = time.time()
-        distance = self.run_distance(pre_dom, post_dom, self.ZHANG)
-        total = time.time() - start
+            # ZHANG --------------------------------------------------
+            # start = time.time()
+            # distance = self.run_distance(pre_dom, post_dom, self.ZHANG)
+            # total = time.time() - start
+            
+            # is_correct = 1
+            # (zhang_result, _) = distance
+            
+            # if distance == None:
+            #     total = '-'
+            #     is_correct = 0
+            
+            # total = str(total).replace('.',',')
+            # print(
+            #     str(tree_size), s,
+            #     branch, s,
+            #     change, s,
+            #     self.ZHANG, s,
+            #     str(run), s,
+            #     total, s,
+            #     str(is_correct), s,
+            #     '-'
+            # )
 
-        is_correct = 1
-        zhang_result = distance
+            # TOUZET --------------------------------------------------
+            # start = time.time()
+            # distance = self.run_distance(pre_dom, post_dom, self.TOUZET)
+            # total = time.time() - start
+            #
+            # is_correct = 0
+            # if zhang_result == None:
+            #     is_correct = '-'
+            #
+            # if distance == None:
+            #     total = '-'
+            # else:
+            #     if distance == zhang_result:
+            #         is_correct = 1
+            #
+            # total = str(total).replace('.',',')
+            # print(
+            #     str(tree_size), s,
+            #     branch, s,
+            #     change, s,
+            #     self.TOUZET, s,
+            #     str(run), s,
+            #     total, s,
+            #     str(is_correct)
+            # )
 
-        if distance == None:
-            total = '-'
+            # CUSTOM --------------------------------------------------
+            start = time.time()
+            (dis, rec) = self.run_distance(pre_dom, post_dom, self.CUSTOM)
+            distance = '-'
+            reduction = '-'
+            if dis != None:
+                distance = dis
+
+            if rec != None:
+                reduction = rec
+
+            total = time.time() - start
+            if (dis == None):
+                total = '-'
+
             is_correct = 0
+            if zhang_result == None:
+                is_correct = '-'
 
-        total = str(total).replace('.',',')
-        print(
-            str(tree_size), s,
-            branch, s,
-            change, s,
-            self.ZHANG, s,
-            str(run), s,
-            total, s,
-            str(is_correct)
-        )
+            if distance == None:
+                total = '-'
+            else:
+                if distance == zhang_result:
+                    is_correct = 1
 
-        # TOUZET --------------------------------------------------
-        start = time.time()
-        distance = self.run_distance(pre_dom, post_dom, self.TOUZET)
-        total = time.time() - start
-
-        is_correct = 0
-        if zhang_result == None:
-            is_correct = '-'
-
-        if distance == None:
-            total = '-'
-        else:
-            if distance == zhang_result:
-                is_correct = 1
-
-        total = str(total).replace('.',',')
-        print(
-            str(tree_size), s,
-            branch, s,
-            change, s,
-            self.TOUZET, s,
-            str(run), s,
-            total, s,
-            str(is_correct)
-        )
-
-        # CUSTOM --------------------------------------------------
-        start = time.time()
-        distance = self.run_distance(pre_dom, post_dom, self.CUSTOM)
-        total = time.time() - start
-
-        is_correct = 0
-        if zhang_result == None:
-            is_correct = '-'
-
-        if distance == None:
-            total = '-'
-        else:
-            if distance == zhang_result:
-                is_correct = 1
-
-        total = str(total).replace('.',',')
-        print(
-            str(tree_size), s,
-            branch, s,
-            change, s,
-            self.CUSTOM, s,
-            str(run), s,
-            total, s,
-            str(is_correct)
-        )
+            total = str(total).replace('.',',')
+            print(
+                str(tree_size), s,
+                branch, s,
+                change, s,
+                self.CUSTOM, s,
+                str(run), s,
+                total, s,
+                str(is_correct), s,
+                reduction
+            )
 
 
 
 
-    def run_distance(self, pre_dom, post_dom, algorithm):
+    def run_distance(self, pre_dom, post_dom, algorithm, k_size = None):
         diff = None
 
         signal.signal(signal.SIGALRM, timeout_handler)
         timeout = 600 # 600s = 10min
         signal.alarm(timeout)
         node_tree = NodeTree(self.results)
+        reduction = None
         try:
         # if True:
             if algorithm == self.ZHANG:
@@ -245,22 +305,25 @@ class TestTree(object):
                 # ZSS implementation.
                 before_root = node_tree.test_to_tree(pre_dom)
                 after_root = node_tree.test_to_tree(post_dom)
-                diff = node_tree.diff_trees(before_root, after_root, True)
+                diff = node_tree.diff_trees(before_root, after_root, True, k_size)
             elif algorithm == self.CUSTOM:
                 tree_distance = TreeDistance(self.results)
                 diff = tree_distance.get_distance(pre_dom, post_dom)
+                reduction = diff[2]
 
             signal.alarm(0)
         except Exception:
             # print("Could not finish tree distance within timeout: ", timeout)
-            return None;
+            return (None, reduction)
 
         if diff == None:
             # print("Distance could not be calculated")
-            return None
+            return (None, reduction)
 
         # print("Distance:", diff[0])
-        return diff[0]
+        # node_tree.print_diff(diff[1])
+
+        return (diff[0], reduction)
 
         # if algorithm == self.ZHANG:
         #     pass
@@ -357,11 +420,12 @@ class TestTree(object):
 
         return False
 
-    def diff(self, file1, file2, algorithm = 'zhang', base_folder = 'test'):
+    def diff(self, file1, file2, algorithm = 'zhang', base_folder = 'test', image1 = None, image2 = None):
         if not self.__valid_algorithm(algorithm):
             print("Invalid algorithm used: ", algorithm)
-            return;
+            return
 
+        self.results.reset()
 
         start_total = time.time()
         node_tree = NodeTree(self.results)
@@ -377,19 +441,27 @@ class TestTree(object):
 
         self.results.set_tree_info(pre_dom, post_dom)
 
-        start = time.time()
-        self.save(file1, foldername1, False)
-        self.save(file2, foldername2, False)
-        total = time.time() - start
-        self.results.execution_time['resource-storage'] = total
+        if image1 == None:
 
+            start = time.time()
+            self.save(file1, foldername1, False)
+            self.save(file2, foldername2, False)
+            total = time.time() - start
+            self.results.execution_time['resource-storage'] = total
+        else: 
+            copyfile(image1, foldername1 + '/image.png')
+            copyfile(image2, foldername2 + '/image.png')
+
+
+        
         diff = None
 
-        signal.signal(signal.SIGALRM, timeout_handler)
-        timeout = 600
-        signal.alarm(timeout)
+        # signal.signal(signal.SIGALRM, timeout_handler)
+        # timeout = 600
+        # signal.alarm(timeout)
 
-        try:
+        # try:
+        if True:
             if algorithm == self.ZHANG:
                 # ZSS implementation.
                 before_root = node_tree.test_to_tree(pre_dom)
@@ -404,10 +476,10 @@ class TestTree(object):
                 tree_distance = TreeDistance(self.results)
                 diff = tree_distance.get_distance(pre_dom, post_dom)
 
-            signal.alarm(0)
-        except Exception:
-            print("Could not finish tree distance within timeout: ", timeout)
-            return;
+            # signal.alarm(0)
+        # except Exception:
+        #     print("Could not finish tree distance within timeout: ", timeout)
+        #     return
 
 
         if diff == None:

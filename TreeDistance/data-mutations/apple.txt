@@ -1,0 +1,54 @@
+# https://www.apple.com/ - 800
+
+REMOVE
+DomVRT.Differ.remove('1.1.1.4.0.2.6', true, false)
+DomVRT.Differ.remove('1.1.1.11.1.0', true, false)
+DomVRT.Differ.remove('1.1.1.12.0.1.0.0', true, false)
+
+
+INSERT
+DomVRT.Differ.insert('1.1.1.11.2', '<h2>New apple product</h2>', true, true)
+DomVRT.Differ.insert('1.1.1.12.0.2.5.1.3.1', '<li class="ac-gf-directory-column-section-item"><a class="ac-gf-directory-column-section-link" href="/us/shop/goto/eppstore/veteransandmilitary" >Free stuff</a></li>', true, true)
+DomVRT.Differ.insert('1.1.1.11.0.0.0.0.2.0', '<span>or</span>', true, true)
+
+
+UPDATE
+DomVRT.Differ.updateText('1.1.1.11.0.0.0.0.0.2.0', true, '50kr/måned')
+DomVRT.Differ.updateText('1.1.1.12.0.3.1.0.1', true, 'TVs')
+DomVRT.Differ.updateText('1.1.1.12.0.2.1.1.0.0.0', true, 'shop and learn')
+
+
+STYLE
+DomVRT.Differ.match('1.1.1.12.0', true, 'background', 'grey')
+DomVRT.Differ.match('1.1.1.11.0.0.0.0.1', true, 'text-transform', 'lowercase')
+DomVRT.Differ.match('1.1.1.4.0.2.0.0', true, 'opacity', '0.5')
+
+
+POS
+DomVRT.Differ.match('1.1.1.4', true, 'position', 'relative')
+DomVRT.Differ.match('1.1.1.4', true, 'top', '20px')
+DomVRT.Differ.match('1.1.1.12.0.3.0', true, 'position', 'relative')
+DomVRT.Differ.match('1.1.1.12.0.3.0', true, 'top', '-20px')
+DomVRT.Differ.match('1.1.1.11.1.2.0.1', true, 'left', '100px')
+
+
+DIM
+DomVRT.Differ.match('1.1.1.11.0.0', true, 'padding', '0')
+DomVRT.Differ.match('1.1.1.11.2.0', true, 'border-width', '10px')
+DomVRT.Differ.match('1.1.1.4.0.2.2.0', true, 'max-width', '2px')
+
+COMB
+DomVRT.Differ.remove('1.1.1.4.0.2.6', true, false)
+DomVRT.Differ.remove('1.1.1.11.1.0', true, false)
+DomVRT.Differ.insert('1.1.1.12.0.2.5.1.3.1', '<li class="ac-gf-directory-column-section-item"><a class="ac-gf-directory-column-section-link" href="/us/shop/goto/eppstore/veteransandmilitary" >Free stuff</a></li>', true, true)
+DomVRT.Differ.insert('1.1.1.11.0.0.0.0.2.0', '<span>or</span>', true, true)
+DomVRT.Differ.updateText('1.1.1.11.0.0.0.0.0.2.0', true, '50kr/måned')
+DomVRT.Differ.updateText('1.1.1.12.0.2.1.1.0.0.0', true, 'shop and learn')
+DomVRT.Differ.match('1.1.1.12.0', true, 'background', 'grey')
+DomVRT.Differ.match('1.1.1.11.0.0.0.0.1', true, 'text-transform', 'lowercase')
+DomVRT.Differ.match('1.1.1.4', true, 'position', 'relative')
+DomVRT.Differ.match('1.1.1.4', true, 'top', '20px')
+DomVRT.Differ.match('1.1.1.12.0.3.0', true, 'position', 'relative')
+DomVRT.Differ.match('1.1.1.12.0.3.0', true, 'top', '-20px')
+DomVRT.Differ.match('1.1.1.11.0.0', true, 'padding', '0')
+DomVRT.Differ.match('1.1.1.11.2.0', true, 'border-width', '10px')

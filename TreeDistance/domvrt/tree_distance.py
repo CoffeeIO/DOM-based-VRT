@@ -212,6 +212,7 @@ class TreeDistance(object):
         post_dom_count = self.__pop_matched_nodes(new_post_dom)
 
         if self.results.debug:
+        # if True:
             print('Sizes before reduction:')
             print(pre_dom['node-count'])
             print(post_dom['node-count'])
@@ -233,7 +234,9 @@ class TreeDistance(object):
             print("Distance:", diff[0])
             node_tree.print_diff(diff[1])
 
-        return [diff[0], diff[1] + node_tree.mapping]
+        reduction = (pre_dom_count + post_dom_count) / (pre_dom['node-count'] + post_dom['node-count']) * 100
+
+        return [diff[0], diff[1] + node_tree.mapping, reduction]
 
 
     def pp(self, test_dom):

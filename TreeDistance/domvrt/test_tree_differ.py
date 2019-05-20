@@ -113,6 +113,7 @@ class TestTreeDiffer(object):
                     self.results.add_issue(self.results.UPDATE, pre_node, post_node, styles_data, visible_change)
 
             elif diff.type == 3:
+                # Element matched
                 color = (255, 165, 0)
 
                 if diff.arg1.position == '0.0':

@@ -1,5 +1,5 @@
 # Standard python
-import json, random, math, collections, os
+import json, random, math, collections, os, sys
 from copy import deepcopy
 # Dependencies
 import lorem
@@ -542,6 +542,8 @@ class TestTreeGenerator(object):
 
         test_tree -- the tree to mutate
         """
+        sys.setrecursionlimit(10000)
+
         self.visual_check = visual_check
 
         if self.map == None:

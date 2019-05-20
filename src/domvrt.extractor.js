@@ -21,7 +21,6 @@ DomVRT.Extractor = (function (obj) {
     result.captureWidth = window.innerWidth;
     result.captureHeight= document.body.scrollHeight;
 
-
     return result;
   };
 
