@@ -2,6 +2,7 @@
 # Chrome extension
 
 ## Install:
+Go to Chrome, settings, 'more tools', 'extensions', 'load unpacked' and select the 'ChromeExtension' folder.
 
 ## Run:
 
@@ -65,4 +66,9 @@ python3 test-distance-performance.py
 
 Run with resource retrieval
 
+
 Run without resource retrieval
+
+```
+python3 test-vrt.py
+```
