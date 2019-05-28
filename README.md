@@ -72,3 +72,11 @@ Run without resource retrieval
 ```
 python3 test-vrt.py
 ```
+
+Summarize output.
+```
+python3 summarize-output.py {somePattern}
+--- example
+python3 summarize-output.py insert--custom
+```
+  
