@@ -1,3 +1,13 @@
+# Folder structure
+
+- `/ChromeExtension`
+- `/src`
+- `/TreeDistance`
+  - `/domvrt`
+  - `/zss`
+  - `/data-test`
+  - `/data-output`
+  - `/data-sample`
 
 # Chrome extension
 
