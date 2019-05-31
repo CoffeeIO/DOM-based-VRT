@@ -29,6 +29,7 @@ Now call the module functions under DomVRT.Differ.
 # ResembleJS
 
 ## Install:
+- node is required
 
 ## Run:
 
@@ -49,9 +50,19 @@ node resembleTest.js test0012
 ## Install:
 
 - Python 3 is required.
+- pip3 is required.
+
 
 ```
-setup.py
+pip3 install selenium
+pip3 install yattag
+pip3 install six
+pip3 install lorem
+pip3 install image
+pip3 install time
+
+# Modify Treedistance/domvrt/node_tree.py:8 
+# Change path to the user specific path of the Treedistance folder.
 ```
 
 
