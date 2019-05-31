@@ -1,13 +1,16 @@
 # Folder structure
 
-- `/ChromeExtension`
-- `/src`
+- `/ChromeExtension` - Chrome extension code
+- `/src` - Source code of JavaScript module
+- `/dist` - Compiled files of the JavaScript module
 - `/TreeDistance`
-  - `/domvrt`
-  - `/zss`
-  - `/data-test`
-  - `/data-output`
-  - `/data-sample`
+  - `/domvrt` - Source code of the Python module
+  - `/zss` - Source code of ZSS library with custom modifications
+  - `/data-test` - Data input files for VRT tests
+  - `/data-output` - Data output files for VRT tests
+  - `/data-sample` - Data input for distance correctness tests
+  - `/data-mutations` - Calls for the JavaScript handlers for each VRT test
+  - `/distance-data` - Output files for tree distance tests
 
 # Chrome extension
 
