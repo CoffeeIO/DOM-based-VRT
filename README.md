@@ -83,7 +83,7 @@ python3 test-distance-quality.py
 ```
 
 ```
-python3 test-distance-performance.py
+python3 test-distance-performance.py {tree size}
 ```
 
 #### Visual regression test
@@ -97,10 +97,11 @@ Run without resource retrieval
 python3 test-vrt.py
 ```
 
-Summarize output.
+Get the summarize output of specific tests.
 ```
 python3 summarize-output.py {somePattern}
 --- example
-python3 summarize-output.py insert--custom
+python3 summarize-output.py zhang # returns the summary of zhang-shasha
+python3 summarize-output.py insert--custom # returns the summary of custom on insert problems
 ```
   
