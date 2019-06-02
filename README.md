@@ -104,4 +104,12 @@ python3 summarize-output.py {somePattern}
 python3 summarize-output.py zhang # returns the summary of zhang-shasha
 python3 summarize-output.py insert--custom # returns the summary of custom on insert problems
 ```
+
+#### Test tree generator and mutator
+
+Run generator and mutator on default settings.
+Results are saved into `data-generator/state1.html` and `data-generator/state2.html` 
+```
+python3 test-mutator.py
+```
   
