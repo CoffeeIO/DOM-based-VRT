@@ -89,10 +89,12 @@ python3 test-distance-performance.py {tree size}
 #### Visual regression test
 
 Run with resource retrieval
+```
+python3 test-vrt.py
+```
 
-
-Run without resource retrieval
-
+Run without resource retrieval.
+Modify last parameter of `test-vrt.py:171` and `test-vrt.py:172` to `False`
 ```
 python3 test-vrt.py
 ```
@@ -105,11 +107,20 @@ python3 summarize-output.py zhang # returns the summary of zhang-shasha
 python3 summarize-output.py insert--custom # returns the summary of custom on insert problems
 ```
 
-#### Test tree generator and mutator
+#### Tree generator and mutator
 
 Run generator and mutator on default settings.
 Results are saved into `data-generator/state1.html` and `data-generator/state2.html` 
 ```
 python3 test-mutator.py
 ```
+
+#### Resource retriever
+
+Run resource generator on captured DOMs
+```
+python3 test-resource-retrieve.py
+```
+
+
   
