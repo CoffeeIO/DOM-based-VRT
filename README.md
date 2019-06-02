@@ -1,5 +1,6 @@
 # Folder structure
 
+- `/Excel` - Excel sheet for results and graphs
 - `/ChromeExtension` - Chrome extension code
 - `/src` - Source code of JavaScript module
 - `/dist` - Compiled files of the JavaScript module
