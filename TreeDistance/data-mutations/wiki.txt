@@ -10,7 +10,6 @@ DomVRT.Differ.insert('1.1.1.2.4.5.0.4', `<div class="github-widget" data-usernam
 DomVRT.Differ.insert('1.1.1.2.4.5.0.4.1', '<li>Pointless - test produces too many false positives to be useful.</li>', true, true)
 DomVRT.Differ.insert('1.1.1.3.2.5.1.0.5', '<li class="interlanguage-link interwiki-tt" ><a href="https://tr.wikipedia.org/wiki/Yaz%C4%B1l%C4%B1m_gerilemesi" title="Spanish" lang="tr" hreflang="tr" class="interlanguage-link-target" >Spanish</a></li>', true, true)
 
-
 UPDATE
 DomVRT.Differ.updateText('1.1.1.2.3.0', true, 'Software regression testing')
 DomVRT.Differ.updateText('1.1.1.3.1.0.1.4.0.0', true, 'Logout')
@@ -36,7 +35,6 @@ DomVRT.Differ.match('1.1.1.3.1.2.2.1.0', true, 'width', '900px')
 DomVRT.Differ.match('1.1.1.2.4.7', true, 'margin-top', '50px')
 
 COMB
-
 DomVRT.Differ.remove('1.1.1.4.2', true, false)
 DomVRT.Differ.remove('1.1.1.2.4.5.0.0.0.0.0', true, false)
 

@@ -5,7 +5,11 @@ from domvrt.parser_mapping import ParserMapping
 from domvrt.test_tree_visual import TestTreeVisual
 
 class TestTreeDiffer(object):
-    """docstring for TestTreeDiffer."""
+    """
+    The TestTreeDiffer class is the component that performs Visual regression.
+    This component iterates the edit script and constructs the set of actual
+    changes.
+    """
     map = None
     results = None
 
@@ -33,15 +37,7 @@ class TestTreeDiffer(object):
         return map
 
 
-    def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None):
-        """
-        Compare style differences of matches.
-
-        pre_tree  --
-        post_tree --
-        diffs     --
-        """
-
+    def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None, doVisualVerification = True):
 
         # Init diff images.
         pre_visual_diff = None
@@ -57,8 +53,8 @@ class TestTreeDiffer(object):
         pre_map = self.make_position_map(pre_tree)
         post_map = self.make_position_map(post_tree)
 
-        if self.map == None and 'minify' in pre_tree:
-            self.map = parser_mapping.ParserMapping(pre_tree['minify'])
+        # if self.map == None and 'minify' in pre_tree:
+        #     self.map = parser_mapping.ParserMapping(pre_tree['minify'])
 
         styleId = self.map.get('styleId')
         styles = self.map.get('styles')
@@ -92,25 +88,43 @@ class TestTreeDiffer(object):
                 bn = pre_node = pre_map[diff.arg1.position]
                 an = post_node = post_map[diff.arg2.position]
 
+                has_update = False
+                has_style = False
+
                 styles_data = []
+                visible_change = False
+
                 if styleId in bn and bn[styleId] != an[styleId]:
                     if styles in bn:
-                            for key in bn[styles].keys():
-                                if bn[styles][key] != an[styles][key]: # Compare individual styles
-                                    style_diff = True
-                                    style = [bn[styles][key], an[styles][key], key]
-                                    print("Styles:", style)
-                                    styles_data.append(style)
+
+                        style_keys = list(set().union(bn[styles].keys(), an[styles].keys()))
+                        if self.has_positional_change(pre_node, post_node):
+                            visible_change = True
+
+                        for key in bn[styles].keys():
+                            if bn[styles][key] != an[styles][key]: # Compare individual styles
+                                has_style = True
+                                style = [bn[styles][key], an[styles][key], key]
+                                print("Styles:", style)
+                                styles_data.append(style)
+
+                if 'nodeValue' in pre_node and 'nodeValue' in post_node:
+                    if pre_node['nodeValue'] != post_node['nodeValue']:
+                        has_update = True
 
                 if pre_visual_diff != None and post_visual_diff != None:
+                    if has_style or has_update:
+                        if not self.ignore_diff(pre_visual_diff, post_visual_diff, pre_node, post_node) or not doVisualVerification:
+                            pre_visual_diff.draw_updated_node(pre_node)
+                            post_visual_diff.draw_updated_node(post_node)
+                            # Add diff to results.
+                            visible_change = True
 
-                    visible_change = False
-                    if not self.ignore_diff(pre_visual_diff, post_visual_diff, pre_node, post_node):
-                        pre_visual_diff.draw_updated_node(pre_node)
-                        post_visual_diff.draw_updated_node(post_node)
-                        # Add diff to results.
-                        visible_change = True
-                    self.results.add_issue(self.results.UPDATE, pre_node, post_node, styles_data, visible_change)
+                    if has_style:
+                        self.results.add_issue(self.results.MATCH, pre_node, post_node, styles_data, visible_change)
+
+                    if has_update:
+                        self.results.add_issue(self.results.UPDATE, pre_node, post_node, styles_data, visible_change)
 
             elif diff.type == 3:
                 # Element matched
@@ -129,10 +143,16 @@ class TestTreeDiffer(object):
                     print("MATCH elem")
                     print("Before:", diff.arg1.position, diff.arg1.label, bn[styleId])
                     print("After: ", diff.arg2.position, diff.arg2.label, an[styleId])
+                    visible_change = False
 
                     if pre_visual_diff != None and post_visual_diff != None:
                         if styles in bn:
-                            for key in bn[styles].keys():
+
+                            style_keys = list(set().union(bn[styles].keys(), an[styles].keys()))
+                            if self.has_positional_change(pre_node, post_node):
+                                visible_change = True
+
+                            for key in style_keys:
                                 if bn[styles][key] != an[styles][key]: # Compare individual styles
                                     style_diff = True
                                     style = [bn[styles][key], an[styles][key], key]
@@ -140,8 +160,7 @@ class TestTreeDiffer(object):
                                     styles_data.append(style)
 
                         if style_diff:
-                            visible_change = False
-                            if not self.ignore_diff(pre_visual_diff, post_visual_diff, pre_node, post_node):
+                            if not self.ignore_diff(pre_visual_diff, post_visual_diff, pre_node, post_node)  or not doVisualVerification: 
                                 pre_visual_diff.draw_updated_node(pre_node, color)
                                 post_visual_diff.draw_updated_node(post_node, color)
                                 # Add diff to results.
@@ -171,7 +190,6 @@ class TestTreeDiffer(object):
             error_margin = pre_sum * 0.0001 # 0.01% differences in all pixels
             diff = abs(pre_sum - post_sum)
 
-
             if pre_hash == post_hash:
                 print("hash match", pre_hash)
                 return True
@@ -183,4 +201,30 @@ class TestTreeDiffer(object):
             print('sizes did not match', pre_visual_diff.get_size_of_area(pre_node), ':', post_visual_diff.get_size_of_area(post_node))
 
         print("Show error diff")
+        return False
+
+    def has_positional_change(self, pre_node, post_node):
+        if 'position' in pre_node['styles'] and 'position' in post_node['styles']:
+            # Both nodes have position property.
+            if pre_node['styles']['position'] != post_node['styles']['position']:
+                return True
+            if pre_node['styles']['bottom'] != post_node['styles']['bottom']:
+                return True
+            if pre_node['styles']['left'] != post_node['styles']['left']:
+                return True
+            if pre_node['styles']['right'] != post_node['styles']['right']:
+                return True
+            if pre_node['styles']['top'] != post_node['styles']['top']:
+                return True
+
+        elif 'position' in post_node['styles']:
+            # Only post_node have position.
+            return True
+        elif 'position' in pre_node['styles']:
+            # Only pre_node have position.
+            return True
+        else:
+            # None of the nodes have position property.
+            return False
+
         return False

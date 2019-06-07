@@ -6,24 +6,24 @@ DomVRT.Differ.remove('1.1.1.3.0.3.0', true, false)
 DomVRT.Differ.remove('1.1.1.3.0.5.0.5.1.2', true, false)
 
 
-insert
+INSERT
 DomVRT.Differ.insert('1.1.1.3.0.7.0.0', '<div><p>Hello world</p><span>Linebreak</span></div>', true, true)
 DomVRT.Differ.insert('1.1.1.3.0.7.2', '<img src="https://via.placeholder.com/150">', true, true)
 DomVRT.Differ.insert('1.1.1.3.0.8.1.0.2.2', '<dl class="form-group col-12 col-sm-8 col-lg-3 mx-auto mt-0 mx-lg-0 mb-3 mb-lg-0 px-3" p="1.1.1.3.0.8.1.0.2.2" st="6"><dt class="input-label" p="1.1.1.3.0.8.1.0.2.2.0" st="3"><label class="form-label text-white f5" for="user[repeat-password]-footer" p="1.1.1.3.0.8.1.0.2.2.0.0" st="2">Repeat Password</label></dt><dd p="1.1.1.3.0.8.1.0.2.2.1" st="2"><input type="repeat-password" name="user[repeat-password]" id="user[repeat-password]-footer" class="form-control form-control-lg input-block input-lg" placeholder="Repeat a password" p="1.1.1.3.0.8.1.0.2.2.1.0" st="1" autocomplete="off" style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAAXNSR0IArs4c6QAAAYdJREFUOBGVVLuKwkAUPTErioVgY5WF2AhpFKz8AC0W0vgTK9injvkMt7HyB6zWSuy1s1WRXUJQ0cJCxSLOnSSzcYmaDGTmPs45M3fuEMmyrA/XdXvse0eMIUnSD4N9drvdb4KnkpCJ4G/0RTYNEoi1swf35jAnFU68snO5HMrl8h0skYCqqmg0GtEC2WxWJDKZDNhlCT+cE0HfeKNV13XUajUMBgPs93t0Oh3Yto1+v3+X+08mP1EJUQKSaZouJeiY5/OZY6iEy+UShRcxVuIvc9riBAGZEK/IhGGtVNjS43dAgWej2WyiUqlAlmWs12sMh0OcTicuIk7wTOBwOGA+n2O5XELTNJRKJQFP+W9bBKKM6XSK4/GIfD4Px3G4UIAjgXYckXq9DkVRsN1ukU6nAz7+XosIeUbQHfKIcL1eUa1W0Wq1MB6PMZlMODDWJRqGgd1uh0KhwEmbzYavND0UoD77rcJoNEKxWOS1LxYLrFYrLkCYhwIMQXdDPxplNptxQngiMmFuABiQmENn7wkAAAAASUVORK5CYII=&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: auto;"></dd></dl>', true, true)
 
 
-update
+UPDATE
 DomVRT.Differ.updateText('1.1.1.0.2.0.0.2.0.0', false, "Sign in")
 DomVRT.Differ.updateText('1.1.1.3.0.8.0.0.0', true, "Get started for free")
 DomVRT.Differ.updateText('1.1.1.4.0.0.1.0.0', true, "Products")
 
-style
+STYLE
 DomVRT.Differ.match('1.1.1.3.0.0.0.0.1.0.0.9', true, 'border-color', 'black')
 DomVRT.Differ.match('1.1.1.3.0.1.0.0.0', true, 'text-transform', 'uppercase')
 DomVRT.Differ.match('1.1.1.3.0.2', true, 'text-transform', 'uppercase')
 
 
-pos
+POS
 DomVRT.Differ.match('1.1.1.3.0.3.0.1.11.0', true, 'position', 'relative')
 DomVRT.Differ.match('1.1.1.3.0.3.0.1.11.0', true, 'left', '-100%')
 
@@ -34,12 +34,12 @@ DomVRT.Differ.match('1.1.1.3.0.4.1.0.1.0.1.1', true, 'position', 'relative')
 DomVRT.Differ.match('1.1.1.3.0.4.1.0.1.0.1.1', true, 'right', '20px')
 
 
-dim
+DIM
 DomVRT.Differ.match('1.1.1.3.0.4.3', true, 'margin-top', '30px')
 DomVRT.Differ.match('1.1.1.3.0.5.0.1', true, 'padding', '20px')
 DomVRT.Differ.match('1.1.1.3.0.6.0.1.6', true, 'margin', '3px')
 
-comb
+COMB
 DomVRT.Differ.remove('1.1.1.3.0.0.0.0.1.0.0.10', true, false)
 DomVRT.Differ.remove('1.1.1.3.0.3.0', true, false)
 

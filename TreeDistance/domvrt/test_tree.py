@@ -1,7 +1,6 @@
 # Standard python
 import json, random, collections, os, requests, time, signal
 from shutil import copyfile
-
 # Dependencies
 # This package
 from domvrt.parser_mapping import ParserMapping
@@ -21,7 +20,10 @@ def timeout_handler(signum, frame):
 
 
 class TestTree(object):
-    """docstring for TestTree."""
+    """
+    The TestTree class handles most calls of the tree distance and
+    VRT problems.
+    """
 
     map = None
     results = None
@@ -29,7 +31,6 @@ class TestTree(object):
     ZHANG = 'zhang'
     TOUZET = 'touzet'
     CUSTOM = 'custom'
-
 
     def __init__(self, settings = None):
         self.merge_settings(settings)
@@ -89,14 +90,6 @@ class TestTree(object):
         self.merge_settings({'distribution-of-change-type' : [1, 1, 0, 0, 0, 1]})
         self.results.debug = False
 
-        tree_sizes = [
-            # 125,
-            # 250,
-            500,
-            # 1000,
-            # 2000,
-            # 4000,
-        ]
         branching_settings = [
             {'min-branch-factor':1, 'max-branch-factor': 1},
             {'min-branch-factor':2, 'max-branch-factor': 2},
@@ -115,11 +108,9 @@ class TestTree(object):
 
         print("tree_size", s, "branching_setting", s, "number_of_changes", s, "algorithm", s, "run", s, "time", s, "is_correct", s, "reduction")
 
-
         # for tree_size in tree_sizes: # 5
         for branching_setting in branching_settings: # *5
             for number_of_change in number_of_changes: # *5
-                # print(tree_size, branching_setting, number_of_change)
                 self.run_distance_test(tree_size, branching_setting, number_of_change)
 
     def test_distance_comp(self, pre_dom, post_file, expect_dist, k_size = None):
@@ -127,9 +118,9 @@ class TestTree(object):
 
         post_dom = self.file_to_tree(post_file)
 
-        zhang = self.run_distance(pre_dom, post_dom, self.ZHANG)
-        touzet = self.run_distance(pre_dom, post_dom, self.TOUZET, k_size)
-        custom = self.run_distance(pre_dom, post_dom, self.CUSTOM)
+        (zhang, _) = self.run_distance(pre_dom, post_dom, self.ZHANG)
+        (touzet, _) = self.run_distance(pre_dom, post_dom, self.TOUZET, k_size)
+        (custom, _) = self.run_distance(pre_dom, post_dom, self.CUSTOM)
 
         if zhang == expect_dist:
             print(zhang, ' == ', expect_dist)
@@ -166,10 +157,7 @@ class TestTree(object):
         self.merge_settings(branching_setting)
         self.merge_settings(number_of_changes)
 
-        # print(self.settings)
-
         # Loop 'repeat' times
-        run = 1
         s = ';'
 
         for n in range(repeat):
@@ -193,32 +181,31 @@ class TestTree(object):
             if min_change != max_change:
                 change += "-" + str(max_change)
 
-            # print("DOM is done")
             zhang_result = None
 
             # ZHANG --------------------------------------------------
-            # start = time.time()
-            # distance = self.run_distance(pre_dom, post_dom, self.ZHANG)
-            # total = time.time() - start
+            start = time.time()
+            distance = self.run_distance(pre_dom, post_dom, self.ZHANG)
+            total = time.time() - start
             
-            # is_correct = 1
-            # (zhang_result, _) = distance
+            is_correct = 1
+            (zhang_result, _) = distance
             
-            # if distance == None:
-            #     total = '-'
-            #     is_correct = 0
+            if distance == None:
+                total = '-'
+                is_correct = 0
             
-            # total = str(total).replace('.',',')
-            # print(
-            #     str(tree_size), s,
-            #     branch, s,
-            #     change, s,
-            #     self.ZHANG, s,
-            #     str(run), s,
-            #     total, s,
-            #     str(is_correct), s,
-            #     '-'
-            # )
+            total = str(total).replace('.',',')
+            print(
+                str(tree_size), s,
+                branch, s,
+                change, s,
+                self.ZHANG, s,
+                str(n), s,
+                total, s,
+                str(is_correct), s,
+                '-'
+            )
 
             # TOUZET --------------------------------------------------
             # start = time.time()
@@ -241,7 +228,7 @@ class TestTree(object):
             #     branch, s,
             #     change, s,
             #     self.TOUZET, s,
-            #     str(run), s,
+            #     str(n), s,
             #     total, s,
             #     str(is_correct)
             # )
@@ -277,13 +264,11 @@ class TestTree(object):
                 branch, s,
                 change, s,
                 self.CUSTOM, s,
-                str(run), s,
+                str(n), s,
                 total, s,
                 str(is_correct), s,
                 reduction
             )
-
-
 
 
     def run_distance(self, pre_dom, post_dom, algorithm, k_size = None):
@@ -320,17 +305,7 @@ class TestTree(object):
             # print("Distance could not be calculated")
             return (None, reduction)
 
-        # print("Distance:", diff[0])
-        # node_tree.print_diff(diff[1])
-
         return (diff[0], reduction)
-
-        # if algorithm == self.ZHANG:
-        #     pass
-        # elif algorithm == self.TOUZET:
-        #     pass
-        # elif algorithm == self.CUSTOM:
-        #     pass
 
     def tree_to_file(self, tree, filename):
         utils.save_file(json.dumps(tree), filename)
@@ -348,14 +323,15 @@ class TestTree(object):
         """
         Given a test object create a copy and mutate it with the given settings.
 
-        obj -- the test object to mutate
+        test_tree -- the test object to mutate
+        visual_check -- boolean if visual verification should be used between mutations
         """
         t = TestTreeGenerator(self.settings, self.results)
         return t.mutate_test(test_tree, visual_check)
 
-    def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None):
+    def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None, doVisualVerification = True):
         t = TestTreeDiffer(self.results)
-        return t.compare_style(pre_tree, post_tree, diffs, pre_path, post_path)
+        return t.compare_style(pre_tree, post_tree, diffs, pre_path, post_path, doVisualVerification)
 
     def store_resources(self, tree, foldername, create_folder = True):
         if create_folder:
@@ -398,7 +374,7 @@ class TestTree(object):
 
         tree = self.file_to_tree(filename)
 
-        # Save original.
+        # Save original (takes extra time).
         # if 'location' in tree:
         #     url = tree['location']['href']
         #     self.tree_to_file(tree, foldername + "/index-original.json")
@@ -411,16 +387,13 @@ class TestTree(object):
 
         return foldername
 
-    def diff_folders(self, folder1, folder2):
-        pass
-
     def __valid_algorithm(self, algorithm):
         if algorithm in ['zhang', 'touzet', 'custom']:
             return True
 
         return False
 
-    def diff(self, file1, file2, algorithm = 'zhang', base_folder = 'test', image1 = None, image2 = None):
+    def diff(self, file1, file2, algorithm = 'zhang', base_folder = 'test', image1 = None, image2 = None, doVisualVerification = True):
         if not self.__valid_algorithm(algorithm):
             print("Invalid algorithm used: ", algorithm)
             return
@@ -451,8 +424,6 @@ class TestTree(object):
         else: 
             copyfile(image1, foldername1 + '/image.png')
             copyfile(image2, foldername2 + '/image.png')
-
-
         
         diff = None
 
@@ -461,7 +432,7 @@ class TestTree(object):
         # signal.alarm(timeout)
 
         # try:
-        if True:
+        if True: # Run without timeout
             if algorithm == self.ZHANG:
                 # ZSS implementation.
                 before_root = node_tree.test_to_tree(pre_dom)
@@ -481,7 +452,6 @@ class TestTree(object):
         #     print("Could not finish tree distance within timeout: ", timeout)
         #     return
 
-
         if diff == None:
             print("Distance could not be calculated")
             return
@@ -490,7 +460,7 @@ class TestTree(object):
         node_tree.print_diff(diff[1])
 
         start = time.time()
-        self.compare_style(pre_dom, post_dom, diff[1], foldername1, foldername2)
+        self.compare_style(pre_dom, post_dom, diff[1], foldername1, foldername2, doVisualVerification)
         total = time.time() - start
         self.results.execution_time['visual-verification'] = total
 
@@ -506,7 +476,6 @@ class TestTree(object):
         print(test_folder)
 
         return (foldername1, foldername2)
-
 
     def run_generated_test(self):
         html_tree = HtmlTree()
@@ -531,7 +500,6 @@ class TestTree(object):
             'data-generator/state2.html',
             'data-generator/state2.json'
         )
-
 
         # self.tree_to_file(post_dom, 'data-generator/post-dom.json')
         self.results.mutations = changes

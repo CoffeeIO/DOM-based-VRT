@@ -9,7 +9,12 @@ from domvrt.html_tree import HtmlTree
 import domvrt.utils as utils
 
 class TestTreeResource(object):
-    """docstring for TestTreeResource."""
+    """
+    The TestTreeResource class is the component that performs resource
+    retreival.
+    This class requests resources, overwrites the original path and save
+    the resources locally. 
+    """
     map = None
     test_tree = None
     foldername = None
@@ -96,7 +101,6 @@ class TestTreeResource(object):
         if r == None:
             invalid_url = True
 
-
         # If fail try as relative url.
         if invalid_url:
             if 'location' not in self.test_tree:
@@ -126,7 +130,6 @@ class TestTreeResource(object):
                     pass
 
                 url = base_url + uri
-
                 r = self.send_request(url)
 
             if r == None or r.status_code != 200:
@@ -135,7 +138,6 @@ class TestTreeResource(object):
                 # print("4: host -> ", url)
 
                 r = self.send_request(url)
-
 
         if r == None:
             print("Could not find url:", uri)
@@ -193,8 +195,6 @@ class TestTreeResource(object):
                     if filename != None:
                         node[attrs]['src'] = filename
 
-
-
     def get_resources(self, node, resources = None, images = None, styles = None):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
@@ -234,8 +234,7 @@ class TestTreeResource(object):
         return (resources, images, styles)
 
     def store_resources(self, tree, foldername):
-
-        self.map = ParserMapping(tree['minify'])
+        self.map = ParserMapping(False)
         self.test_tree = tree
         self.foldername = foldername
         self.file_no = 0

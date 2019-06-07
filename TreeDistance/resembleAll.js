@@ -62,9 +62,3 @@ const dirs = getDirectories('./data-output');
 dirs.forEach(function (dir) {
   getDiff(dir);
 });
-
-
-
-// for (let j = 0; j < process.argv.length; j++) {
-//     console.log(j + ' -> ' + ();
-// }

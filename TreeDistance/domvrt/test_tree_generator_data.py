@@ -2,7 +2,10 @@ import random
 
 # Standard python
 class TestTreeGeneratorData(object):
-
+    """
+    This class was a storage of image data for the more complex generator.
+    Here image data is stored as base64 encoded text.
+    """
     def get_image_data(self):
         count = len(self.image_data)
         index = random.randint(0, count - 1)

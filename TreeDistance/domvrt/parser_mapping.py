@@ -1,6 +1,10 @@
 class ParserMapping(object):
-    """docstring for ParserMapping."""
-
+    """
+    The ParserMapping class was an attempt to create an abstraction layer
+    between stored DOM and property names.
+    From this smaller extraction files could be saved.
+    The class is still used in certain part, but is not fully supported.
+    """
     def __init__(self, minify):
         self.minify = minify
         self.mVal = 1 if minify else 0

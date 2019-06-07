@@ -1,8 +1,5 @@
 'use strict';
 
-// for (let j = 0; j < process.argv.length; j++) {
-//     console.log(j + ' -> ' + ();
-// }
 
 if (process.argv.length != 3) {
   console.log('Missing argument');

@@ -2,9 +2,6 @@ import domvrt
 
 test_tree = domvrt.TestTree()
 
-# Capture settings.
-# Windowed 1000x1200
-
 def run_netflix():
     f = "netflix--"
     basef = "www-netflix.com--"
@@ -121,7 +118,6 @@ def run_eboks():
     insert = basef + "insert"
     update = basef + "update"
     style = basef + "element-style"
-    # base2 = basef + "default2"
 
     pos = basef + "element-pos"
     dim = basef + "element-dim"
@@ -145,7 +141,6 @@ def run_medium():
     insert = basef + "insert"
     update = basef + "update"
     style = basef + "element-style"
-    # base2 = basef + "default2"
 
     pos = basef + "element-pos"
     dim = basef + "element-dim"
@@ -173,8 +168,8 @@ def run(file1, file2, folder):
     file1 = f + file1 + json
     file2 = f + file2 + json
 
-    test_tree.diff(file1, file2, 'custom', folder + '--custom-', img1, img2)
-    # test_tree.diff(file1, file2, 'zhang', folder + '--zhang-', img1, img2)
+    test_tree.diff(file1, file2, 'custom', folder + '--custom-', img1, img2, True)
+    test_tree.diff(file1, file2, 'zhang', folder + '--zhang-', img1, img2, True)
 
 
 run_netflix()

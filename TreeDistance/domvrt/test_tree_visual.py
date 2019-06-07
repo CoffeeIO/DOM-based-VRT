@@ -10,7 +10,11 @@ import domvrt.utils as utils
 
 
 class TestTreeVisual(object):
-    """docstring for TestTreeVisual."""
+    """
+    The TestTreeVisual class performs all image analysis and manipulation
+    for the purpose of visual verification.
+    This class saves image and highlighs them.
+    """
     def __init__(self, foldername = None):
         self.foldername = foldername
 
@@ -73,10 +77,8 @@ class TestTreeVisual(object):
         width, height = self.im.size
         # self.width_scale = width / tree['captureWidth']
         # self.height_scale = self.width_scale
-        self.width_scale = 2.0
-        self.height_scale = 2.0
-        # if 'captureHeight' in tree:
-        #     self.height_scale = height / tree['captureHeight']
+        self.width_scale = 2.0 # Fix scale, for chrome screenshot
+        self.height_scale = 2.0 # Fix scale, for chrome screenshot
 
     def save_image(self, filename):
         self.im.save(filename)
@@ -143,7 +145,7 @@ class TestTreeVisual(object):
 
         print("sum -> " , sum)
 
-        return (m.digest(), sum)
+        return (m.hexdigest(), sum)
 
     def __is_valid_node(self, node):
         attrs = ['x1', 'x2', 'y1', 'y2']

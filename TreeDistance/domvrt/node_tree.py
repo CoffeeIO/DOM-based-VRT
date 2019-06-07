@@ -5,7 +5,6 @@ import sys, json, os, time
 from domvrt.parser_mapping import ParserMapping
 from domvrt.results import Results
 
-
 sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance')
 
 from zss import simple_distance, Node, Operation, distance as strdist
@@ -18,7 +17,12 @@ def strdist(a, b):
             return 1
 
 class NodeTree(object):
-    """docstring for NodeTree."""
+    """
+    The NodeTree works as the abstraction layer between the DOM 
+    representation and ZSS's Node representation.
+    This class is responsible for all calls to the Zhang-Shasha 
+    distance function. 
+    """
 
     def __init__(self, results = None):
         if results == None:
@@ -98,6 +102,8 @@ class NodeTree(object):
 
         pre  -- object before changes
         post -- object after changes
+        use_touzet -- boolean if touzet should be used
+        k_size -- option k for the touzet algorithm
         """
         if self.results != None:
             start = time.time()

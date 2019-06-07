@@ -11,7 +11,10 @@ from domvrt.test_tree_generator_data import TestTreeGeneratorData
 from domvrt.results import Results
 
 class TestTreeGenerator(object):
-    """docstring for TestTreeGenerator."""
+    """
+    The TestTreeGenerator class generates HTML DOMs, represented as objects.
+    This class also is responsible for mutating a given DOM.
+    """
     def __init__(self, settings, results = None):
         self.settings = settings
         self.test_tree_generator_data = TestTreeGeneratorData()
@@ -138,7 +141,6 @@ class TestTreeGenerator(object):
                     visible_change
                 )
 
-
         return node
 
     # -------------------------------------------------------------------------
@@ -198,7 +200,6 @@ class TestTreeGenerator(object):
     def __contruct_tree(self, remain_nodes, depth, body):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
-
         node_queue = collections.deque([{'node': body, 'depth': depth}])
 
         self.count_tags = 0
@@ -216,7 +217,6 @@ class TestTreeGenerator(object):
                 content_child = self.__random_text(new_pos)
                 node['node'][childNodes].append(content_child)
                 remain_nodes -= 1
-
 
             number_of_children = random.randint(self.settings['min-branch-factor'], self.settings['max-branch-factor'])
             offset = 0
@@ -247,7 +247,6 @@ class TestTreeGenerator(object):
         if self.results.debug:
             print("counts: ", self.count_tags, self.count_text)
         return (self.count_tags, self.count_text)
-
 
     def __create_base_object(self, minify):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
@@ -341,12 +340,10 @@ class TestTreeGenerator(object):
 
         (count_tags, count_text) = self.__contruct_tree(number_of_element, 1, body)
 
-
         root['node-count'] = number_of_element + 6 # Add 6 nodes from template
         root['captureWidth'] = 700
         if self.results.debug:
             print('Done generating')
-
 
         return root
 
@@ -371,12 +368,6 @@ class TestTreeGenerator(object):
     def __mutate_test_child(self, node, changes_remain_total, changes_remain, changes_prop, hit_body = False, parent = None, child_index = None):
         """
         Mutate node with the different test types.
-
-        node                 --
-        changes_remain_total --
-        changes_remain       --
-        changes_prop         --
-        hit_body             --
         """
 
         (add, delete, mod_style, mod_position, mod_dimension, change_content) = changes_remain
@@ -399,7 +390,6 @@ class TestTreeGenerator(object):
                 div = self.__modify_element(div)
 
                 # self.__add_change(div, 'add')
-
 
                 div[childNodes] = node[childNodes]
                 node[childNodes] = [div]
@@ -444,7 +434,6 @@ class TestTreeGenerator(object):
                         visible_change
                     )
 
-
                 delete -= 1
                 changes_remain_total -= 1
 
@@ -476,7 +465,6 @@ class TestTreeGenerator(object):
                 old_node = deepcopy(node)
                 # old_node = (node)
 
-
                 changed = False
                 if node[nodeType] == 1: # Normal node
                     text = self.__random_text(node[position] + "." + str(len(node[childNodes])))
@@ -504,7 +492,6 @@ class TestTreeGenerator(object):
                     elif i == 3: # Change
                         node[nodeValue] = lorem.sentence()
                     changed = True
-
 
                 if changed:
                     change_content -= 1
@@ -534,8 +521,6 @@ class TestTreeGenerator(object):
 
         return (changes_remain_total, changes_remain)
 
-
-
     def mutate_test(self, test_tree, visual_check = True):
         """
         Mutate test tree until desired number of changes is reached.
@@ -553,7 +538,6 @@ class TestTreeGenerator(object):
 
         changes_remain_total = random.randint(self.settings['min-changes'], self.settings['max-changes'])
         change_sum     = sum(self.settings['distribution-of-change-type'])
-
 
         add            = (self.settings['distribution-of-change-type'][0] * changes_remain_total / change_sum)
         delete         = (self.settings['distribution-of-change-type'][1] * changes_remain_total / change_sum)
@@ -574,7 +558,6 @@ class TestTreeGenerator(object):
         self.base_image = None
         if self.visual_check:
             self.base_image = self.__snapshot()
-
 
         nodes = float(mutate_tree['node-count']) # Convert to float
 
@@ -603,7 +586,6 @@ class TestTreeGenerator(object):
 
         return (mutate_tree, self.results.mutations)
 
-
     def __update_position_child(self, node, parent_position = None):
         self.node_count += 1
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
@@ -622,9 +604,6 @@ class TestTreeGenerator(object):
     def update_position(self, node):
         """
         Update position on tree.
-
-        node         --
-        new_position --
         """
         self.node_count = 0
 
@@ -648,7 +627,6 @@ class TestTreeGenerator(object):
             'position': position,
             'property': property,
         })
-
 
     def __snapshot(self):
         if os.path.isfile('data-generator/snapshot.png'):

@@ -164,7 +164,7 @@ def is_k_relevant(A, B, x, y, map_A, map_B, k):
     size_x = map_A[x]
     size_y = map_B[y]
     # Something is wrong with the last part.
-    value = abs(size_a - x - size_b + y) + abs(size_x - size_y) + abs(x - size_x - y + size_x)
+    value = abs(size_a - x - size_b + y) + abs(size_x - size_y) + abs(x - size_x - y + size_y)
     return value <= k
 
 def simple_distance(A, B, get_children=Node.get_children,

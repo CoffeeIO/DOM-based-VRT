@@ -1,5 +1,5 @@
 # Standard python
-import collections
+import collections, hashlib
 from copy import deepcopy
 # Dependencies
 # This package
@@ -7,7 +7,11 @@ from domvrt.node_tree import NodeTree
 from domvrt.results import Results
 
 class TreeDistance(object):
-    """docstring for TestDistance."""
+    """
+    The TestDistance class works as the custom tree distance algorithm.
+    This algorithm performs subtree matching and use the ZSS 
+    library on the reduced tree.
+    """
     def __init__(self, results = None):
         if results == None:
             self.results = Results()
@@ -35,6 +39,11 @@ class TreeDistance(object):
         node['matched'] = False # Default no node is matched
 
         if 'childNodes' not in node or len(node['childNodes']) == 0:
+            
+            # Hash the node label.
+            m = hashlib.md5(node_hash.encode())
+            node_hash = m.hexdigest()
+            
             node['subtree-size'] = 0
             node['subtree-hash'] = node_hash
             return (1, node_hash)
@@ -44,6 +53,10 @@ class TreeDistance(object):
              (subtree_size, subtree_hash) = self.__count_subtree_size(child)
              node_size += subtree_size
              node_hash += subtree_hash
+
+        # Hash the subtree label.
+        m = hashlib.md5(node_hash.encode())
+        node_hash = m.hexdigest()
 
         node['subtree-size'] = node_size
         node['subtree-hash'] = node_hash
@@ -157,8 +170,6 @@ class TreeDistance(object):
         post_size_to_hash = self.__get_size_to_hash(post_dom)
 
         self.pp(pre_dom)
-        # print(post_size_to_hash)
-        # print(pre_hash_to_node)
 
         # Get subtree sizes and sort in decending order to match biggest subtrees first.
         post_size_keys = list(post_size_to_hash.keys())
@@ -212,7 +223,6 @@ class TreeDistance(object):
         post_dom_count = self.__pop_matched_nodes(new_post_dom)
 
         if self.results.debug:
-        # if True:
             print('Sizes before reduction:')
             print(pre_dom['node-count'])
             print(post_dom['node-count'])

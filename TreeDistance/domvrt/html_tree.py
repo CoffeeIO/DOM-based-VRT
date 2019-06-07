@@ -7,7 +7,11 @@ from domvrt.parser_mapping import ParserMapping
 import domvrt.utils as utils
 
 class HtmlTree(object):
-    """docstring for HtmlTree."""
+    """ 
+    The HtmlTree class is responsible for converting the DOM objects to HTML
+    text.
+    This class is also responsible for saving the HTML text to a file.
+    """
 
     map = None
 

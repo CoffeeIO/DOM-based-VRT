@@ -6,17 +6,20 @@ from domvrt.parser_mapping import ParserMapping
 import domvrt.utils as utils
 
 class Results(object):
-    """docstring for Results."""
+    """
+    The Results class is a test information store.
+    Here information regarding execution time, metrics and tree info is stored
+    from any given test.
+    The class is also responsible for outputting the test information to file.
+    """
 
     debug = True
-
     map = None
 
     INSERT = "insert"
     REMOVE = "remove"
     UPDATE = "update"
     MATCH = "match"
-
 
     # Issue = Actual change.
     issues = {
@@ -166,6 +169,9 @@ class Results(object):
         })
 
     def add_mutation(self, type, pre_node = None, post_node = None, style_data = None, visible = False):
+        if self.map == None:
+            self.map = ParserMapping(False)
+
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()
 
         pre_data = None
@@ -542,8 +548,6 @@ class Results(object):
                 self.add_metric('fp')
                 print("Actual not found: ", actual['node-pre']['position'])
                 print(actual)
-
-
 
     def compare(self):
         # Check if there is no mutations to compare.

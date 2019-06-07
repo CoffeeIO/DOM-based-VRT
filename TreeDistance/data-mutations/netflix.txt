@@ -1,23 +1,26 @@
 # https://www.netflix.com/dk-en/ - 570
 
-// Careful with offset in position
+REMOVE
 DomVRT.Differ.remove('1.1.1.0.0.3.1.1.7', true, false)
 DomVRT.Differ.remove('1.1.1.0.0.1.0.0', true, false)
 DomVRT.Differ.remove('1.1.1.0.0.2.0.0.1.0', true, true)
 
-// Careful with offset in position
+INSERT
 DomVRT.Differ.insert('1.1.1.0.0.1.1', '<a href="/login" class="authLinks signupBasicHeader" data-uia="header-login-link">Sign Out</a>', true, true)
 DomVRT.Differ.insert('1.1.1.0.0.2.1.2.0.0.0', '<p>Hello world</p>', true, true)
 DomVRT.Differ.insertWrapper('1.1.1.0.0.3.1', '<div class="newwrapper">', '</div>', false)
 
+UPDATE
 DomVRT.Differ.updateText('1.1.1.0.0.2.0.0.1.0.1.0', true, "WATCH ANYWHERE. CANCEL ANY TIME.")
 DomVRT.Differ.updateText('1.1.1.0.0.2.1.1.1.1.0.2.0.0', true, "Watch on TV")
 DomVRT.Differ.updateText('1.1.1.0.0.3.1.1.5.0.0.0', true, "Account")
 
+STYLE
 DomVRT.Differ.match('1.1.1.0.0.2.0.0.1.2.0.2', true, 'background', '#da101a')
 DomVRT.Differ.match('1.1.1.0.0.2.1.2.0.0.0.0.0', true, 'text-transform', 'lowercase')
 DomVRT.Differ.match('1.1.1.0.0.3.1.1.0.0', true, 'color', 'blue')
 
+POS
 DomVRT.Differ.match('1.1.1.0.0.3.1.0', true, 'position', 'relative')
 DomVRT.Differ.match('1.1.1.0.0.3.1.0', true, 'left', '10px')
 DomVRT.Differ.match('1.1.1.0.0.1.1', true, 'position', 'relative')
@@ -25,11 +28,12 @@ DomVRT.Differ.match('1.1.1.0.0.1.1', true, 'top', '40px')
 DomVRT.Differ.match('1.1.1.0.0.2.1.2.0.0.1.0', true, 'position', 'absolute')
 DomVRT.Differ.match('1.1.1.0.0.2.1.2.0.0.1.0', true, 'bottom', '20px')
 
+DIM
 DomVRT.Differ.match('1.1.1.0.0.3.1', true, 'margin', '40px')
 DomVRT.Differ.match('1.1.1.0.0.2.1.1.1.2.0', true, 'padding', '20px')
 DomVRT.Differ.match('1.1.1.0.0.2.0.0.1.0.1', true, 'margin-top', '80px')
 
-// Combi
+COMB
 DomVRT.Differ.remove('1.1.1.0.0.3.1.1.7', true, false)
 DomVRT.Differ.remove('1.1.1.0.0.1.0.0', true, false)
 DomVRT.Differ.updateText('1.1.1.0.0.2.0.0.1.0.1.0', true, "WATCH ANYWHERE. CANCEL ANY TIME.")

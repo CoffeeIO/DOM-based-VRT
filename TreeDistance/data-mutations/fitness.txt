@@ -5,23 +5,23 @@ DomVRT.Differ.remove('1.1.1.4.0.1.0.0.2.0.0.0.2.0.2', true, false)
 DomVRT.Differ.remove('1.1.1.4.0.1.0.0.5.0.0.0', true, false)
 DomVRT.Differ.remove('1.1.1.4.0.2.0.0.0.0.0.3.1.1.1', true, false)
 
-insert
+INSERT
 DomVRT.Differ.insert('1.1.1.4.0.2.0.0.0.0.0.1.1.3', '<li class="footer__list__item"><a href="/dk2/konkurrence" class="footer__list__link" data-drupal-link-system-path="node/260">Ny menu</a></li>', true, true)
 DomVRT.Differ.insert('1.1.1.4.0.1.0.0.4.0.0.0.0', '<p>Subtitle</p>', true, true)
 DomVRT.Differ.insertWrapper('1.1.1.4.0.1.0.0.6.0.0', '<div>' , '</div>', false)
 
-update
+UPDATE
 DomVRT.Differ.updateText('1.1.1.4.0.1.0.0.2.0.0.0.2.0.2.0.2.0', true, 'Medlemmer')
 DomVRT.Differ.updateText('1.1.1.4.0.0.0.0.3.0.1.0.0', true, 'Vores hold')
 DomVRT.Differ.updateText('1.1.1.4.0.1.0.0.5.1.1.1.0.0.0.0.0', true, '15%')
 
-styles
+STYLE
 DomVRT.Differ.match('1.1.1.4.0.1.0.0.5.0.1.1.0.0.0.2.0', true, 'background-color', '#6bc2cd')
 DomVRT.Differ.match('1.1.1.4.0.1.0.0.4.1.0.1.0.1.1', true, 'font-style', 'italic')
 DomVRT.Differ.match('1.1.1.4.0.1.0.0.0.1.0', true, 'color', 'green')
 1.1.1.4.0.1.0.0.0.1.0
 
-pos
+POS
 DomVRT.Differ.match('1.1.1.4.0.0.0.0.2.0', true, 'position', 'relative')
 DomVRT.Differ.match('1.1.1.4.0.0.0.0.2.0', true, 'right', '20px')
 
@@ -31,12 +31,12 @@ DomVRT.Differ.match('1.1.1.4.0.0.0.0.0', true, 'left', '30px')
 DomVRT.Differ.match('1.1.1.4.0.1.0.0.5.0.0.0.0', true, 'position', 'relative')
 DomVRT.Differ.match('1.1.1.4.0.1.0.0.5.0.0.0.0', true, 'bottom', '20px')
 
-dim
+DIM
 DomVRT.Differ.match('1.1.1.4.0.1.0.0.2', true, 'padding', '40px 0')
 DomVRT.Differ.match('1.1.1.4.0.2.0.0.0.0.0', true, 'margin-bottom', '20px')
 DomVRT.Differ.match('1.1.1.4.0.1.0.0.5.1.1.1.0.0', true, 'padding', '10px')
 
-comb
+COMB
 DomVRT.Differ.remove('1.1.1.4.0.1.0.0.2.0.0.0.2.0.2', true, false)
 DomVRT.Differ.remove('1.1.1.4.0.1.0.0.5.0.0.0', true, false)
 
