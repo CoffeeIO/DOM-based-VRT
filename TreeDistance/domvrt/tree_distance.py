@@ -126,6 +126,8 @@ class TreeDistance(object):
         self.node_count += 1
 
         to_remove = []
+        if 'childNodes' not in node:
+            node['childNodes'] = []
         for index, child in enumerate(node['childNodes']):
             if child['matched'] == True:
                 to_remove.append(index)
@@ -145,6 +147,7 @@ class TreeDistance(object):
 
         # O(n) , n is nodes of pre_dom
         self.__count_subtree_size(pre_dom)
+
          # O(n) , n is nodes of post_dom
         self.__count_subtree_size(post_dom)
 
@@ -162,7 +165,8 @@ class TreeDistance(object):
 
         # O(n log(n)) , n is the height of tree
         post_size_keys.sort(reverse = True)
-        print(post_size_keys)
+        if self.results.debug:
+            print(post_size_keys)
 
         for post_key in post_size_keys:
             if post_key < 3:
@@ -182,7 +186,8 @@ class TreeDistance(object):
 
                     # If the pre_node is already matched we skip it.
                     if pre_node['matched'] == True:
-                        print('Found match, skipping')
+                        if self.results.debug:
+                            print('Found match, skipping')
                         continue
 
                     # Match pre_node to post_node.
@@ -206,13 +211,14 @@ class TreeDistance(object):
         pre_dom_count = self.__pop_matched_nodes(new_pre_dom)
         post_dom_count = self.__pop_matched_nodes(new_post_dom)
 
-        print('Sizes before reduction:')
-        print(pre_dom['node-count'])
-        print(post_dom['node-count'])
+        if self.results.debug:
+            print('Sizes before reduction:')
+            print(pre_dom['node-count'])
+            print(post_dom['node-count'])
 
-        print('Sizes after reduction:')
-        print(pre_dom_count)
-        print(post_dom_count)
+            print('Sizes after reduction:')
+            print(pre_dom_count)
+            print(post_dom_count)
 
         self.results.tree_info['reduced-pre-dom-size'] = pre_dom_count
         self.results.tree_info['reduced-post-dom-size'] = post_dom_count
@@ -223,8 +229,9 @@ class TreeDistance(object):
         post_root = node_tree.test_to_tree(new_post_dom)
         diff = node_tree.diff_trees(pre_root, post_root)
 
-        print("Distance:", diff[0])
-        node_tree.print_diff(diff[1])
+        if self.results.debug:
+            print("Distance:", diff[0])
+            node_tree.print_diff(diff[1])
 
         return [diff[0], diff[1] + node_tree.mapping]
 
@@ -244,7 +251,8 @@ class TreeDistance(object):
          "pos: " + str(test_dom['position']) + " , " + \
          "subtree: " + str(test_dom['subtree-size']) + " , " + \
         " }"
-        print(s)
+        if self.results.debug:
+            print(s)
 
         if 'childNodes' not in test_dom:
             return
@@ -281,8 +289,9 @@ class TreeDistance(object):
         for index, char1 in enumerate(p1):
             char2 = p2[index]
             if char1 != char2:
-                print(len(p1), index)
-                print(len(p2), index)
+                if self.results.debug:
+                    print(len(p1), index)
+                    print(len(p2), index)
                 dist1 = len(p1) - index
                 dist2 = len(p2) - index
                 return dist1 + dist2 - 1

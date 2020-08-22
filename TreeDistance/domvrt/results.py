@@ -8,6 +8,8 @@ import domvrt.utils as utils
 class Results(object):
     """docstring for Results."""
 
+    debug = True
+
     map = None
 
     INSERT = "insert"
