@@ -49,10 +49,10 @@ class TestTreeDiffer(object):
 
         if pre_path != None:
             pre_visual_diff = TestTreeVisual(pre_path)
-            pre_visual_diff.init_image(pre_path + "/image.png", pre_tree)
+            pre_visual_diff.init_image("data/image1.png", pre_tree)
         if post_path != None:
             post_visual_diff = TestTreeVisual(post_path)
-            post_visual_diff.init_image(post_path + "/image.png", post_tree)
+            post_visual_diff.init_image("data/image2.png", post_tree)
 
         pre_map = self.make_position_map(pre_tree)
         post_map = self.make_position_map(post_tree)
@@ -93,7 +93,7 @@ class TestTreeDiffer(object):
                 an = post_node = post_map[diff.arg2.position]
 
                 styles_data = []
-                if styleId in bn and bn[styleId] != an[styleId]:
+                if styleId in bn and styleId in an and bn[styleId] != an[styleId]:
                     if styles in bn:
                             for key in bn[styles].keys():
                                 if bn[styles][key] != an[styles][key]: # Compare individual styles

@@ -2,6 +2,20 @@ DomVRT.Extractor = (function (obj) {
 
   obj.nodeCount = 0;
 
+  obj.processUrls = function(urls, viewports) {
+    for (const url of urls) {
+      for (const viewport of viewports) {
+        obj.processUrl(url, viewport);
+      }
+    }
+  };
+
+  obj.processUrl = function(url, viewport) {
+    let windowName = url + ' : ' +  viewport;
+    console.log('%s : %s', url, viewport);
+
+  }
+
   obj.currentAppToJSON = function(minify) {
     console.log('Running DomVRT Extractor');
 
@@ -37,25 +51,37 @@ DomVRT.Extractor = (function (obj) {
   };
 
   obj.currentAppToFile = function(filename, minify) {
+    filename = filename ? filename : getFilename();
+
+    html2canvas(document.querySelector('html')).then(canvas => {
+      canvas.toBlob(function(blob) {
+        saveAs(blob, filename + '.png');
+      });
+    });
 
     var jsonObj = obj.currentAppToJSON(minify);
-
-    if (filename == null) {
-      var d = new Date();
-      var timeStr = d.getFullYear() + '-' + dts(d.getMonth() + 1) + '-' +
-       dts(d.getDate()) + '--' + dts(d.getHours()) + '-' + dts(d.getMinutes() +
-        '-' + dts(d.getSeconds()));
-
-      var host = (window.location.host).replace('.', '-');
-
-      filename = host + '--' + timeStr + '.json';
-    }
-
     var blob = new Blob([JSON.stringify(jsonObj)], {type: "application/json;charset=utf-8"});
-    saveAs(blob, filename);
+    saveAs(blob, filename + '.json');
 
     return jsonObj;
   };
+
+  var getFilename = function() {
+    var d = new Date();
+    var timeStr = d.getFullYear() + '-' + dts(d.getMonth() + 1) + '-' +
+      dts(d.getDate()) + '--' + dts(d.getHours()) + '-' + dts(d.getMinutes() +
+      '-' + dts(d.getSeconds()));
+
+    var host = (window.location.host).replace('.', '-');
+    let path = (window.location.pathname).replace('/', '-');
+    const urlParams = new URLSearchParams(window.location.search);
+    const viewport = urlParams.get('domVrtViewport');
+
+    // filename = host + '-' + path + '--' + viewport + '--' + timeStr + '';
+    filename = timeStr + '--' + host + '-' + path + '--' + viewport;
+
+    return filename;
+  }
 
   // Based on https://gist.github.com/sstur/7379870
   var nodeToJSON = function (node, minify, position) {

@@ -61,8 +61,9 @@ pip3 install six
 pip3 install lorem
 pip3 install image
 pip3 install time
+pip3 install requests
 
-# Modify Treedistance/domvrt/node_tree.py:8 
+# Modify Treedistance/domvrt/node_tree.py:8
 # Change path to the user specific path of the Treedistance folder.
 ```
 
@@ -111,7 +112,7 @@ python3 summarize-output.py insert--custom # returns the summary of custom on in
 #### Tree generator and mutator
 
 Run generator and mutator on default settings.
-Results are saved into `data-generator/state1.html` and `data-generator/state2.html` 
+Results are saved into `data-generator/state1.html` and `data-generator/state2.html`
 ```
 python3 test-mutator.py
 ```
@@ -124,4 +125,4 @@ python3 test-resource-retrieve.py
 ```
 
 
-  
+

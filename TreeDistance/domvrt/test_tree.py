@@ -181,14 +181,21 @@ class TestTree(object):
         foldername2 = self.get_folder(test_folder + "/after")
 
 
+        print("Convert file to tree")
+
         pre_dom = self.file_to_tree(file1)
         post_dom = self.file_to_tree(file2)
 
+        print("Setting tree info")
+
+
         self.results.set_tree_info(pre_dom, post_dom)
 
+        print("Saving files")
+
         start = time.time()
-        self.save(file1, foldername1, False)
-        self.save(file2, foldername2, False)
+        # self.save(file1, foldername1, False)
+        # self.save(file2, foldername2, False)
         total = time.time() - start
         self.results.execution_time['resource-storage'] = total
 
@@ -197,6 +204,8 @@ class TestTree(object):
         signal.signal(signal.SIGALRM, timeout_handler)
         timeout = 600
         signal.alarm(timeout)
+
+        print("Running tree distance algorithms")
 
         try:
             if algorithm == self.ZHANG:

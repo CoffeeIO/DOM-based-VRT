@@ -63,6 +63,7 @@ class TestTreeVisual(object):
     height_scale = None
 
     def init_image(self, filename, tree):
+        
         self.im = Image.open(filename)
         self.d = ImageDraw.Draw(self.im)
 

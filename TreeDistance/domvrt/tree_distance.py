@@ -182,7 +182,7 @@ class TreeDistance(object):
 
                     # If the pre_node is already matched we skip it.
                     if pre_node['matched'] == True:
-                        print('Found match, skipping')
+                        # print('Found match, skipping')
                         continue
 
                     # Match pre_node to post_node.
