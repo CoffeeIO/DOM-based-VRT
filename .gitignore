@@ -3,6 +3,8 @@ ChromeExtension/domvrt*.min.js
 workspace
 TreeDistance/data
 TreeDistance/data-output
+data/
+data-summary/
 
 .DS_Store
 

@@ -59,9 +59,17 @@ DomVRT.Extractor = (function (obj) {
       });
     });
 
+
+    // domtoimage.toBlob(document.getElementById('html'))
+    //   .then(function (blob) {
+    //       saveAs(blob, filename + '.png');
+    //   });
+
+    // setTimeout(function(){
     var jsonObj = obj.currentAppToJSON(minify);
-    var blob = new Blob([JSON.stringify(jsonObj)], {type: "application/json;charset=utf-8"});
-    saveAs(blob, filename + '.json');
+    // var blob = new Blob([JSON.stringify(jsonObj)], {type: "application/json;charset=utf-8"});
+    // saveAs(blob, filename + '.json');
+    // }, 3000);
 
     return jsonObj;
   };

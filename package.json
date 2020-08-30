@@ -29,6 +29,9 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
+    "js-yaml": "^3.14.0",
+    "moment": "^2.27.0",
+    "puppeteer": "^5.2.1",
     "puppeteer-full-page-screenshot": "^1.0.5"
   },
   "scripts": {

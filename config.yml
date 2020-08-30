@@ -1,0 +1,7 @@
+viewports:
+  - 600
+  - 900
+urls:
+  - "https://coffeeio.com/"
+  - "https://coffeeio.com/2017/04/06/trello-enhanced-date.html"
+delay: 3000

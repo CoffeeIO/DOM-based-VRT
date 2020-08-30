@@ -9,6 +9,7 @@ var source = [
 var librarySource = [
     'src/vendor/FileSaver.js',
     'src/vendor/html2canvas.min.js',
+    'src/vendor/dom-to-image.min.js',
 ];
 // ----------------------------------------------------------------------------
 
@@ -44,9 +45,9 @@ gulp.task('merge', function () {
 });
 
 var tasks = [
-    'vendor', // Bundle vendor files
+    // 'vendor', // Bundle vendor files
     'ts',         // Compile Typescript files
-    'merge',   // Merge vendor files with typescript files
+    // 'merge',   // Merge vendor files with typescript files
 ];
 
 gulp.task('compile', gulp.series(tasks))

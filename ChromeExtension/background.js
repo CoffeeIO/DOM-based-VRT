@@ -13,24 +13,41 @@ function run() {
 chrome.browserAction.onClicked.addListener(function(tab) {
   run()
 
-  processUrls(getUrls(), getViewports());
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  }, function(tabs) {
+    var tab = tabs[0];
+    var url = tab.url;
+
+    processUrls(getUrls(url), getViewports());
+  });
+
 });
 
 let domvrtId = 1;
 
-function getUrls() {
-  return [
+function getUrls(currentUrl = null) {
+  let arr = [];
+
+  if (currentUrl) {
+    arr.push(currentUrl);
+  }
+
+  arr.push(
     // 'https://coffeeio.com/',
     // 'https://mgapcdev.com/',
-    'https://github.com/MGApcDev/DOM-based-VRT',
-  ];
+    // 'https://github.com/MGApcDev/DOM-based-VRT',
+  );
+
+  return arr;
 }
 
 function getViewports() {
   return [
     600,
     900,
-    1200,
+    // 1200,
   ];
 }
 
