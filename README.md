@@ -150,7 +150,7 @@ python3 test-resource-retrieve.py
     - Domain
 
 ### List captures
-- `list.sh --query={1.2 | coffeeio.com}`
+- `list.sh "{1.2 | coffeeio.com}"`
 - ID
 - Tag
 - Url count

@@ -3,6 +3,10 @@ const moment = require('moment'); // require
 const fs = require('fs');
 const yaml = require('js-yaml');
 
+let tag = '';
+process.argv.forEach(function (val, index, array) {
+    console.log(index + ': ' + val);
+});
 
 
 (async () => {
@@ -79,11 +83,9 @@ const yaml = require('js-yaml');
         }
     }
 
-    fs.writeFileSync('summary/' + datetime + '--' + summary.domain + '.json', JSON.stringify(summary));
+    fs.writeFileSync('data-summary/' + datetime + '--' + summary.domain + '.json', JSON.stringify(summary));
 
     await browser.close();
-
-
 })();
 
 async function autoScroll(page){
