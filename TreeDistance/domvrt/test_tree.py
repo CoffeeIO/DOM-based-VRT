@@ -99,9 +99,9 @@ class TestTree(object):
         t = TestTreeGenerator(self.settings)
         return t.mutate_test(test_tree)
 
-    def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None):
+    def compare_style(self, pre_tree, post_tree, diffs, pre_path, post_path, path1, path2):
         t = TestTreeDiffer(self.results)
-        return t.compare_style(pre_tree, post_tree, diffs, pre_path, post_path)
+        return t.compare_style(pre_tree, post_tree, diffs, pre_path, post_path, path1, path2)
 
     def store_resources(self, tree, foldername, create_folder = True):
         if create_folder:
@@ -166,10 +166,10 @@ class TestTree(object):
 
         return False
 
-    def diff(self, file1, file2, algorithm = 'zhang', base_folder = 'test'):
+    def diff(self, path1, path2, algorithm = 'zhang', base_folder = 'test'):
         if not self.__valid_algorithm(algorithm):
             print("Invalid algorithm used: ", algorithm)
-            return;
+            return
 
 
         start_total = time.time()
@@ -183,8 +183,8 @@ class TestTree(object):
 
         print("Convert file to tree")
 
-        pre_dom = self.file_to_tree(file1)
-        post_dom = self.file_to_tree(file2)
+        pre_dom = self.file_to_tree(path1 + '.json')
+        post_dom = self.file_to_tree(path2 + '.json')
 
         print("Setting tree info")
 
@@ -236,7 +236,7 @@ class TestTree(object):
         node_tree.print_diff(diff[1])
 
         start = time.time()
-        self.compare_style(pre_dom, post_dom, diff[1], foldername1, foldername2)
+        self.compare_style(pre_dom, post_dom, diff[1], foldername1, foldername2, path1, path2)
         total = time.time() - start
         self.results.execution_time['visual-verification'] = total
 

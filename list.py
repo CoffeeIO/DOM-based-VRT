@@ -8,7 +8,8 @@ onlyfiles = [f for f in listdir(dataSource) if isfile(join(dataSource, f))]
 # print(onlyfiles)
 
 header = [
-    "ID",
+    "Unique ID",
+    "Test key",
     "Domain",
     "Tag",
     "Captures",
@@ -26,7 +27,7 @@ for path in onlyfiles:
     # parse file
     obj = json.loads(data)
 
-    tableData.append([obj['id'], obj['domain'], obj['tag'], len(obj['files'])])
+    tableData.append([obj['id'], obj['key'] if 'key' in obj else '', obj['domain'], obj['tag'], len(obj['files'])])
     print(obj)
 
 string = tt.to_string(

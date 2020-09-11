@@ -33,7 +33,7 @@ class TestTreeDiffer(object):
         return map
 
 
-    def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None):
+    def compare_style(self, pre_tree, post_tree, diffs, pre_path, post_path, path1, path2):
         """
         Compare style differences of matches.
 
@@ -49,10 +49,10 @@ class TestTreeDiffer(object):
 
         if pre_path != None:
             pre_visual_diff = TestTreeVisual(pre_path)
-            pre_visual_diff.init_image("data/image1.png", pre_tree)
+            pre_visual_diff.init_image(path1 + '.png', pre_tree)
         if post_path != None:
             post_visual_diff = TestTreeVisual(post_path)
-            post_visual_diff.init_image("data/image2.png", post_tree)
+            post_visual_diff.init_image(path2 + '.png', post_tree)
 
         pre_map = self.make_position_map(pre_tree)
         post_map = self.make_position_map(post_tree)

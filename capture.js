@@ -8,6 +8,8 @@ process.argv.forEach(function (val, index, array) {
     console.log(index + ': ' + val);
 });
 
+const dataSource = 'data';
+
 
 (async () => {
     // Init
@@ -67,7 +69,7 @@ process.argv.forEach(function (val, index, array) {
                 return DomVRT.Extractor.currentAppToJSON();
             });
 
-            let path = 'data/' + datetime + '--' + count + '--' + domain + '--' + viewport;
+            let path = dataSource + '/' + datetime + '--' + count + '--' + domain + '--' + viewport;
             count += 1;
 
             summary.files.push(path);
@@ -83,6 +85,8 @@ process.argv.forEach(function (val, index, array) {
         }
     }
 
+    summary.key = makeKey(config, summary);
+    console.log(summary.key);
     fs.writeFileSync('data-summary/' + datetime + '--' + summary.domain + '.json', JSON.stringify(summary));
 
     await browser.close();
@@ -115,4 +119,31 @@ async function makeid(length) {
        result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
- }
+}
+function makeKey(config, summary) {
+    let key = '';
+
+    for (const viewport of config.viewports) {
+        key += viewport + '|';
+    }
+    for (const url of config.urls) {
+        key += url + '|';
+    }
+    console.log(key);
+
+
+    return hashCode(key);
+}
+
+function hashCode(str) {
+    var hash = 0;
+    if (str.length == 0) {
+        return hash;
+    }
+    for (var i = 0; i < str.length; i++) {
+        var char = str.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}

@@ -5,6 +5,7 @@ TreeDistance/data
 TreeDistance/data-output
 data/
 data-summary/
+data-output/
 
 .DS_Store
 
