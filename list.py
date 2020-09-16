@@ -13,6 +13,7 @@ header = [
     "Domain",
     "Tag",
     "Captures",
+    "Datetime"
 ]
 
 tableData = []
@@ -27,7 +28,9 @@ for path in onlyfiles:
     # parse file
     obj = json.loads(data)
 
-    tableData.append([obj['id'], obj['key'] if 'key' in obj else '', obj['domain'], obj['tag'], len(obj['files'])])
+    key = obj['key'] if 'key' in obj else ''
+    datetime = obj['datetime'] if 'datetime' in obj else ''
+    tableData.append([obj['id'], key, obj['domain'], obj['tag'], len(obj['files']), datetime])
     print(obj)
 
 string = tt.to_string(

@@ -24,12 +24,14 @@ const dataSource = 'data';
     } catch (e) {
         console.log(e);
     }
+    let datetime = moment().format('YYYY-MM-DD--hh-mm-ss');
 
     let summary = {
         files: [],
         tag: "",
         domain: "",
         id: await makeid(10),
+        datetime: datetime,
     };
 
     if (!config.urls) {
@@ -43,8 +45,6 @@ const dataSource = 'data';
 
     let count = 1;
 
-    let datetime = moment().format('YYYY-MM-DD--hh-mm-ss');
-
     for (const url of config.urls) {
         for (const viewport of config.viewports) {
 
@@ -57,6 +57,8 @@ const dataSource = 'data';
             let domain = await page.evaluate(function() {
                 return window.location.host;
             });
+
+            await page.addScriptTag({path: "./mutate.js"});
 
             await page.addScriptTag({path: "./ChromeExtension/domvrt.js"});
 
