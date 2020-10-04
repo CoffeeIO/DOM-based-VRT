@@ -651,13 +651,13 @@ DomVRT.Extractor = (function (obj) {
   };
 
   obj.currentAppToFile = function(filename, minify) {
-    // filename = filename ? filename : getFilename();
+    filename = filename ? filename : getFilename();
 
-    // html2canvas(document.querySelector('html')).then(canvas => {
-    //   canvas.toBlob(function(blob) {
-    //     saveAs(blob, filename + '.png');
-    //   });
-    // });
+    html2canvas(document.querySelector('html')).then(canvas => {
+      canvas.toBlob(function(blob) {
+        saveAs(blob, filename + '.png');
+      });
+    });
 
 
     // domtoimage.toBlob(document.getElementById('html'))
@@ -791,9 +791,9 @@ DomVRT.Extractor = (function (obj) {
 
       if (rect != null) {
         json[jsonMapping['x1'][mVal]] = rect.left
-        json[jsonMapping['y1'][mVal]] = rect.top
+        json[jsonMapping['y1'][mVal]] = rect.top + window.scrollY
         json[jsonMapping['x2'][mVal]] = rect.right
-        json[jsonMapping['y2'][mVal]] = rect.bottom
+        json[jsonMapping['y2'][mVal]] = rect.bottom + window.scrollY
       }
 
     }

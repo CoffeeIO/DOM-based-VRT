@@ -23,6 +23,7 @@ class TestTree(object):
 
     map = None
     results = None
+    test_folder = None
 
     ZHANG = 'zhang'
     TOUZET = 'touzet'
@@ -157,6 +158,9 @@ class TestTree(object):
 
         return foldername
 
+    def reset_results(self):
+        self.results = Results()
+
     def diff_folders(self, folder1, folder2):
         pass
 
@@ -171,14 +175,16 @@ class TestTree(object):
             print("Invalid algorithm used: ", algorithm)
             return
 
-
         start_total = time.time()
         node_tree = NodeTree(self.results)
 
-        (full_folder, test_folder) = self.get_folder(base_folder, True)
+        if self.test_folder == None:
+            (full_folder, test_folder) = self.get_folder(base_folder, True)
+            self.test_folder = test_folder
 
-        foldername1 = self.get_folder(test_folder + "/before")
-        foldername2 = self.get_folder(test_folder + "/after")
+
+        foldername1 = self.get_folder(self.test_folder + "/before")
+        foldername2 = self.get_folder(self.test_folder + "/after")
 
 
         print("Convert file to tree")
@@ -225,8 +231,7 @@ class TestTree(object):
             signal.alarm(0)
         except Exception:
             print("Could not finish tree distance within timeout: ", timeout)
-            return;
-
+            return
 
         if diff == None:
             print("Distance could not be calculated")
@@ -249,7 +254,7 @@ class TestTree(object):
         self.results.save(foldername1)
         self.results.save(foldername2)
         self.results.print_save()
-        print(test_folder)
+        print(self.test_folder)
 
         return (foldername1, foldername2)
 

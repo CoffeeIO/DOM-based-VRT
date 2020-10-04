@@ -1,5 +1,7 @@
 viewports:
+  - 1200
   - 900
+  - 600
 urls:
   - "https://coffeeio.com/"
 delay: 3000

@@ -25,6 +25,7 @@ data2 = None
 
 tableData = []
 
+# Find objects for captures.
 for path in onlyfiles:
     print(path)
 
@@ -43,6 +44,7 @@ for path in onlyfiles:
         data2 = obj
         tableData.append([obj['id'], obj['key'] if 'key' in obj else '', obj['domain'], obj['tag'], len(obj['files'])])
 
+# Check if both objects are defined.
 if data1 and data2:
     if data1['key'] == data2['key']:
         if len(tableData):
@@ -55,11 +57,13 @@ if data1 and data2:
             )
             print(string)
 
-            # Ready to compare tests.
-            test_tree = domvrt.TestTree()
-            path1 = data1['files'][0]
-            path2 = data2['files'][0]
+        # Ready to compare tests.
+        test_tree = domvrt.TestTree()
+        for i in range(len(data1['files'])):
+            path1 = data1['files'][i]
+            path2 = data2['files'][i]
             test_tree.diff(path1, path2, 'custom')
+            test_tree.reset_results()
     else:
         print("These captures are not comparable. Identical test key is required.")
 
