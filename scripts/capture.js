@@ -24,7 +24,7 @@ const dataSource = 'data';
     } catch (e) {
         console.log(e);
     }
-    let datetime = moment().format('YYYY-MM-DD--hh-mm-ss');
+    let datetime = moment().format('YYYY-MM-DD--HH-mm-ss');
 
     let summary = {
         files: [],
@@ -58,7 +58,7 @@ const dataSource = 'data';
                 return window.location.host;
             });
 
-            await page.addScriptTag({path: "./mutate.js"});
+            await page.addScriptTag({path: "./scripts/capture-mutate.js"});
 
             await page.addScriptTag({path: "./ChromeExtension/domvrt.js"});
 

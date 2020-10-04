@@ -17,21 +17,24 @@ header = [
 ]
 
 tableData = []
+dataObjs = []
 
 for path in onlyfiles:
-    print(path)
-
-    # read file
+    # Read file
     with open(dataSource + "/" + path, 'r') as myfile:
         data=myfile.read()
 
-    # parse file
-    obj = json.loads(data)
+    # Parse file
+    dataObjs.append(json.loads(data))
 
+# Sort captures by datetime
+dataObjs.sort(key=lambda x: x['datetime'], reverse=True)
+
+for obj in dataObjs:
     key = obj['key'] if 'key' in obj else ''
     datetime = obj['datetime'] if 'datetime' in obj else ''
+
     tableData.append([obj['id'], key, obj['domain'], obj['tag'], len(obj['files']), datetime])
-    print(obj)
 
 string = tt.to_string(
     tableData,

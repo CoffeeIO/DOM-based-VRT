@@ -1,3 +1,37 @@
+# Dream
+
+### Configuration
+`.env` or `config.yml`
+- Define testing viewports
+- Define url(s)
+- Define delay
+
+### Capture website
+- `./capture.sh --tag=CoffeeIO-1.2.0`
+- Output
+  - Screenshot[]
+  - DOM json[]
+  - Summary json
+    - List of all files in capture
+    - Tag
+    - Domain
+
+### List captures
+- `list.sh "{1.2 | coffeeio.com}"`
+- ID
+- Tag
+- Url count
+- Website domain
+- Other info
+
+### Compare snapshots
+- `./compare.sh {id-before} {id-after}`
+
+### Show visual comparison
+- Website?
+
+---
+
 # Folder structure
 
 - `/Excel` - Excel sheet for results and graphs
@@ -131,34 +165,3 @@ python3 test-resource-retrieve.py
 
 
 
-# Dream
-
-### Configuration
-`.env` or `config.yml`
-- Define testing viewports
-- Define url(s)
-- Define delay
-
-### Capture website
-- `./capture.sh --tag=CoffeeIO-1.2.0`
-- Output
-  - Screenshot[]
-  - DOM json[]
-  - Summary json
-    - List of all files in capture
-    - Tag
-    - Domain
-
-### List captures
-- `list.sh "{1.2 | coffeeio.com}"`
-- ID
-- Tag
-- Url count
-- Website domain
-- Other info
-
-### Compare snapshots
-- `./compare.sh {id-before} {id-after}`
-
-### Show visual comparison
-- Website?
