@@ -136,6 +136,14 @@ class TestTree(object):
         except Exception as e:
             return None
 
+    def set_capture_ids(self, id1, id2):
+        self.results.set_capture_ids(id1, id2)
+
+    def set_capture_objs(self, obj1, obj2):
+        self.results.set_capture_objs(obj1, obj2)
+
+    def set_capture_file(self, file1, file2):
+        self.results.set_capture_file(file1, file2)
 
     def save(self, filename, foldername, create_folder = True):
         html_tree = HtmlTree()

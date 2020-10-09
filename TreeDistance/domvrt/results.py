@@ -37,12 +37,18 @@ class Results(object):
         'visual-verification' : None,
         'resource-storage': None,
         'total' : None,
+        'before-file': None,
+        'after-file': None,
     }
     tree_info = {
         'pre-dom-size': None,
         'post-dom-size': None,
         'reduced-pre-dom-size': None,
         'reduced-post-dom-size': None,
+        'before-capture-id': None,
+        'after-capture-id': None,
+        'before-capture': None,
+        'after-capture': None,
     }
     quality = {
         'tp' : 0,
@@ -56,6 +62,18 @@ class Results(object):
     }
     pre_folder = None
     post_folder = None
+
+    def set_capture_ids(self, id1, id2):
+        self.tree_info['before-capture-id'] = id1
+        self.tree_info['after-capture-id'] = id2
+
+    def set_capture_objs(self, obj1, obj2):
+        self.tree_info['before-capture'] = obj1
+        self.tree_info['after-capture'] = obj2
+
+    def set_capture_file(self, file1, file2):
+        self.execution_time['before-file'] = file1
+        self.execution_time['after-file'] = file2
 
     def set_tree_info(self, pre_dom, post_dom):
         self.map = ParserMapping(pre_dom['minify'])

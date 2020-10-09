@@ -59,9 +59,12 @@ if data1 and data2:
 
         # Ready to compare tests.
         test_tree = domvrt.TestTree()
+        test_tree.set_capture_ids(id1, id2)
+        test_tree.set_capture_objs(data1, data2)
         for i in range(len(data1['files'])):
-            path1 = data1['files'][i]
-            path2 = data2['files'][i]
+            test_tree.set_capture_file(data1['files'][i], data2['files'][i])
+            path1 = data1['files'][i]['file']
+            path2 = data2['files'][i]['file']
             test_tree.diff(path1, path2, 'custom')
             test_tree.reset_results()
     else:

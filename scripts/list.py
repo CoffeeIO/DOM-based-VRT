@@ -1,19 +1,24 @@
 from os import listdir
 from os.path import isfile, join
 import json
+import sys
 import termtables as tt
 
 dataSource = "data-summary"
 onlyfiles = [f for f in listdir(dataSource) if isfile(join(dataSource, f))]
-# print(onlyfiles)
+
+query = None
+if (len(sys.argv) >= 2):
+    query = sys.argv[1]
 
 header = [
     "Unique ID",
-    "Test key",
+    "Test hash",
     "Domain",
     "Tag",
+    "Execution",
     "Captures",
-    "Datetime"
+    "Datetime",
 ]
 
 tableData = []
@@ -33,8 +38,13 @@ dataObjs.sort(key=lambda x: x['datetime'], reverse=True)
 for obj in dataObjs:
     key = obj['key'] if 'key' in obj else ''
     datetime = obj['datetime'] if 'datetime' in obj else ''
+    execution = obj['execution'] if 'execution' in obj else ''
+    domain = obj['domain']
 
-    tableData.append([obj['id'], key, obj['domain'], obj['tag'], len(obj['files']), datetime])
+    if query and not(query.lower() in domain.lower()):
+        continue
+
+    tableData.append([obj['id'], key, domain, obj['tag'], execution,len(obj['files']), datetime])
 
 string = tt.to_string(
     tableData,

@@ -1,8 +1,9 @@
 viewports:
+  - 1600
   - 1200
   - 900
-  - 600
+  - 768
 urls:
-  - "https://coffeeio.com/"
+  - "https://innovationsfonden.dk/"
+  - "https://innovationsfonden.dk/da/om-innovationsfonden"
 delay: 3000
-tag: "1.0.0"

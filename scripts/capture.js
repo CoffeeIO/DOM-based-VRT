@@ -3,13 +3,13 @@ const moment = require('moment'); // require
 const fs = require('fs');
 const yaml = require('js-yaml');
 
+let startTime = Math.floor(Date.now() / 1000);
 let tag = '';
-process.argv.forEach(function (val, index, array) {
-    console.log(index + ': ' + val);
-});
+if (process.argv.length >= 3) {
+    tag = process.argv[2];
+}
 
 const dataSource = 'data';
-
 
 (async () => {
     // Init
@@ -28,10 +28,12 @@ const dataSource = 'data';
 
     let summary = {
         files: [],
-        tag: "",
+        tag: tag,
         domain: "",
         id: await makeid(10),
         datetime: datetime,
+        execution: '',
+        config: config,
     };
 
     if (!config.urls) {
@@ -45,7 +47,10 @@ const dataSource = 'data';
 
     let count = 1;
 
+    // Loop urls.
     for (const url of config.urls) {
+
+        // Loop viewport sizes.
         for (const viewport of config.viewports) {
 
             const page = await browser.newPage();
@@ -63,7 +68,7 @@ const dataSource = 'data';
             await page.addScriptTag({path: "./ChromeExtension/domvrt.js"});
 
             // Scroll to bottom and back up.
-            await autoScroll(page);
+            // await autoScroll(page);
             await page.waitFor(config.delay);
 
             // Capture DOM and save
@@ -74,7 +79,12 @@ const dataSource = 'data';
             let path = dataSource + '/' + datetime + '--' + count + '--' + domain + '--' + viewport;
             count += 1;
 
-            summary.files.push(path);
+            let fileObj = {
+                'file': path,
+                'viewport': viewport,
+                'url': url,
+            };
+            summary.files.push(fileObj);
             summary.domain = domain;
 
             fs.writeFileSync(path + '.json', JSON.stringify(data));
@@ -88,6 +98,7 @@ const dataSource = 'data';
     }
 
     summary.key = makeKey(config, summary);
+    summary.execution = (Math.floor(Date.now() / 1000) - startTime) + 's'
     console.log(summary.key);
     fs.writeFileSync('data-summary/' + datetime + '--' + summary.domain + '.json', JSON.stringify(summary));
 
