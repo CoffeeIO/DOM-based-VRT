@@ -167,7 +167,7 @@ class TestTree(object):
         return foldername
 
     def reset_results(self):
-        self.results = Results()
+        self.results.reset()
 
     def diff_folders(self, folder1, folder2):
         pass

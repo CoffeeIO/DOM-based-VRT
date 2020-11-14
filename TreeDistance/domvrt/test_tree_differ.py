@@ -50,9 +50,12 @@ class TestTreeDiffer(object):
         if pre_path != None:
             pre_visual_diff = TestTreeVisual(pre_path)
             pre_visual_diff.init_image(path1 + '.png', pre_tree)
+            pre_visual_diff.save_image(pre_path + '/image.png')
+
         if post_path != None:
             post_visual_diff = TestTreeVisual(post_path)
             post_visual_diff.init_image(path2 + '.png', post_tree)
+            post_visual_diff.save_image(post_path + '/image.png')
 
         pre_map = self.make_position_map(pre_tree)
         post_map = self.make_position_map(post_tree)

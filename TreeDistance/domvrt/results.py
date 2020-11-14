@@ -62,6 +62,13 @@ class Results(object):
     }
     pre_folder = None
     post_folder = None
+    def reset(self):
+        self.issues = {
+            self.INSERT : [],
+            self.REMOVE : [],
+            self.UPDATE : [],
+            self.MATCH  : [],
+        }
 
     def set_capture_ids(self, id1, id2):
         self.tree_info['before-capture-id'] = id1
@@ -78,6 +85,7 @@ class Results(object):
     def set_tree_info(self, pre_dom, post_dom):
         self.map = ParserMapping(pre_dom['minify'])
         self.tree_info['captureWidth'] = pre_dom['captureWidth']
+        self.tree_info['captureHeight'] = pre_dom['captureHeight']
         self.tree_info['pre-dom-size'] = pre_dom['node-count']
         self.tree_info['post-dom-size'] = post_dom['node-count']
 
