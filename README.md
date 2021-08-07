@@ -1,5 +1,9 @@
 # DOM-Based-VRT
 
+<p align="center">
+    <img alt="DOM-Based VRT" src="logo.png" width="300">
+</p>
+
 ### Install
 
 - Python 3 is required (expected executable to be called `python3`)
@@ -83,6 +87,15 @@ pip3 install numpy
     -  `image-diff.png` The screenshot with diff highlights.
     -  `image-diff-highlight.png` The diff highlights without the screenshot.
     -  `output.json` A JSON description of all detected differences.
+
+### Results
+- Red : Removed element
+- Yellow : Modified element
+- Green : Added element
+- *json describes exactly which dom elements are affected*
+<p align="center">
+    <img alt="DOM-Based VRT" src="figure15-16.png" width="600">
+</p>
 
 ---
 
