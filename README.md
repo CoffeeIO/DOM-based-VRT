@@ -2,8 +2,8 @@
 
 ### Install
 
-- Python 3 is required
-- Pip 3 is required
+- Python 3 is required (expected executable to be called `python3`)
+- Pip 3 is required (expected executable to be called `pip3`)
 - Node is required
 - NPM is required
 
