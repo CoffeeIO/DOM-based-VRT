@@ -15,6 +15,7 @@ class Results(object):
     UPDATE = "update"
     MATCH = "match"
 
+    issueNumber = 1
 
     # Issue = Actual change.
     issues = {
@@ -147,8 +148,11 @@ class Results(object):
             "node-pre"  : pre_data,
             "node-post" : post_data,
             "style"     : style_data,
-            "visible"   : visible
+            "visible"   : visible,
+            "type"      : type,
+            "id"        : self.issueNumber
         })
+        self.issueNumber += 1
 
     def add_mutation(self, type, pre_node = None, post_node = None, style_data = None, visible = False):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()

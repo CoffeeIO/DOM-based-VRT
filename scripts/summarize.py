@@ -21,7 +21,7 @@ if (query == None):
 
 testFolder = constructFolder(query)
 
-dataSource = "data-output"
+dataSource = "comparisions"
 onlyFolders = [f for f in listdir(dataSource) if not(isfile(join(dataSource, f)))]
 
 print(onlyFolders)

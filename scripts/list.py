@@ -4,7 +4,7 @@ import json
 import sys
 import termtables as tt
 
-dataSource = "data-summary"
+dataSource = "capture-summaries"
 onlyfiles = [f for f in listdir(dataSource) if isfile(join(dataSource, f))]
 
 query = None

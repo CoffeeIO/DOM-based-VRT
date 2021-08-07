@@ -7,6 +7,11 @@ data/
 data-summary/
 data-output/
 
+comparisions/
+captures/
+capture-summaries/
+
+
 .DS_Store
 
 # Created by https://www.gitignore.io/api/node

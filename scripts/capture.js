@@ -9,7 +9,7 @@ if (process.argv.length >= 3) {
     tag = process.argv[2];
 }
 
-const dataSource = 'data';
+const dataSource = 'captures';
 
 (async () => {
     // Init
@@ -100,7 +100,7 @@ const dataSource = 'data';
     summary.key = makeKey(config, summary);
     summary.execution = (Math.floor(Date.now() / 1000) - startTime) + 's'
     console.log(summary.key);
-    fs.writeFileSync('data-summary/' + datetime + '--' + summary.domain + '.json', JSON.stringify(summary));
+    fs.writeFileSync('capture-summaries/' + datetime + '--' + summary.domain + '.json', JSON.stringify(summary));
 
     await browser.close();
 })();

@@ -5,7 +5,7 @@ import termtables as tt
 import sys
 import domvrt
 
-dataSource = "data-summary"
+dataSource = "capture-summaries"
 onlyfiles = [f for f in listdir(dataSource) if isfile(join(dataSource, f))]
 # print(onlyfiles)
 

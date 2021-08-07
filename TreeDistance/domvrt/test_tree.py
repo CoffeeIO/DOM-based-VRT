@@ -307,7 +307,7 @@ class TestTree(object):
             print("creating path: '" + folder + "'")
 
     def get_folder(self, foldername, return_base = False):
-        base = "data-output/"
+        base = "comparisions/"
 
         folder_no = 0
         folder = base + foldername + utils.number_to_string(folder_no)

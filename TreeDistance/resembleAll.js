@@ -53,7 +53,7 @@ const getDirectories = source =>
 
   }
 
-const dirs = getDirectories('./data-output');
+const dirs = getDirectories('./comparisons');
 dirs.forEach(function (dir) {
   getDiff(dir);
 });
