@@ -6,7 +6,7 @@ from domvrt.parser_mapping import ParserMapping
 from domvrt.results import Results
 
 
-sys.path.append('/Users/itu/dev/DOM-based-VRT/TreeDistance')
+sys.path.append('/Users/man/private_projects/domvrt/TreeDistance')
 
 from zss import simple_distance, Node, Operation, distance as strdist
 

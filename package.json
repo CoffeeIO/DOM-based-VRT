@@ -1,29 +1,41 @@
 {
-  "name": "DOM-based-VRT",
+  "name": "dom-based-vrt",
   "version": "1.0.0",
   "description": "",
   "author": "Mathias Grundtvig Andreasen (MGApcDev)",
   "license": "GPL-3.0",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "node-sass": "^4.11.0",
-    "uglify-js": "^3.4.9",
-    "watch": "*"
-  },
-  "scripts": {
-    "start": "python -m SimpleHTTPServer",
-    "uglify": "node_modules/uglify-js/bin/uglifyjs src/*.js -o dist/domvrt.min.js",
-    "uglifyVendor": "node_modules/uglify-js/bin/uglifyjs src/vendor/*.js -o dist/domvrt.vendor.min.js",
-    "copyToChrome": "cp dist/*.js ChromeExtension/",
-    "compile": "npm run uglify && npm run uglifyVendor && npm run copyToChrome",
-    "watch": "watch 'npm run compile' ./src"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/MGApcDev/DOM-based-VRT"
+    "@babel/core": "^7.6.2",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/preset-env": "^7.6.2",
+    "browserify": "^16.5.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0-beta.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-minify": "^3.1.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-typescript": "^5.0.1",
+    "gulp-watch": "^5.0.1",
+    "jasmine-core": "^3.5.0",
+    "karma": "^5.0.2",
+    "karma-browserify": "^7.0.0",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-firefox-launcher": "^1.3.0",
+    "karma-ie-launcher": "^1.0.0",
+    "karma-jasmine": "^3.1.1",
+    "karma-opera-launcher": "^1.0.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "tslint": "^5.20.1",
+    "typescript": "^3.6.4"
   },
   "dependencies": {
-    "file-saver": "^2.0.0"
-  }
+    "js-yaml": "^3.14.0",
+    "moment": "^2.27.0",
+    "puppeteer": "^5.2.1",
+    "puppeteer-full-page-screenshot": "^1.0.5"
+  },
+  "scripts": {
+    "test": "karma start karma.conf.js"
+  },
+  "homepage": "https://coffeeio.com"
 }

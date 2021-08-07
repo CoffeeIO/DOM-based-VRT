@@ -1,0 +1,9 @@
+viewports:
+  - 1600
+  - 1200
+  - 900
+  - 768
+urls:
+  - "https://innovationsfonden.dk/"
+  - "https://innovationsfonden.dk/da/om-innovationsfonden"
+delay: 3000
