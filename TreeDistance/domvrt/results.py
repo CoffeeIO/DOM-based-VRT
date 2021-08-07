@@ -15,6 +15,7 @@ class Results(object):
     UPDATE = "update"
     MATCH = "match"
 
+    issueNumber = 1
 
     # Issue = Actual change.
     issues = {
@@ -37,12 +38,18 @@ class Results(object):
         'visual-verification' : None,
         'resource-storage': None,
         'total' : None,
+        'before-file': None,
+        'after-file': None,
     }
     tree_info = {
         'pre-dom-size': None,
         'post-dom-size': None,
         'reduced-pre-dom-size': None,
         'reduced-post-dom-size': None,
+        'before-capture-id': None,
+        'after-capture-id': None,
+        'before-capture': None,
+        'after-capture': None,
     }
     quality = {
         'tp' : 0,
@@ -56,10 +63,30 @@ class Results(object):
     }
     pre_folder = None
     post_folder = None
+    def reset(self):
+        self.issues = {
+            self.INSERT : [],
+            self.REMOVE : [],
+            self.UPDATE : [],
+            self.MATCH  : [],
+        }
+
+    def set_capture_ids(self, id1, id2):
+        self.tree_info['before-capture-id'] = id1
+        self.tree_info['after-capture-id'] = id2
+
+    def set_capture_objs(self, obj1, obj2):
+        self.tree_info['before-capture'] = obj1
+        self.tree_info['after-capture'] = obj2
+
+    def set_capture_file(self, file1, file2):
+        self.execution_time['before-file'] = file1
+        self.execution_time['after-file'] = file2
 
     def set_tree_info(self, pre_dom, post_dom):
         self.map = ParserMapping(pre_dom['minify'])
         self.tree_info['captureWidth'] = pre_dom['captureWidth']
+        self.tree_info['captureHeight'] = pre_dom['captureHeight']
         self.tree_info['pre-dom-size'] = pre_dom['node-count']
         self.tree_info['post-dom-size'] = post_dom['node-count']
 
@@ -95,10 +122,10 @@ class Results(object):
             pre_data = {
                 "nodeType" : pre_node[nodeType],
                 "position" : pre_node[position],
-                "x1"       : pre_node['x1'],
-                "x2"       : pre_node['x2'],
-                "y1"       : pre_node['y1'],
-                "y2"       : pre_node['y2'],
+                "x1"       : pre_node['x1'] if 'x1' in pre_node else None,
+                "x2"       : pre_node['x2'] if 'x2' in pre_node else None,
+                "y1"       : pre_node['y1'] if 'y1' in pre_node else None,
+                "y2"       : pre_node['y2'] if 'y2' in pre_node else None,
                 "tag"      : pre_node[tagName] if tagName in pre_node else None,
                 "attr"     : pre_node[attrs] if attrs in pre_node else None,
                 "text"     : pre_node[nodeValue] if nodeValue in pre_node else None,
@@ -121,8 +148,11 @@ class Results(object):
             "node-pre"  : pre_data,
             "node-post" : post_data,
             "style"     : style_data,
-            "visible"   : visible
+            "visible"   : visible,
+            "type"      : type,
+            "id"        : self.issueNumber
         })
+        self.issueNumber += 1
 
     def add_mutation(self, type, pre_node = None, post_node = None, style_data = None, visible = False):
         (tagName, nodeType, nodeName, nodeValue, position, childNodes, attrs) = self.map.get_mapping_names()

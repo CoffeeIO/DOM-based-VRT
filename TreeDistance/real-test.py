@@ -3,8 +3,8 @@ import domvrt
 # file1 = "data/coffeeio-com--2019-03-06--22-19-05.json"
 # file2 = "data/coffeeio-com--2019-03-06--22-19-05-1.json"
 
-file1 = "data/coffeeio-com--2019-03-07--09-1-13.json"
-file2 = "data/coffeeio-com--2019-03-07--09-1-13-(1).json"
+file1 = "data/github-com--2020-08-22--17-35-49.json"
+file2 = "data/github-com--2020-08-22--17-36-24.json"
 
 
 test_tree = domvrt.TestTree()

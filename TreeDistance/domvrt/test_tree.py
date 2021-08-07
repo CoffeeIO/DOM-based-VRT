@@ -23,6 +23,7 @@ class TestTree(object):
 
     map = None
     results = None
+    test_folder = None
 
     ZHANG = 'zhang'
     TOUZET = 'touzet'
@@ -99,9 +100,9 @@ class TestTree(object):
         t = TestTreeGenerator(self.settings)
         return t.mutate_test(test_tree)
 
-    def compare_style(self, pre_tree, post_tree, diffs, pre_path = None, post_path = None):
+    def compare_style(self, pre_tree, post_tree, diffs, pre_path, post_path, path1, path2):
         t = TestTreeDiffer(self.results)
-        return t.compare_style(pre_tree, post_tree, diffs, pre_path, post_path)
+        return t.compare_style(pre_tree, post_tree, diffs, pre_path, post_path, path1, path2)
 
     def store_resources(self, tree, foldername, create_folder = True):
         if create_folder:
@@ -135,6 +136,14 @@ class TestTree(object):
         except Exception as e:
             return None
 
+    def set_capture_ids(self, id1, id2):
+        self.results.set_capture_ids(id1, id2)
+
+    def set_capture_objs(self, obj1, obj2):
+        self.results.set_capture_objs(obj1, obj2)
+
+    def set_capture_file(self, file1, file2):
+        self.results.set_capture_file(file1, file2)
 
     def save(self, filename, foldername, create_folder = True):
         html_tree = HtmlTree()
@@ -157,6 +166,9 @@ class TestTree(object):
 
         return foldername
 
+    def reset_results(self):
+        self.results.reset()
+
     def diff_folders(self, folder1, folder2):
         pass
 
@@ -166,29 +178,38 @@ class TestTree(object):
 
         return False
 
-    def diff(self, file1, file2, algorithm = 'zhang', base_folder = 'test'):
+    def diff(self, path1, path2, algorithm = 'zhang', base_folder = 'test'):
         if not self.__valid_algorithm(algorithm):
             print("Invalid algorithm used: ", algorithm)
-            return;
-
+            return
 
         start_total = time.time()
         node_tree = NodeTree(self.results)
 
-        (full_folder, test_folder) = self.get_folder(base_folder, True)
+        if self.test_folder == None:
+            (full_folder, test_folder) = self.get_folder(base_folder, True)
+            self.test_folder = test_folder
 
-        foldername1 = self.get_folder(test_folder + "/before")
-        foldername2 = self.get_folder(test_folder + "/after")
+
+        foldername1 = self.get_folder(self.test_folder + "/before")
+        foldername2 = self.get_folder(self.test_folder + "/after")
 
 
-        pre_dom = self.file_to_tree(file1)
-        post_dom = self.file_to_tree(file2)
+        print("Convert file to tree")
+
+        pre_dom = self.file_to_tree(path1 + '.json')
+        post_dom = self.file_to_tree(path2 + '.json')
+
+        print("Setting tree info")
+
 
         self.results.set_tree_info(pre_dom, post_dom)
 
+        print("Saving files")
+
         start = time.time()
-        self.save(file1, foldername1, False)
-        self.save(file2, foldername2, False)
+        # self.save(file1, foldername1, False)
+        # self.save(file2, foldername2, False)
         total = time.time() - start
         self.results.execution_time['resource-storage'] = total
 
@@ -197,6 +218,8 @@ class TestTree(object):
         signal.signal(signal.SIGALRM, timeout_handler)
         timeout = 600
         signal.alarm(timeout)
+
+        print("Running tree distance algorithms")
 
         try:
             if algorithm == self.ZHANG:
@@ -216,8 +239,7 @@ class TestTree(object):
             signal.alarm(0)
         except Exception:
             print("Could not finish tree distance within timeout: ", timeout)
-            return;
-
+            return
 
         if diff == None:
             print("Distance could not be calculated")
@@ -227,7 +249,7 @@ class TestTree(object):
         node_tree.print_diff(diff[1])
 
         start = time.time()
-        self.compare_style(pre_dom, post_dom, diff[1], foldername1, foldername2)
+        self.compare_style(pre_dom, post_dom, diff[1], foldername1, foldername2, path1, path2)
         total = time.time() - start
         self.results.execution_time['visual-verification'] = total
 
@@ -240,7 +262,7 @@ class TestTree(object):
         self.results.save(foldername1)
         self.results.save(foldername2)
         self.results.print_save()
-        print(test_folder)
+        print(self.test_folder)
 
         return (foldername1, foldername2)
 
@@ -285,7 +307,7 @@ class TestTree(object):
             print("creating path: '" + folder + "'")
 
     def get_folder(self, foldername, return_base = False):
-        base = "data-output/"
+        base = "comparisions/"
 
         folder_no = 0
         folder = base + foldername + utils.number_to_string(folder_no)

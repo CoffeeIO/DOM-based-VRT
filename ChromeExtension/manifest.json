@@ -1,27 +1,30 @@
 {
   "manifest_version": 2,
-
   "name": "DOM extractor",
   "description": "",
   "version": "1.0.0",
-
-  "author":"Mathias Grundtvig Andreasen(MGApcDev)",
+  "author": "Mathias Grundtvig Andreasen(MGApcDev)",
   "permissions": [
     "<all_urls>",
     "storage",
-    "activeTab"
+    "activeTab",
+    "tabs",
+    "pageCapture"
   ],
-  "browser_action": {
-  },
+  "browser_action": {},
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "content_scripts": [
     {
-      "matches": ["*://*/*"],
+      "matches": [
+        "*://*/*"
+      ],
       "js": [
-        "domvrt.vendor.min.js",
-        "domvrt.min.js",
+        "domvrt.vendor.js",
+        "domvrt.js",
         "main.js"
       ]
     }

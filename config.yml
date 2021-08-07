@@ -1,0 +1,9 @@
+viewports:
+  - 1600
+  - 1200
+  - 900
+  - 768
+urls:
+  - "https://coffeeio.com"
+  #- "https://mgapcdev.com"
+delay: 3000
