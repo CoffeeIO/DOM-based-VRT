@@ -4,6 +4,6 @@ viewports:
   - 900
   - 768
 urls:
-  - "https://innovationsfonden.dk/"
-  - "https://innovationsfonden.dk/da/om-innovationsfonden"
+  - "https://coffeeio.com"
+  #- "https://mgapcdev.com"
 delay: 3000

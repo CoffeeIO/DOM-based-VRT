@@ -39,21 +39,21 @@ async function getDiff() {
     // data is the same as usual with an additional getBuffer() function
 
     const data = await compareImages(
-        await fs.readFile("./data-output/" + folder + num + "/before0000/image.png"),
-        await fs.readFile("./data-output/" + folder + num + "/after0000/image.png"),
+        await fs.readFile("./comparisions/" + folder + num + "/before0000/image.png"),
+        await fs.readFile("./comparisions/" + folder + num + "/after0000/image.png"),
         options
     );
-    const out1 = "./data-output/" + folder + num + "/after0000/resemble.png";
+    const out1 = "./comparisions/" + folder + num + "/after0000/resemble.png";
 
     await fs.writeFile(out1, data.getBuffer());
     console.log("File saved to %s", out1);
 
     const data2 = await compareImages(
-        await fs.readFile("./data-output/" + folder + num + "/after0000/image.png"),
-        await fs.readFile("./data-output/" + folder + num + "/before0000/image.png"),
+        await fs.readFile("./comparisions/" + folder + num + "/after0000/image.png"),
+        await fs.readFile("./comparisions/" + folder + num + "/before0000/image.png"),
         options
     );
-    const out2 = "./data-output/" + folder + num + "/before0000/resemble.png"
+    const out2 = "./comparisions/" + folder + num + "/before0000/resemble.png"
 
     await fs.writeFile(out2, data2.getBuffer());
     console.log("File saved to %s", out2);

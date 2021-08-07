@@ -5,6 +5,7 @@
 - Python 3 is required
 - Pip 3 is required
 - Node is required
+- NPM is required
 
 ```bash
 npm install
@@ -20,48 +21,49 @@ pip3 install numpy
 ```
 
 ### Step 1: Capture website
-- Define website to capture in `config.yml`
-  - Define testing viewports to capture
-  - Define url(s) to capture
-  - Define delay between captures
-- `./scripts/capture.sh CoffeeIO-1.2.0`
-  - First param tag is optional
-- Each captures produces 2 files in `/captures`
-  - A PNG screenshot of the website at the specific viewport
-  - A JSON file containing
-    - The whole DOM tree and styles at capture
-    - Some meta information about the capture
-  - In `/capture-summaries` a file is produced that describe the captures and meta information.
-    - ```javascript
-      {
-        "files": [ /* Captures */
-          {
-            "file": "data/2021-08-07--11-10-43--1--innovationsfonden.dk--1600",
-            "viewport": 1600,
-            "url": "https://innovationsfonden.dk/"
-          },...
+- Define website to capture in `config.yml`.
+  - Define testing viewports to capture.
+  - Define url(s) to capture.
+  - Define delay between captures.
+- `scripts/capture-mutate.js` is executed before capture of website, allowing you to modify the website before capture.
+- Run `scripts/capture.sh CoffeeIO-1.2.0` to perform capture.
+  - First param is optional. It is just tag metadata to make it easier to identity later.
+- Each capture produces 2 files in `/captures`.
+  - A PNG screenshot of the website at the specific viewport.
+  - A JSON file containing.
+    - The whole DOM tree and styles at capture.
+    - Some meta information about the capture.
+- In `/capture-summaries` a file is produced that describe all the captures and meta information.
+  - ```javascript
+    {
+      "files": [ /* Captures */
+        {
+          "file": "captures/2021-08-07--11-10-43--1--innovationsfonden.dk--1600",
+          "viewport": 1600,
+          "url": "https://innovationsfonden.dk/"
+        },...
+      ],
+      "tag": "CoffeeIO-1.2.0", /* Optional tag for searching */
+      "domain": "innovationsfonden.dk",
+      "id": "77ugJzaV0J", /* UUID of capture */
+      "datetime": "2021-08-07--11-10-43", /* Datetime of capture */
+      "execution": "85s", /* Total execution time of all captures */
+      "config": { /* Copy of config file at time of capture */
+        "viewports": [
+          1600,
+          1200,
+          ...
         ],
-        "tag": "CoffeeIO-1.2.0", /* Optional tag for searching */
-        "domain": "innovationsfonden.dk",
-        "id": "77ugJzaV0J", /* UUID of capture */
-        "datetime": "2021-08-07--11-10-43", /* Datetime of capture */
-        "execution": "85s", /* Total execution time of all captures */
-        "config": { /* Copy of config file at time of capture */
-          "viewports": [
-            1600,
-            1200,
-            ...
-          ],
-          "urls": [
-            "https://innovationsfonden.dk/",
-            "https://innovationsfonden.dk/da/om-innovationsfonden",
-            ...
-          ],
-          "delay": 3000
-        },
-        "key": -783019585 /* Hash key for disallowing invalid comparisons in compare.sh */
-      }
-      ```
+        "urls": [
+          "https://innovationsfonden.dk/",
+          "https://innovationsfonden.dk/da/om-innovationsfonden",
+          ...
+        ],
+        "delay": 3000
+      },
+      "key": -783019585 /* Hash key for disallowing invalid comparisons in compare.sh */
+    }
+    ```
 
 ### Step 2: List captures
 - `scripts/list.sh` to list all captures
@@ -112,17 +114,11 @@ Now call the module functions under DomVRT.Differ.
 
 # ResembleJS - comparision
 
-## Install:
-- node is required
-
-## Run:
-
-Run all tests in `data-output` folder.
 ```
 node resembleAll.js
 ```
 
-Run a single test in `data-output` folder.
+Run a single test in `comparisions` folder.
 ```
 node resembleTest.js {somefolder}
 --- example
